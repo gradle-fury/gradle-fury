@@ -1,0 +1,46 @@
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Android Application (APK)'
+
+apply plugin: 'com.android.application'
+
+dependencies {
+    compile project(':hello-world-aar')
+
+    compile "com.android.support:appcompat-v7:${project.property('android-support.version')}"
+    compile "com.android.support:cardview-v7:${project.property('android-support.version')}"
+    compile "com.android.support:design:${project.property('android-support.version')}"
+    compile "com.android.support:recyclerview-v7:${project.property('android-support.version')}"
+    compile "com.android.support:support-v4:${project.property('android-support.version')}"
+
+    testCompile "junit:junit:${project.property('junit.version')}"
+}
+
+apply from: "${rootDir}/gradle/android-support.gradle"
+
+android {
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+            zipAlignEnabled false
+        }
+    }
+
+    /*
+     * Here is some bogus configuration for the purposes of illustrating multi-flavor Android builds
+     */
+    productFlavors {
+        foo {
+            // empty config (the difference is in the strings.xml...)
+        }
+        bar {
+            // empty config (the difference is in the strings.xml...)
+        }
+        baz {
+            // empty config (the difference is in the strings.xml...)
+        }
+    }
+}

@@ -1,0 +1,5 @@
+rootProject.name = 'gradle-fury'
+
+include ':hello-world-aar'
+include ':hello-world-apk'
+include ':hello-world-lib'

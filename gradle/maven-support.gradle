@@ -1,0 +1,669 @@
+/**=================================================================================================
+ * Common Gradle script configuration for Maven tasks.
+ =================================================================================================*/
+
+
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+
+// Maven Repository (i.e. Sonatype Nexus Repository Manager) Configuration -------------------------
+
+ext.isReleaseBuild = (project.version.equals("unspecified") == false &&
+        project.version.contains("SNAPSHOT") == false)
+
+// default to Maven Central if not provided
+ext.releaseRepositoryUrl = (
+        hasProperty('RELEASE_REPOSITORY_URL')
+                ? RELEASE_REPOSITORY_URL
+                : "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+)
+
+// default to Maven Central if not provided
+ext.snapshotRepositoryUrl = (
+        hasProperty('SNAPSHOT_REPOSITORY_URL')
+                ? SNAPSHOT_REPOSITORY_URL
+                : "https://oss.sonatype.org/content/repositories/snapshots/"
+)
+
+ext.targetRepositoryUrl = ( isReleaseBuild ? releaseRepositoryUrl : snapshotRepositoryUrl)
+
+ext.nexusUsername = ( hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : "" )
+ext.nexusPassword = ( hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "" )
+
+
+// Maven POM Properties ----------------------------------------------------------------------------
+
+// The following property definitions are consumed by the maven-publish plugin to drive automatic
+// Maven POM generation. The associated configuration properties should be defined in the standard
+// gradle.properties file in the root of the project.  These standard properties have been
+// purposefully externalized to allow for configuration on a per-project basis without requiring
+// modification to this script.
+//
+// NOTE: Ultimately, this work should be refactored and cleaned up for inclusion into an existing or
+// new formal Gradle plugin!  (A "labor of love" task for another day on my own time...)
+
+def developers = []
+
+// parse the developer list first
+if (hasProperty("pom.developers.developer.0.id")) {
+
+    // parse the roles of each developer
+    for (def i = 0; hasProperty("pom.developers.developer.${i}.id"); ++i) {
+
+        def roles = []
+
+        if (hasProperty("pom.developers.developer.${i}.role.0")) {
+            for (def j = 0; hasProperty("pom.developers.developer.${i}.role.${j}"); ++j) {
+                roles[j] = project.property("pom.developers.developer.${i}.role.${j}")
+            }
+        }
+
+        def developer = [
+                id: project.property("pom.developers.developer.${i}.id"),
+                name: (
+                        hasProperty("pom.developers.developer.${i}.name")
+                                ? project.property("pom.developers.developer.${i}.name") : ""
+                ),
+                email: (
+                        hasProperty("pom.developers.developer.${i}.email")
+                                ? project.property("pom.developers.developer.${i}.email") : ""
+                ),
+                organization: (
+                        hasProperty("pom.developers.developer.${i}.organization")
+                                ? project.property("pom.developers.developer.${i}.organization") : ""
+                ),
+                roles: roles
+        ]
+
+        developers[i] = developer
+    }
+}
+
+
+// now we define the primary "pom" configuration used by the maven-publish plugin (see below)
+ext.pom = [
+        packaging: ( hasProperty('pom.packaging') ? project.property('pom.packaging') : "jar" ), // use JAR as the default ???
+        name: ( hasProperty('project.name') ? project.property('project.name') : "" ),
+        description: ( hasProperty('project.description') ? project.property('project.description') : "" ),
+        url: ( hasProperty('pom.url') ? project.property('pom.url') : "" ),
+        inceptionYear: ( hasProperty('pom.inceptionYear') ? project.property('pom.inceptionYear') : "" ),
+        licenses: [
+// FIXME :: @chrisdoyle :: support multiple licenses, similar to how we support multiple developers below...
+            license: [
+                    name: (
+                            hasProperty('pom.licenses.license.name')
+                                    ? project.property('pom.licenses.license.name') : ""
+                    ),
+                    url: (
+                            hasProperty('pom.licenses.license.url')
+                                    ? project.property('pom.licenses.license.url') : ""
+                    ),
+                    distribution: (
+                            hasProperty('pom.licenses.license.distribution')
+                                    ? project.property('pom.licenses.license.distribution') : ""
+                    )
+            ]
+        ],
+        organization: [
+                name: ( hasProperty('pom.organization.name') ? project.property('pom.organization.name') : "" ),
+                url: ( hasProperty('pom.organization.url') ? project.property('pom.organization.url') : "" )
+        ],
+        developers: developers,
+        issueManagement: [
+                system: (
+                        hasProperty('pom.issueManagement.system') ? project.property('pom.issueManagement.system') : ""
+                ),
+                url: ( hasProperty('pom.issueManagement.url') ? project.property('pom.issueManagement.url') : "" )
+        ],
+        ciManagement: [
+                system: ( hasProperty('pom.ciManagement.system') ? project.property('pom.ciManagement.system') : "" ),
+                url: ( hasProperty('pom.ciManagement.url') ? project.property('pom.ciManagement.url') : "" )
+        ],
+        scm: [
+                url: ( hasProperty('pom.scm.url') ? project.property('pom.scm.url') : "" ),
+                connection: ( hasProperty('pom.scm.connection') ? project.property('pom.scm.connection') : "" ),
+                developerConnection: (
+                        hasProperty('pom.scm.developerConnection')
+                                ? project.property('pom.scm.developerConnection') : ""
+                )
+        ],
+        distributionManagement: [
+                site: [
+                        id: (
+                                hasProperty('pom.distributionManagement.site.id')
+                                        ? project.property('pom.distributionManagement.site.id') : ""
+                        ),
+                        url: ( hasProperty('pom.distributionManagement.site.url')
+                                ? project.property('pom.distributionManagement.site.url') : ""
+                        )
+                ]
+        ]
+]
+
+
+// Gradle Execution Pipeline Hacks -----------------------------------------------------------------
+
+// And here's where we muck with the Gradle task execution pipeline in order to strong-arm the
+// proper publishing of all artifacts (for every Android build variant) to a target Maven repository
+// (e.g. Sonatype Nexus)
+//
+// For background information regarding this "neat" series of hacks, please visit the following
+// thread from the Gradle forums:
+//
+//     "How can I upload multiple flavors/artifacts with different POM-files using mavenDeployer?"
+//     https://discuss.gradle.org/t/how-can-i-upload-multiple-flavors-artifacts-with-different-pom-files-using-mavendeployer/5887
+
+build.mustRunAfter clean
+publish.dependsOn build
+
+uploadArchives.dependsOn publish
+
+uploadArchives {
+    doFirst {
+        println "\n\n========================================================="
+        println "==> WARNING: The 'uploadArchives' task is deprecated. <=="
+        println "==> Calling the 'publish' task instead...             <=="
+        println "=========================================================\n\n"
+
+        throw new StopExecutionException("Calling the 'publish' task instead...")
+    }
+}
+
+
+afterEvaluate { project ->
+
+    project.ext.isJavaProject = project.plugins.hasPlugin('java');
+
+    // FIXME :: @chrisdoyle :: DRY :: these are also defined in android-support.gradle...
+    project.ext.isAndroidApplication = project.plugins.hasPlugin("com.android.application");
+    project.ext.isAndroidLibrary = project.plugins.hasPlugin("com.android.library");
+    project.ext.isAndroidProject = project.isAndroidApplication || project.isAndroidLibrary;
+
+
+    // Digitally sign all Release artifacts --------------------------------------------------------
+
+    // NOTE: For now the only "validation" we will perform is whether or not a value is provided for
+    // each of the required signingConfigs properties.  More concrete validation may be developed as
+    // an enhancement in the future, if desired.
+    ext.canSign = project.hasProperty('android.signingConfigs.release.storeFile') &&
+            (project.property('android.signingConfigs.release.storeFile') != null) &&
+            !project.property('android.signingConfigs.release.storeFile').trim().isEmpty() &&
+            project.hasProperty('android.signingConfigs.release.storePassword') &&
+            (project.property('android.signingConfigs.release.storePassword') != null) &&
+            !project.property('android.signingConfigs.release.storePassword').trim().isEmpty() &&
+            project.hasProperty('android.signingConfigs.release.keyAlias') &&
+            (project.property('android.signingConfigs.release.keyAlias') != null) &&
+            !project.property('android.signingConfigs.release.keyAlias').trim().isEmpty() &&
+            project.hasProperty('android.signingConfigs.release.keyPassword') &&
+            (project.property('android.signingConfigs.release.keyPassword') != null) &&
+            !project.property('android.signingConfigs.release.keyPassword').trim().isEmpty();
+
+    // END Digitally sign all Release artifacts ----------------------------------------------------
+
+
+    // (Yet Another) Gradle Execution Pipeline Hack (to override the inoperable 'install' task for
+    // Android projects!!!
+    if (project.ext.isJavaProject) {
+        install {
+            doFirst {
+                println "\n\n========================================================="
+                println "==> WARNING: The 'install' task is deprecated.        <=="
+                println "==> Calling the 'publishToMavenLocal' task instead... <=="
+                println "=========================================================\n\n"
+
+                throw new StopExecutionException("Calling the 'publishToMavenLocal' task instead...")
+            }
+        }
+
+        install.dependsOn publishToMavenLocal
+    }
+    else if (project.ext.isAndroidProject) {
+        task install() {
+            doFirst {
+                println "\n\n========================================================="
+                println "==> WARNING: The 'install' task is deprecated.        <=="
+                println "==> Calling the 'publishToMavenLocal' task instead... <=="
+                println "=========================================================\n\n"
+
+                throw new StopExecutionException("Calling the 'publishToMavenLocal' task instead...")
+            }
+        }
+
+        install.dependsOn publishToMavenLocal
+
+        build.mustRunAfter clean
+        publishToMavenLocal.dependsOn build
+    }
+
+    if (project.hasProperty('profile')) {
+        project.ext.profiles = project.profile.split(',')
+
+        project.ext.set("ciProfileEnabled", project.ext.profiles.contains("ci"));
+
+        project.ext.set("javadocProfileEnabled", project.ext.profiles.contains("javadoc")
+                || project.ciProfileEnabled);
+
+        project.ext.set("sourcesProfileEnabled", project.ext.profiles.contains("sources")
+                || project.ciProfileEnabled);
+    }
+    else {
+        project.ext.set("ciProfileEnabled", false);
+        project.ext.set("javadocProfileEnabled", false);
+        project.ext.set("sourcesProfileEnabled", false);
+    }
+
+    if (project.isJavaProject) {
+        if (project.javadocProfileEnabled) {
+            javadoc {
+                classpath = configurations.compile
+
+                options.charSet 'UTF-8'
+                options.docEncoding 'UTF-8'
+                options.encoding 'UTF-8'
+
+                // FIXME :: @chrisdoyle :: this assumes Java 7...
+                options.links 'http://docs.oracle.com/javase/7/docs/api/'
+
+                options {
+                    setMemberLevel(JavadocMemberLevel.PACKAGE)
+                }
+            }
+
+            task javadocJar(type: Jar, dependsOn: javadoc) {
+                classifier = 'javadoc'
+                from javadoc.destinationDir
+            }
+        }
+
+        if (project.sourcesProfileEnabled) {
+            task sourcesJar(type: Jar, dependsOn: classes) {
+                classifier = 'sources'
+                from sourceSets.main.allSource
+            }
+        }
+    }
+    else if (project.isAndroidProject) {
+        def variants
+
+        if (project.android.hasProperty('libraryVariants')) {
+            variants = project.android.libraryVariants;
+        }
+        else if (project.android.hasProperty('applicationVariants')) {
+            variants = project.android.applicationVariants;
+        }
+
+        variants.all { variant ->
+            def artifactName = project.name + "-" + project.version + "-" + variant.name + "." +
+                    project.pom.packaging;
+
+            if (    variant.name.equalsIgnoreCase("release")
+                    || (variant.name.equalsIgnoreCase("release") && project.canSign)    ) {
+
+                if (project.javadocProfileEnabled) {
+                    project.task("${variant.name}Javadoc", type: Javadoc) {
+
+                        // https://github.com/chrisbanes/gradle-mvn-push/issues/9
+                        failOnError false
+
+                        destinationDir = new File("$project.buildDir/javadoc/$variant.name")
+
+                        source = variant.javaCompile.source
+
+                        ext.androidJar =
+                                "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
+
+                        classpath = project.files(variant.javaCompile.classpath.files)
+                        classpath += project.files(ext.androidJar)
+                        // other lame attempts to overcome the 3-headed monster...
+//                      classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//                      classpath += variants.toList().first().javaCompile.classpath
+
+                        options {
+                            links "http://docs.oracle.com/javase/7/docs/api/"
+                            linksOffline("http://d.android.com/reference",
+                                    "${project.android.sdkDirectory}/docs/reference")
+                            setMemberLevel(JavadocMemberLevel.PACKAGE)
+                            docEncoding = 'UTF-8'
+                            encoding = 'UTF-8'
+                            charSet = 'UTF-8'
+                        }
+
+                        exclude '**/BuildConfig.java'
+                        exclude '**/R.java'
+                    }
+
+                    project.task("generate${variant.name.capitalize()}JavadocJar", type: Jar,
+                            dependsOn: "${variant.name}Javadoc") {
+
+                        classifier "${variant.name}-javadoc"
+
+                        description = 'Assembles a JAR archive containing the generated Javadoc API documentation of $variant.name.'
+
+                        exclude '**/BuildConfig.class'
+                        exclude '**/R.class'
+
+                        from "$project.buildDir/javadoc/$variant.name"
+                    }
+                }
+
+                if (project.sourcesProfileEnabled) {
+                    project.task("generate${variant.name.capitalize()}SourcesJar", type: Jar) {
+                        classifier = "${variant.name}-sources"
+
+                        description = 'Assembles a JAR archive containing the main sources of $variant.name.'
+
+                        // exclude generated files
+                        exclude '**/BuildConfig.java'
+                        exclude '**/R.java'
+
+                        from variant.javaCompile.source
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+def modifyGeneratedPom(pom) {
+    pom.withXml { provider ->
+        def node = provider.asNode()
+
+        if (!project.pom.packaging.equals("")) {
+            if (!node.packaging) {
+                node.appendNode('packaging', project.pom.packaging)
+            }
+            else {
+                node.packaging.replaceNode {
+                    packaging(project.pom.packaging)
+                }
+            }
+        }
+        else {
+            println "No pom.packaging defined in gradle.properties"
+        }
+
+        if (!project.pom.name.equals("")) {
+            if (!node.name) {
+                node.appendNode('name', project.pom.name)
+            }
+            else {
+                node.name.replaceNode {
+                    name(project.pom.name)
+                }
+            }
+        }
+
+        if (!project.pom.description.equals("")) {
+            if (!node.description) {
+                node.appendNode('description', project.pom.description)
+            }
+            else {
+                node.description.replaceNode {
+                    description(project.pom.description)
+                }
+            }
+        }
+
+        if (!project.pom.url.equals("")) {
+            if (!node.url) {
+                node.appendNode('url', project.pom.url)
+            }
+            else {
+                node.url.replaceNode {
+                    url(project.pom.url)
+                }
+            }
+        }
+
+        if (!project.pom.inceptionYear.equals("")) {
+            if (!node.url) {
+                node.appendNode('inceptionYear', project.pom.inceptionYear)
+            }
+            else {
+                node.url.replaceNode {
+                    inceptionYear(project.pom.inceptionYear)
+                }
+            }
+        }
+
+        if (!project.pom.licenses.license.name.equals("")
+                || !project.pom.licenses.license.url.equals("")
+                || !project.pom.licenses.license.distribution.equals("")) {
+
+            def licensesNode = node.appendNode('licenses')
+            def licenseNode = licensesNode.appendNode('license')
+
+            if (!project.pom.licenses.license.name.equals("")) {
+                licenseNode.appendNode('name', project.pom.licenses.license.name)
+            }
+            if (!project.pom.licenses.license.url.equals("")) {
+                licenseNode.appendNode('url', project.pom.licenses.license.url)
+            }
+            if (!project.pom.licenses.license.distribution.equals("")) {
+                licenseNode.appendNode('distribution', project.pom.licenses.license.distribution)
+            }
+        }
+
+        if (!project.pom.organization.name.equals("") || !project.pom.organization.url.equals("")) {
+            def organizationNode = node.appendNode('organization')
+
+            if (!project.pom.organization.name.equals("")) {
+                organizationNode.appendNode('name', project.pom.organization.name)
+            }
+            if (!project.pom.organization.url.equals("")) {
+                organizationNode.appendNode('url', project.pom.organization.url)
+            }
+        }
+
+        def developersNode = node.appendNode('developers')
+
+        def developers = project.pom.developers
+
+        developers.each {
+            def developerNode = developersNode.appendNode('developer')
+
+            if (it.id != null) {
+                developerNode.appendNode('id', it.id)
+            }
+
+            if (it.name != null) {
+                developerNode.appendNode('name', it.name)
+            }
+
+            if (it.email != null) {
+                developerNode.appendNode('email', it.email)
+            }
+
+            if (it.organization != null) {
+                developerNode.appendNode('organization', it.organization)
+            }
+
+            if (it.roles != null) {
+                def rolesNode = developerNode.appendNode('roles')
+                it.roles.each {
+                    rolesNode.appendNode('role', it)
+                }
+            }
+        }
+
+        if (!project.pom.issueManagement.system.equals("")
+                || !project.pom.issueManagement.url.equals("")) {
+
+            def issueManagementNode = node.appendNode('issueManagement')
+
+            if (!project.pom.issueManagement.system.equals("")) {
+                issueManagementNode.appendNode('system', project.pom.issueManagement.system)
+            }
+            if (!project.pom.issueManagement.url.equals("")) {
+                issueManagementNode.appendNode('url', project.pom.issueManagement.url)
+            }
+        }
+
+        if (!project.pom.ciManagement.system.equals("")
+                || !project.pom.ciManagement.url.equals("")) {
+            def ciManagementNode = node.appendNode('ciManagement')
+
+            if (!project.pom.ciManagement.system.equals("")) {
+                ciManagementNode.appendNode('system', project.pom.ciManagement.system)
+            }
+            if (!project.pom.ciManagement.url.equals("")) {
+                ciManagementNode.appendNode('url', project.pom.ciManagement.url)
+            }
+        }
+
+        if (!project.pom.scm.url.equals("") || !project.pom.scm.connection.equals("")
+                || !project.pom.scm.developerConnection.equals("")) {
+            def scmNode = node.appendNode('scm')
+
+            if (!project.pom.scm.url.equals("")) {
+                scmNode.appendNode('url', project.pom.scm.url)
+            }
+            if (!project.pom.scm.connection.equals("")) {
+                scmNode.appendNode('connection', project.pom.scm.connection)
+            }
+            if (!project.pom.scm.developerConnection.equals("")) {
+                scmNode.appendNode('developerConnection', project.pom.scm.developerConnection)
+            }
+        }
+
+        if (!project.pom.distributionManagement.site.id.equals("")
+                || !project.pom.distributionManagement.site.url.equals("")) {
+            def distributionManagementNode = node.appendNode('distributionManagement')
+            def siteNode = distributionManagementNode.appendNode('site')
+
+            if (!project.pom.distributionManagement.site.id.equals("")) {
+                siteNode.appendNode('id', project.pom.distributionManagement.site.id)
+            }
+            if (!project.pom.distributionManagement.site.url.equals("")) {
+                siteNode.appendNode('url', project.pom.distributionManagement.site.url)
+            }
+        }
+    }
+}
+
+
+// maven-publish Configuration (I love me some incubation!!!) --------------------------------------
+//
+// =====================================================================================
+// ==> COMMENTARY: Gradle is wackadoodle. (Or perhaps it's just my understanding...) <==
+// =====================================================================================
+//
+// In order to avoid:
+//
+//      > Cannot configure the 'publishing' extension after it has been accessed.
+//
+// I had to steal some voodoo from here:
+//
+//      http://stackoverflow.com/a/27066692/3093897
+//
+// I have a vague idea what it does, but at the end of the day I don't really care as long as it
+// freaking works.  It is absurd having to write non-standard Groovy code to support standard
+// lifecycle operations, the least of which is artifact publishing.
+//
+// --Doyle
+//
+project.plugins.withType(MavenPublishPlugin) {
+    project.extensions.configure PublishingExtension,
+            new org.gradle.api.internal.ClosureBackedAction( {
+
+        publications {
+            if (project.isJavaProject) {
+                javaArtifacts(MavenPublication) {
+                    from components.java
+
+                    groupId project.group
+                    artifactId project.name
+                    version project.version
+
+                    modifyGeneratedPom(pom)
+                }
+
+                if (project.javadocProfileEnabled) {
+                    javadocArtifacts(MavenPublication) {
+                        from components.java
+
+                        groupId project.group
+                        artifactId project.name
+                        version project.version
+
+                        modifyGeneratedPom(pom)
+
+                        artifact javadocJar
+                    }
+                }
+
+                if (project.sourcesProfileEnabled) {
+                    sourceJarArtifacts(MavenPublication) {
+                        from components.java
+
+                        groupId project.group
+                        artifactId project.name
+                        version project.version
+
+                        modifyGeneratedPom(pom)
+
+                        artifact sourcesJar
+                    }
+                }
+            }
+            else if (project.isAndroidProject) {
+                def artifactRoot
+                def variants
+
+                if (project.android.hasProperty('applicationVariants')) {
+                    artifactRoot = "${buildDir}/outputs/apk"
+                    variants = project.android.applicationVariants;
+                }
+                else if (project.android.hasProperty('libraryVariants')) {
+                    artifactRoot = "${buildDir}/outputs/aar"
+                    variants = project.android.libraryVariants;
+                }
+
+                androidArtifacts(MavenPublication) {
+                    groupId project.group
+                    artifactId project.name
+                    version project.version
+
+                    modifyGeneratedPom(pom)
+
+                    variants.all { variant ->
+                        def artifactName = project.name + "-" + project.version + "-" +
+                                variant.name + "." + project.pom.packaging;
+
+                        if (variant.name.equalsIgnoreCase("release")
+                                || (variant.name.equalsIgnoreCase("release") && project.canSign)) {
+
+                            artifact("${artifactRoot}/${artifactName}") {
+                                classifier variant.name
+                                extension project.pom.packaging
+                            }
+
+                            if (project.javadocProfileEnabled) {
+                                artifact tasks["generate${variant.name.capitalize()}JavadocJar"]
+                            }
+
+                            if (project.sourcesProfileEnabled) {
+                                artifact tasks["generate${variant.name.capitalize()}SourcesJar"]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                url project.targetRepositoryUrl
+
+                if (!project.nexusUsername.equals("")) {
+                    credentials {
+                        username project.nexusUsername
+                        password project.nexusPassword
+                    }
+                }
+            }
+        }
+    })
+}

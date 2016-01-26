@@ -1,0 +1,13 @@
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Android Library (AAR)'
+
+apply plugin: 'com.android.library'
+
+dependencies {
+    compile project(':hello-world-lib')
+
+    compile "com.android.support:support-annotations:${project.property('android-support.version')}"
+
+    testCompile "junit:junit:${project.property('junit.version')}"
+}
+
+apply from: "${rootDir}/gradle/android-support.gradle"
