@@ -52,7 +52,8 @@ afterEvaluate { project ->
                         || task.name.toLowerCase().startsWith("lint")
                         || task.name.toLowerCase().startsWith("merge")
                         || task.name.toLowerCase().startsWith("package")
-                        || task.name.toLowerCase().startsWith("process")   )
+                        || task.name.toLowerCase().startsWith("process")
+                        || task.name.toLowerCase().startsWith("validate"))
                         && task.name.toLowerCase().contains("release")   ) {
 
                     // uncomment for verbose output...
@@ -138,6 +139,14 @@ android {
                 signingConfig signingConfigs.release
                 zipAlignEnabled true
             }
+        }
+    }
+    else {
+        // "Doing it this way gives you flexibility to build on a computer that has the [the
+        //  properties defined] or not"
+        // From http://stackoverflow.com/a/15753461/3093897:
+        signingConfigs {
+            release
         }
     }
     // END Digitally sign all Release artifacts ----------------------------------------------------
