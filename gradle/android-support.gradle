@@ -36,42 +36,9 @@ ext.canSign = project.hasProperty('android.signingConfigs.release.storeFile') &&
 
 afterEvaluate { project ->
     if (!canSign) {
-        if (isAndroidApplication) {
+        if (isAndroidProject) {
             println "\n\n==================================================="
             println "==> WARNING: No signing configuration provided!"
-            println "==> Appropriate \"Release\" tasks will be DISABLED for project '${project.name}'..."
-            println "===================================================\n\n"
-
-            tasks.each { task ->
-
-                if (    (   task.name.toLowerCase().contains("dex")
-                        || task.name.toLowerCase().startsWith("assemble")
-                        || task.name.toLowerCase().startsWith("check")
-                        || task.name.toLowerCase().startsWith("compile")
-                        || task.name.toLowerCase().startsWith("generate")
-                        || task.name.toLowerCase().startsWith("lint")
-                        || task.name.toLowerCase().startsWith("merge")
-                        || task.name.toLowerCase().startsWith("package")
-                        || task.name.toLowerCase().startsWith("process")
-                        || task.name.toLowerCase().startsWith("validate"))
-                        && task.name.toLowerCase().contains("release")   ) {
-
-                    // uncomment for verbose output...
-                    // println "==> Task '${task.name}' DISABLED for '${project.name}'..."
-
-                    task.enabled = false;
-                }
-            }
-            println "\n"
-        }
-        else if (isAndroidLibrary) {
-            println "\n\n==================================================="
-            println "==> WARNING: No signing configuration provided!"
-            println "==>"
-            println "==> Appropriate \"Release\" tasks *SHOULD* be DISABLED for project '${project.name}'..."
-            println "==> BUT THEY CANNOT BE BECAUSE OF THE GRADLE PLUGIN!!!!!!!!!!!"
-            println "==>"
-            println "==> See: https://code.google.com/p/android/issues/detail?id=52962"
             println "===================================================\n\n"
         }
     }

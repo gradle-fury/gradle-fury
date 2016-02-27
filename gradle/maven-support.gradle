@@ -9,7 +9,7 @@ apply plugin: 'maven-publish'
 
 // Maven Repository (i.e. Sonatype Nexus Repository Manager) Configuration -------------------------
 
-ext.isReleaseBuild = (project.version.equals("unspecified") == false &&
+ext.isReleaseBuild = (!project.version.equals("unspecified") &&
         project.version.contains("SNAPSHOT") == false)
 
 // default to Maven Central if not provided
@@ -297,68 +297,64 @@ afterEvaluate { project ->
             def artifactName = project.name + "-" + project.version + "-" + variant.name + "." +
                     project.pom.packaging;
 
-            if (    variant.name.equalsIgnoreCase("release")
-                    || (variant.name.equalsIgnoreCase("release") && project.canSign)    ) {
+            if (project.javadocProfileEnabled) {
+                project.task("${variant.name}Javadoc", type: Javadoc) {
 
-                if (project.javadocProfileEnabled) {
-                    project.task("${variant.name}Javadoc", type: Javadoc) {
+                    // https://github.com/chrisbanes/gradle-mvn-push/issues/9
+                    failOnError false
 
-                        // https://github.com/chrisbanes/gradle-mvn-push/issues/9
-                        failOnError false
+                    destinationDir = new File("$project.buildDir/javadoc/$variant.name")
 
-                        destinationDir = new File("$project.buildDir/javadoc/$variant.name")
+                    source = variant.javaCompile.source
 
-                        source = variant.javaCompile.source
+                    ext.androidJar =
+                            "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
 
-                        ext.androidJar =
-                                "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
-
-                        classpath = project.files(variant.javaCompile.classpath.files)
-                        classpath += project.files(ext.androidJar)
-                        // other lame attempts to overcome the 3-headed monster...
+                    classpath = project.files(variant.javaCompile.classpath.files)
+                    classpath += project.files(ext.androidJar)
+                    // other lame attempts to overcome the 3-headed monster...
 //                      classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 //                      classpath += variants.toList().first().javaCompile.classpath
 
-                        options {
-                            links "http://docs.oracle.com/javase/7/docs/api/"
-                            linksOffline("http://d.android.com/reference",
-                                    "${project.android.sdkDirectory}/docs/reference")
-                            setMemberLevel(JavadocMemberLevel.PACKAGE)
-                            docEncoding = 'UTF-8'
-                            encoding = 'UTF-8'
-                            charSet = 'UTF-8'
-                        }
-
-                        exclude '**/BuildConfig.java'
-                        exclude '**/R.java'
+                    options {
+                        links "http://docs.oracle.com/javase/7/docs/api/"
+                        linksOffline("http://d.android.com/reference",
+                                "${project.android.sdkDirectory}/docs/reference")
+                        setMemberLevel(JavadocMemberLevel.PACKAGE)
+                        docEncoding = 'UTF-8'
+                        encoding = 'UTF-8'
+                        charSet = 'UTF-8'
                     }
 
-                    project.task("generate${variant.name.capitalize()}JavadocJar", type: Jar,
-                            dependsOn: "${variant.name}Javadoc") {
-
-                        classifier "${variant.name}-javadoc"
-
-                        description = 'Assembles a JAR archive containing the generated Javadoc API documentation of $variant.name.'
-
-                        exclude '**/BuildConfig.class'
-                        exclude '**/R.class'
-
-                        from "$project.buildDir/javadoc/$variant.name"
-                    }
+                    exclude '**/BuildConfig.java'
+                    exclude '**/R.java'
                 }
 
-                if (project.sourcesProfileEnabled) {
-                    project.task("generate${variant.name.capitalize()}SourcesJar", type: Jar) {
-                        classifier = "${variant.name}-sources"
+                project.task("generate${variant.name.capitalize()}JavadocJar", type: Jar,
+                        dependsOn: "${variant.name}Javadoc") {
 
-                        description = 'Assembles a JAR archive containing the main sources of $variant.name.'
+                    classifier "${variant.name}-javadoc"
 
-                        // exclude generated files
-                        exclude '**/BuildConfig.java'
-                        exclude '**/R.java'
+                    description = 'Assembles a JAR archive containing the generated Javadoc API documentation of $variant.name.'
 
-                        from variant.javaCompile.source
-                    }
+                    exclude '**/BuildConfig.class'
+                    exclude '**/R.class'
+
+                    from "$project.buildDir/javadoc/$variant.name"
+                }
+            }
+
+            if (project.sourcesProfileEnabled) {
+                project.task("generate${variant.name.capitalize()}SourcesJar", type: Jar) {
+                    classifier = "${variant.name}-sources"
+
+                    description = 'Assembles a JAR archive containing the main sources of $variant.name.'
+
+                    // exclude generated files
+                    exclude '**/BuildConfig.java'
+                    exclude '**/R.java'
+
+                    from variant.javaCompile.source
                 }
             }
         }
@@ -632,21 +628,17 @@ project.plugins.withType(MavenPublishPlugin) {
                         def artifactName = project.name + "-" + project.version + "-" +
                                 variant.name + "." + project.pom.packaging;
 
-                        if (variant.name.equalsIgnoreCase("release")
-                                || (variant.name.equalsIgnoreCase("release") && project.canSign)) {
+                        artifact("${artifactRoot}/${artifactName}") {
+                            classifier variant.name
+                            extension project.pom.packaging
+                        }
 
-                            artifact("${artifactRoot}/${artifactName}") {
-                                classifier variant.name
-                                extension project.pom.packaging
-                            }
+                        if (project.javadocProfileEnabled) {
+                            artifact tasks["generate${variant.name.capitalize()}JavadocJar"]
+                        }
 
-                            if (project.javadocProfileEnabled) {
-                                artifact tasks["generate${variant.name.capitalize()}JavadocJar"]
-                            }
-
-                            if (project.sourcesProfileEnabled) {
-                                artifact tasks["generate${variant.name.capitalize()}SourcesJar"]
-                            }
+                        if (project.sourcesProfileEnabled) {
+                            artifact tasks["generate${variant.name.capitalize()}SourcesJar"]
                         }
                     }
                 }
