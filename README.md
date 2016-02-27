@@ -10,14 +10,243 @@ kung-fu freak of nature." --Kung Fury*
 Purpose
 -------
 
-An alternative helper to upload multi-flavored Gradle Android Artifacts to Maven repositories with
-pretty POM files using simple property configuration.
+An alternative helper to upload multi-flavored Gradle Android Artifacts to local and remote Maven
+repositories with pretty POM files using simple property configuration.
 
 
 Usage
 -----
 
-Coming soon!  (I promise!)
+Please refer to the dummy "Hello World" subprojects along with the provided root project
+`build.gradle` and `gradle.properties` files included with this project as a general usage guide:
+
+* Example Android Library: [hello-world-aar](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-aar)
+* Example Android Application: [hello-world-apk](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-apk)
+* Example Java Library: [hello-world-lib](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-lib)
+* Root [build.gradle](https://github.com/chrisdoyle/gradle-fury/blob/master/build.gradle)
+* Root [gradle.properties](https://github.com/chrisdoyle/gradle-fury/blob/master/gradle.properties)
+
+
+#### 1. Create or modify the root gradle.properties file in your project
+
+This is the secret sauce.  I crave simplicity, and I just adore the idea of being able to house
+simple project configuration in a singular, standard location in each of my projects, instead of
+littering it throughout several locations throughout the codebase.
+
+There are a handful of key properties which the `gradle-fury` helper scripts use to make the magic
+happen:
+
+##### Maven Repository (e.g. Sonatype Nexus Repository Manager) Configuration Properties
+
+Define the properties which are used by the ```maven-publish``` plugin for artifact publication:
+
+  * The `NEXUS_USERNAME` and `NEXUS_PASSWORD` properties define the username/password credentials used
+to authenticate to the target repository.  Though the properties are prefixed with `NEXUS_`, they
+could really apply to any Maven repository.
+
+  * The `RELEASE_REPOSITORY_URL` and `SNAPSHOT_REPOSITORY_URL` properties define the
+[repositories](https://docs.gradle.org/current/userguide/publishing_maven.html#publishing_maven:repositories)
+in the `PublishingExtension.getRepositories()` container.
+
+For example:
+
+```groovy
+NEXUS_USERNAME=president.skroob
+NEXUS_PASSWORD=12345
+
+RELEASE_REPOSITORY_URL=https://oss.sonatype.org/service/local/staging/deploy/maven2/
+SNAPSHOT_REPOSITORY_URL=https://oss.sonatype.org/content/repositories/snapshots/
+```
+
+##### Android Configuration Properties
+
+Define the general
+[Android Build Configuration properties](http://developer.android.com/tools/building/configuring-gradle.html)
+to apply to all Android Library and Application projects:
+
+```groovy
+android.buildToolsVersion=23.0.2
+android.compileSdkVersion=23
+android.minSdkVersion=15
+android.targetSdkVersion=23
+```
+
+Define the Android `versionCode` property (per the
+[Android Documentation](http://developer.android.com/tools/publishing/versioning.html), "an
+integer value that represents the version of the application code, relative to other versions"):
+
+```groovy
+android.versionCode=1234
+```
+
+Define the app [signing configuration](http://developer.android.com/tools/publishing/app-signing.html) for
+Release artifacts:
+
+```groovy
+android.signingConfigs.release.storeFile=/path/to/your/keystore.jks
+android.signingConfigs.release.storePassword=Tr0ub4dor&3
+android.signingConfigs.release.keyAlias=MyAndroidKey
+android.signingConfigs.release.keyPassword=correcthorsebatterystaple
+```
+
+##### Maven POM Generation Properties
+
+These properties map directly to the properties defined in the
+[Maven POM Reference](https://maven.apache.org/pom.html) documentation:
+
+```groovy
+pom.packaging
+pom.name
+pom.description
+pom.url
+pom.inceptionYear
+pom.licenses.license.name
+pom.licenses.license.url
+pom.licenses.license.distribution
+pom.organization.name
+pom.organization.url
+pom.developers.developer.[n].id ***
+pom.developers.developer.[n].name ***
+pom.developers.developer.[n].email ***
+pom.developers.developer.[n].organization ***
+pom.developers.developer.[n].role.[n] ***
+pom.issueManagement.system
+pom.issueManagement.url
+pom.ciManagement.system
+pom.ciManagement.url
+pom.scm.url
+pom.scm.connection
+pom.scm.developerConnection
+pom.distributionManagement.site.id
+pom.distributionManagement.site.url
+```
+
+__***NOTE__: Multiple developers are supported by using a numeric suffix `[n]` as an identifier for
+each entry, along with support for multiple roles for each individual developer; for example:
+
+```groovy
+pom.developers.developer.0.id=kung.fury
+pom.developers.developer.0.name=Kung Fury
+pom.developers.developer.0.email=kungfury@knuckl.es
+pom.developers.developer.0.organization=Miami Police Department
+pom.developers.developer.0.role.0=Police Officer
+pom.developers.developer.0.role.1=Kung Fu Master
+
+pom.developers.developer.1.id=hackerman
+pom.developers.developer.1.name=Hackerman
+pom.developers.developer.1.email=hackerbot@hackerm.an
+pom.developers.developer.1.organization=Hackerman Worldwide
+pom.developers.developer.1.role.0=Computer Whiz
+pom.developers.developer.1.role.1=Hackerbot
+```
+
+*NOTE: `gradle-fury` currently only supports a single license.  An
+[issue](https://github.com/chrisdoyle/gradle-fury/issues/2)
+([Support Multiple License in POM Generation](https://github.com/chrisdoyle/gradle-fury/issues/2))
+has been opened to address this in an upcoming release.*
+
+The included root [gradle.properties](https://github.com/chrisdoyle/gradle-fury/blob/master/gradle.properties)
+file may be used as a template.
+
+
+#### 2. Modify the `allprojects` closure in your root project `build.gradle`
+
+The required modifications consist of defining the default `project.group` and `project.version`
+properties, and applying the
+[maven-support.gradle](https://github.com/chrisdoyle/gradle-fury/blob/master/gradle/maven-support.gradle)
+script in the `allprojects` closure, which will subsequently apply the configuration to all subprojects.
+
+Please note that `project.group` and `project.version` *must* be defined before including
+[maven-support.gradle](https://github.com/chrisdoyle/gradle-fury/blob/master/gradle/maven-support.gradle)
+since it uses these values.  Also note that these property values may be overridden by individual
+subprojects.
+
+```groovy
+allprojects  {
+    // NOTE: project.group and project.version must be defined before including
+    // maven-support.gradle since it uses these values...
+    project.group = ( project.hasProperty('pom.groupId')
+            ? project.property('pom.groupId') : "" )
+
+    project.version =
+            ( project.hasProperty('pom.version') ? project.property('pom.version') : "1.0" )
+
+    apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'
+
+		.
+		.
+		.
+
+}
+```
+
+The included root [build.gradle](https://github.com/chrisdoyle/gradle-fury/blob/master/build.gradle)
+file may be used as a reference for usage.
+
+
+#### 3. Apply the [android-support.gradle](https://github.com/chrisdoyle/gradle-fury/blob/master/gradle/android-support.gradle) script to each Android subproject [gradle.properties](https://github.com/chrisdoyle/gradle-fury/blob/master/gradle.properties)
+
+Add the following to the
+[build.gradle](https://github.com/chrisdoyle/gradle-fury/blob/master/build.gradle) of each Android
+(Library or Application) subproject defined in your project:
+
+```groovy
+apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'
+
+```
+
+See the `build.gradle` files defined in the
+[hello-world-aar](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-aar) and
+[hello-world-apk](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-apk) example
+projects for reference.
+
+Please note that no similar inclusions are required for standard Java subprojects, as illustrated in
+the [hello-world-lib](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-lib) example
+Java project.
+
+
+#### 4. Publish multi-flavored Gradle artifacts with pretty POM files!
+
+##### Install Artifacts to a Local `.m2` Repository
+
+```bash
+$ gradle clean build publishToMavenLocal
+```
+
+*OR*
+
+```bash
+$ gradle clean build install
+```
+
+The Gradle pipeline has also been hacked such that the `install` task invokes the
+`publishToMavenLocal` task.  Why?  Because the `install` task does not work with Android projects.
+See also the **"Impetus and Rage"** section below.
+
+Also, please note that at the time this project was published, that the
+[Gradle documentation for the really swell 'maven-plugin'](https://docs.gradle.org/current/userguide/publishing_maven.html)
+indicated that Maven publishing support provided by the 'maven-publish' plugin was still in
+incubation, and that:
+
+> Eventually this new publishing support will replace publishing via the Upload task.
+
+Don't hold your breath.  Apparently "incubation" is perpetual with Gradle.
+
+##### Publish Artifacts to a Remote Repository
+
+```bash
+$ gradle clean build publish
+```
+
+*OR*
+
+```bash
+$ gradle clean build uploadArchives
+```
+
+Similar to the `install` task, the Gradle pipeline has been "hacked" such that the `uploadArchives`
+task simply invokes the `publish` task, along with a friendly "warning".  So technically, you should
+be able to use `uploadArchives` in place of the `publish` task.
 
 *"Well then. It's hacking time." --Kung Fury*
 
@@ -45,7 +274,9 @@ Don't get me started.
 
 + [Please enjoy the music](http://chrisdoyle.com/2016/01/25/please-enjoy-the-music/)
 + [How can I upload multiple flavors/artifacts with different POM-files using mavenDeployer?](https://discuss.gradle.org/t/how-can-i-upload-multiple-flavors-artifacts-with-different-pom-files-using-mavendeployer/5887)
++ [Gradle Maven plugin “install” task does not work with Android library project](http://stackoverflow.com/questions/18559932/gradle-maven-plugin-install-task-does-not-work-with-android-library-project)
 + [Gradle plugin does not propagate debug/release to dependencies](https://code.google.com/p/android/issues/detail?id=52962)
+
 
 *"Knock...kles" --Kung Fury*
 
