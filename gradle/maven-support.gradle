@@ -43,9 +43,33 @@ ext.nexusPassword = ( hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "" )
 // NOTE: Ultimately, this work should be refactored and cleaned up for inclusion into an existing or
 // new formal Gradle plugin!  (A "labor of love" task for another day on my own time...)
 
+def licenses = []
+
+// parse the license list
+if (hasProperty("pom.licenses.license.0.name")) {
+
+    // parse the roles of each developer
+    for (def i = 0; hasProperty("pom.licenses.license.${i}.name"); ++i) {
+
+        def license = [
+                name: project.property("pom.licenses.license.${i}.name"),
+                url         : (
+                        hasProperty("pom.licenses.license.${i}.url")
+                                ? project.property("pom.licenses.license.${i}.url") : ""
+                ),
+                distribution: (
+                        hasProperty("pom.licenses.license.${i}.distribution")
+                                ? project.property("pom.licenses.license.${i}.distribution") : ""
+                )
+        ]
+
+        licenses[i] = license
+    }
+}
+
 def developers = []
 
-// parse the developer list first
+// parse the developer list
 if (hasProperty("pom.developers.developer.0.id")) {
 
     // parse the roles of each developer
@@ -88,23 +112,7 @@ ext.pom = [
         description: ( hasProperty('project.description') ? project.property('project.description') : "" ),
         url: ( hasProperty('pom.url') ? project.property('pom.url') : "" ),
         inceptionYear: ( hasProperty('pom.inceptionYear') ? project.property('pom.inceptionYear') : "" ),
-        licenses: [
-// FIXME :: @chrisdoyle :: support multiple licenses, similar to how we support multiple developers below...
-            license: [
-                    name: (
-                            hasProperty('pom.licenses.license.name')
-                                    ? project.property('pom.licenses.license.name') : ""
-                    ),
-                    url: (
-                            hasProperty('pom.licenses.license.url')
-                                    ? project.property('pom.licenses.license.url') : ""
-                    ),
-                    distribution: (
-                            hasProperty('pom.licenses.license.distribution')
-                                    ? project.property('pom.licenses.license.distribution') : ""
-                    )
-            ]
-        ],
+        licenses: licenses,
         organization: [
                 name: ( hasProperty('pom.organization.name') ? project.property('pom.organization.name') : "" ),
                 url: ( hasProperty('pom.organization.url') ? project.property('pom.organization.url') : "" )
@@ -424,21 +432,25 @@ def modifyGeneratedPom(pom) {
             }
         }
 
-        if (!project.pom.licenses.license.name.equals("")
-                || !project.pom.licenses.license.url.equals("")
-                || !project.pom.licenses.license.distribution.equals("")) {
+        def licenses = project.pom.licenses
 
+        if ((licenses != null) && (licenses.size() > 0)) {
             def licensesNode = node.appendNode('licenses')
-            def licenseNode = licensesNode.appendNode('license')
 
-            if (!project.pom.licenses.license.name.equals("")) {
-                licenseNode.appendNode('name', project.pom.licenses.license.name)
-            }
-            if (!project.pom.licenses.license.url.equals("")) {
-                licenseNode.appendNode('url', project.pom.licenses.license.url)
-            }
-            if (!project.pom.licenses.license.distribution.equals("")) {
-                licenseNode.appendNode('distribution', project.pom.licenses.license.distribution)
+            licenses.each {
+                def licenseNode = licensesNode.appendNode('license')
+
+                if ((it.name != null) && !it.name.equals("")) {
+                    licenseNode.appendNode('name', it.name)
+                }
+
+                if ((it.url != null) && !it.url.equals("")) {
+                    licenseNode.appendNode('url', it.url)
+                }
+
+                if ((it.distribution != null) && !it.distribution.equals("")) {
+                    licenseNode.appendNode('distribution', it.distribution)
+                }
             }
         }
 
@@ -448,38 +460,42 @@ def modifyGeneratedPom(pom) {
             if (!project.pom.organization.name.equals("")) {
                 organizationNode.appendNode('name', project.pom.organization.name)
             }
+
             if (!project.pom.organization.url.equals("")) {
                 organizationNode.appendNode('url', project.pom.organization.url)
             }
         }
 
-        def developersNode = node.appendNode('developers')
 
         def developers = project.pom.developers
 
-        developers.each {
-            def developerNode = developersNode.appendNode('developer')
+        if ((developers != null) && (developers.size() > 0)) {
+            def developersNode = node.appendNode('developers')
 
-            if (it.id != null) {
-                developerNode.appendNode('id', it.id)
-            }
+            developers.each {
+                def developerNode = developersNode.appendNode('developer')
 
-            if (it.name != null) {
-                developerNode.appendNode('name', it.name)
-            }
+                if ((it.id != null) && !it.id.equals("")) {
+                    developerNode.appendNode('id', it.id)
+                }
 
-            if (it.email != null) {
-                developerNode.appendNode('email', it.email)
-            }
+                if ((it.name != null) && !it.name.equals("")) {
+                    developerNode.appendNode('name', it.name)
+                }
 
-            if (it.organization != null) {
-                developerNode.appendNode('organization', it.organization)
-            }
+                if ((it.email != null) && !it.email.equals("")) {
+                    developerNode.appendNode('email', it.email)
+                }
 
-            if (it.roles != null) {
-                def rolesNode = developerNode.appendNode('roles')
-                it.roles.each {
-                    rolesNode.appendNode('role', it)
+                if ((it.organization != null) && !it.organization.equals("")) {
+                    developerNode.appendNode('organization', it.organization)
+                }
+
+                if ((it.roles != null) && (it.roles.size() > 0)) {
+                    def rolesNode = developerNode.appendNode('roles')
+                    it.roles.each {
+                        rolesNode.appendNode('role', it)
+                    }
                 }
             }
         }

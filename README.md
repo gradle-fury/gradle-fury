@@ -10,7 +10,7 @@ kung-fu freak of nature." --Kung Fury*
 Purpose
 -------
 
-An alternative helper to upload multi-flavored Gradle Android Artifacts to local and remote Maven
+An alternative Gradle helper to publish multi-flavored Android artifacts to local and remote Maven
 repositories with pretty POM files using simple property configuration.
 
 
@@ -31,10 +31,10 @@ Please refer to the dummy "Hello World" subprojects along with the provided root
 
 This is the secret sauce.  I crave simplicity, and I just adore the idea of being able to house
 simple project configuration in a singular, standard location in each of my projects, instead of
-littering it throughout several locations throughout the codebase.
+littering it in several locations throughout the codebase.
 
 There are a handful of key properties which the `gradle-fury` helper scripts use to make the magic
-happen:
+happen, which are defined in the following sub-sections.
 
 ##### Maven Repository (e.g. Sonatype Nexus Repository Manager) Configuration Properties
 
@@ -100,9 +100,9 @@ pom.name
 pom.description
 pom.url
 pom.inceptionYear
-pom.licenses.license.name
-pom.licenses.license.url
-pom.licenses.license.distribution
+pom.licenses.license.[n].name ***
+pom.licenses.license.[n].url ***
+pom.licenses.license.[n].distribution ***
 pom.organization.name
 pom.organization.url
 pom.developers.developer.[n].id ***
@@ -121,8 +121,8 @@ pom.distributionManagement.site.id
 pom.distributionManagement.site.url
 ```
 
-__***NOTE__: Multiple developers are supported by using a numeric suffix `[n]` as an identifier for
-each entry, along with support for multiple roles for each individual developer; for example:
+__***NOTE__: Multiple licenses, developers, and developer roles are supported by using a numeric
+suffix `[n]` as an identifier for each entry; for example:
 
 ```groovy
 pom.developers.developer.0.id=kung.fury
@@ -139,11 +139,6 @@ pom.developers.developer.1.organization=Hackerman Worldwide
 pom.developers.developer.1.role.0=Computer Whiz
 pom.developers.developer.1.role.1=Hackerbot
 ```
-
-*NOTE: `gradle-fury` currently only supports a single license.  An
-[issue](https://github.com/chrisdoyle/gradle-fury/issues/2)
-([Support Multiple License in POM Generation](https://github.com/chrisdoyle/gradle-fury/issues/2))
-has been opened to address this in an upcoming release.*
 
 The included root [gradle.properties](https://github.com/chrisdoyle/gradle-fury/blob/master/gradle.properties)
 file may be used as a template.
@@ -205,7 +200,7 @@ the [hello-world-lib](https://github.com/chrisdoyle/gradle-fury/tree/master/hell
 Java project.
 
 
-#### 4. Publish multi-flavored Gradle artifacts with pretty POM files!
+#### 4. Publish multi-flavored Android artifacts with pretty POM files!
 
 ##### Install Artifacts to a Local `.m2` Repository
 
@@ -219,14 +214,15 @@ $ gradle clean build publishToMavenLocal
 $ gradle clean build install
 ```
 
-The Gradle pipeline has also been hacked such that the `install` task invokes the
-`publishToMavenLocal` task.  Why?  Because the `install` task does not work with Android projects.
-See also the **"Impetus and Rage"** section below.
+The Gradle pipeline has been hacked such that the `install` task invokes the `publishToMavenLocal`
+task, along with a friendly "warning".  Why?  Because the `install` task does not work with Android
+projects.  See also the
+[Impetus and Rage](https://github.com/chrisdoyle/gradle-fury/tree/develop#impetus-and-rage) section
+below.
 
-Also, please note that at the time this project was published, that the
+Also, please note that at the time this project was published the
 [Gradle documentation for the really swell 'maven-plugin'](https://docs.gradle.org/current/userguide/publishing_maven.html)
-indicated that Maven publishing support provided by the 'maven-publish' plugin was still in
-incubation, and that:
+indicated that its Maven publishing support was still in incubation, and that:
 
 > Eventually this new publishing support will replace publishing via the Upload task.
 
