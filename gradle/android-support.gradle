@@ -165,9 +165,18 @@ android {
     }
 
     testOptions {
-        unitTests {
-            returnDefaultValues = true;
+        // "How to turn on console output in Android Unit tests?"
+        // From http://stackoverflow.com/a/34299238/3093897:
+        unitTests.all {
+            // All the usual Gradle options.
+            testLogging {
+                events "passed", "skipped", "failed", "standardOut", "standardError"
+                outputs.upToDateWhen {false}
+                showStandardStreams = true
+            }
         }
+
+        unitTests.returnDefaultValues = true
     }
 
     packagingOptions {
