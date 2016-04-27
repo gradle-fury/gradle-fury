@@ -1,0 +1,64 @@
+/**=================================================================================================
+ * Example Gradle Initialization Scripts (1 of 3)
+ *
+ *
+ * ==> To use, modify and copy to "~/.gradle/init.d/" folder <==
+ *
+ *
+ * This script illustrates how one could define a global Maven repository configuration.  This
+ * example defines a localhost Sonatype Nexus repository group, which in my case front-ends several
+ * proxy repositories to assist in enabling "offline" building.
+ *
+ * NOTE: "If more than one init script is found they will all be executed, in the order specified
+ * above. Scripts in a given directory are executed in alphabetical order."
+ *
+ * @see <a href="https://docs.gradle.org/current/userguide/init_scripts.html">
+ *      Chapter 42. Initialization Scripts</a>
+ =================================================================================================*/
+
+allprojects {
+
+    repositories {
+        maven  {
+            name "localhost"
+            url "http://localhost:8081/repository/maven-public/"
+        }
+    }
+
+    buildscript {
+        repositories {
+            maven  {
+                name "localhost"
+                url "http://localhost:8081/repository/maven-public/"
+            }
+        }
+    }
+
+    /**
+     * A simple Gradle task to display all configured Maven repositories (formatted).
+     */
+    task showMavenRepositories << {
+        def printFooter = false
+
+        repositories.each {
+            if (it instanceof MavenArtifactRepository) {
+                if (!printFooter) {
+                    println "repositories {"
+                    printFooter = true
+                }
+                println "    maven {"
+                println "        name \"${it.getName()}\""
+                println "        url \"${it.getUrl()}\""
+                println "    }"
+            }
+        }
+
+        if (printFooter) {
+            println "}"
+        }
+        else {
+            "No Maven repositories defined!"
+        }
+    }
+
+}
