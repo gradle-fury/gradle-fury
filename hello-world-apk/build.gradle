@@ -17,17 +17,6 @@ dependencies {
 apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'
 
 android {
-    buildTypes {
-        debug {
-            debuggable true
-            minifyEnabled false
-        }
-        release {
-            minifyEnabled false
-            signingConfig signingConfigs.release
-            zipAlignEnabled false
-        }
-    }
 
     /*
      * Here is some bogus configuration for the purposes of illustrating multi-flavor Android builds

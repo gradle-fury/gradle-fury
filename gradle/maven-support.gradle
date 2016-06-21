@@ -643,21 +643,27 @@ project.plugins.withType(MavenPublishPlugin) {
                     modifyGeneratedPom(pom)
 
                     variants.all { variant ->
-                        def artifactName = project.name + "-" + project.version + "-" +
-                                variant.name + "." + project.pom.packaging;
 
-                        artifact("${artifactRoot}/${artifactName}") {
-                            classifier variant.name
-                            extension project.pom.packaging
+                        if (!variant.name.toLowerCase().endsWith("release")
+                                || (variant.name.toLowerCase().endsWith("release") && canSign)) {
+
+                            def artifactName = project.name + "-" + project.version + "-" +
+                                    variant.name + "." + project.pom.packaging;
+
+                            artifact("${artifactRoot}/${artifactName}") {
+                                classifier variant.name
+                                extension project.pom.packaging
+                            }
+
+                            if (project.javadocProfileEnabled) {
+                                artifact tasks["generate${variant.name.capitalize()}JavadocJar"]
+                            }
+
+                            if (project.sourcesProfileEnabled) {
+                                artifact tasks["generate${variant.name.capitalize()}SourcesJar"]
+                            }
                         }
 
-                        if (project.javadocProfileEnabled) {
-                            artifact tasks["generate${variant.name.capitalize()}JavadocJar"]
-                        }
-
-                        if (project.sourcesProfileEnabled) {
-                            artifact tasks["generate${variant.name.capitalize()}SourcesJar"]
-                        }
                     }
                 }
             }
