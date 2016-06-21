@@ -1,5 +1,7 @@
 /**=================================================================================================
  * Common Gradle script configuration for Android projects.
+ *
+ * @author Chris Doyle
  =================================================================================================*/
 
 
@@ -36,12 +38,17 @@ ext.canSign = project.hasProperty('android.signingConfigs.release.storeFile') &&
 
 afterEvaluate { project ->
     if (!canSign) {
-        if (isAndroidProject) {
-            println "\n\n==================================================="
-            println "==> WARNING: No signing configuration provided!"
-            println "===================================================\n\n"
+        if ((isAndroidProject) && !rootProject.hasProperty('noSigningConfigWarningDisplayed')) {
+            // only display this error message on the first pass...
+            println "\n\n==================================================================="
+            println "==> WARNING: No Android release signing configuration provided! <=="
+            println "===================================================================\n\n"
         }
     }
+
+    // albeit a bit hacky, but this is used to limit the display of the warning message above if no
+    // signing configuration is provided...
+    rootProject.ext.noSigningConfigWarningDisplayed = true
 }
 // END Digitally sign all Release artifacts --------------------------------------------------------
 

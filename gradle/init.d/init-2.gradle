@@ -1,0 +1,53 @@
+/**=================================================================================================
+ * Example Gradle Initialization Scripts (2 of 3)
+ *
+ *
+ * ==> To use, modify and copy to "~/.gradle/init.d/" folder <==
+ *
+ *
+ * Modified from Gradle documentation, which states that the "plugin in [this] init script ensures
+ * that only a specified repository is used when running the build."
+ *
+ * @see <a href="https://docs.gradle.org/current/userguide/init_scripts.html#N14A59">
+ *      42.5. Init script plugins</a>
+ *
+ * NOTE: "If more than one init script is found they will all be executed, in the order specified
+ * above. Scripts in a given directory are executed in alphabetical order."
+ *
+ * @see <a href="https://docs.gradle.org/current/userguide/init_scripts.html">
+ *      Chapter 42. Initialization Scripts</a>
+ =================================================================================================*/
+
+apply plugin: EnterpriseRepositoryPlugin
+
+class EnterpriseRepositoryPlugin implements Plugin<Gradle> {
+
+    private static String ENTERPRISE_REPOSITORY_URL = "http://localhost:8081/repository/maven-public/"
+    private static String ENTERPRISE_SNAPSHOT_REPOSITORY_URL = "http://localhost:8081/repository/maven-snapshots/"
+
+    void apply(Gradle gradle) {
+        // ONLY USE ENTERPRISE REPOS FOR DEPENDENCIES
+
+        println "\n\n==============================================================================="
+        println "==> Configuring Global Maven Repository Configurations:"
+        println "==>     Release:  ${ENTERPRISE_REPOSITORY_URL}"
+        println "==>     Snapshot: ${ENTERPRISE_SNAPSHOT_REPOSITORY_URL}"
+        println "===============================================================================\n\n"
+
+        gradle.allprojects{ project ->
+            project.repositories {
+
+                // Remove all repositories not pointing to the enterprise repository url
+                all { ArtifactRepository repo ->
+                    //project.logger.lifecycle "Processing repository ${repo.url} in project ${project}"
+                    if ( !(repo instanceof MavenArtifactRepository) ||
+                            ( !repo.url.toString().startsWith('file') && // keep file system repos
+                                    (repo.url.toString() != ENTERPRISE_REPOSITORY_URL) &&
+                                    (repo.url.toString() != ENTERPRISE_SNAPSHOT_REPOSITORY_URL) ) )  {
+                        remove repo
+                    }
+                }
+            }
+        }
+    }
+}

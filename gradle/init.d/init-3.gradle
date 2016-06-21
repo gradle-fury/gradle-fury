@@ -1,0 +1,75 @@
+/**=================================================================================================
+ * Example Gradle Initialization Scripts (3 of 3)
+ *
+ *
+ * ==> To use, modify and copy to "~/.gradle/init.d/" folder <==
+ *
+ *
+ * This is my attempt to mimic the standard deployment behavior which Maven provides via server and
+ * repository configuration in settings.xml and the project POM.  Oh, how I miss thee.
+ *
+ * @see <a href="https://maven.apache.org/settings.html#Servers>
+ *      Maven Settings Reference - Servers</a>
+ * @see <a href="https://maven.apache.org/pom.html#Distribution_Management">
+ *      Maven POM Reference - Distribution Management</a>
+ *
+ * This script also provides global Android release signing configuration.
+ *
+ * @see <a href="http://developer.android.com/tools/publishing/app-signing.html">
+ *      Signing Your Applications</a>
+ *
+ * NOTE: "If more than one init script is found they will all be executed, in the order specified
+ * above. Scripts in a given directory are executed in alphabetical order."
+ *
+ * @see <a href="https://docs.gradle.org/current/userguide/init_scripts.html">
+ *      Chapter 42. Initialization Scripts</a>
+ *
+ * @author Chris Doyle
+ =================================================================================================*/
+
+allprojects  {
+
+    // Example: localhost Sonatype Nexus instance (default if no 'target' property is specified)
+    project.ext.NEXUS_USERNAME="admin"
+    project.ext.NEXUS_PASSWORD="admin123"
+    project.ext.RELEASE_REPOSITORY_URL="http://localhost:8081/repository/maven-releases/"
+    project.ext.SNAPSHOT_REPOSITORY_URL="http://localhost:8081/repository/maven-snapshots/"
+
+    if (project.hasProperty('target')) {
+
+        // Example: Sonatype OSSRH (OSS Repository Hosting)
+        if (project.property('target').equalsIgnoreCase("ossrh")) {
+            project.ext.NEXUS_USERNAME="president.skroob"
+            project.ext.NEXUS_PASSWORD="12345"
+            project.ext.RELEASE_REPOSITORY_URL="https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            project.ext.SNAPSHOT_REPOSITORY_URL="https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+
+        else if (!project.property('target').equalsIgnoreCase("localhost")) {
+            throw new InvalidUserDataException( "\n\n===============================================================================\n" \
+                               + "==> ERROR:\n" \
+                               + "==> Invalid 'target' property specified: [${project.property('target')}]\n" \
+                               + "==> Valid options are: [ localhost | ossrh ]\n" \
+                               + "===============================================================================\n" );
+        }
+    }
+    else {
+        if (!rootProject.hasProperty('dejavu')) { // only display this error message on the first pass...
+            println "\n\n========================================"
+            println "==> No 'target' property specified. <=="
+            println "==> Defaulting to [localhost]...    <=="
+            println "=======================================\n\n"
+        }
+    }
+
+    // define the default Android Signing configuration
+    project.ext.setProperty("android.signingConfigs.release.storeFile", "/path/to/your/keystore.jks")
+    project.ext.setProperty("android.signingConfigs.release.storePassword", "Tr0ub4dor&3")
+    project.ext.setProperty("android.signingConfigs.release.keyAlias", "MyAndroidKey")
+    project.ext.setProperty("android.signingConfigs.release.keyPassword", "correcthorsebatterystaple")
+
+    // albeit a bit hacky, but this is used to limit the display of the warning message above if no
+    // target is defined...
+    rootProject.ext.dejavu="all over again"
+
+}
