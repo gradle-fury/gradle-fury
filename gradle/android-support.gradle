@@ -46,6 +46,28 @@ afterEvaluate { project ->
         }
     }
 
+    // The following "tasks" looper hack overcomes Gradle's new deficiency when attempting to
+    // prepare release artifacts from a computer sans signing configuration:
+    //
+    //     :hello-world-apk:validateReleaseSigning FAILED
+    //
+    //     FAILURE: Build failed with an exception.
+    //
+    //     * What went wrong:
+    //     Execution failed for task ':hello-world-apk:validateReleaseSigning'.
+    //     > Keystore file not set for signing config release
+    tasks.each { task ->
+        if (isAndroidApplication) {
+            if ((task.name.toLowerCase().startsWith("assemble") && task.name.toLowerCase().contains('release'))
+                    || (task.name.toLowerCase().startsWith("bundle") && task.name.toLowerCase().contains('release'))
+                    || (task.name.toLowerCase().startsWith("package") && task.name.toLowerCase().contains('release'))
+                    || (task.name.equals("validateReleaseSigning"))) {
+
+                task.setEnabled(canSign);
+            }
+        }
+    }
+
     // albeit a bit hacky, but this is used to limit the display of the warning message above if no
     // signing configuration is provided...
     rootProject.ext.noSigningConfigWarningDisplayed = true
@@ -59,9 +81,9 @@ android {
     compileSdkVersion ( project.hasProperty('android.compileSdkVersion')
             ? Integer.parseInt(project.property('android.compileSdkVersion')) : 23 )
 
-    // default buildToolsVersion to 23.0.2 if not provided
+    // default buildToolsVersion to 23.0.3 if not provided
     buildToolsVersion ( project.hasProperty('android.buildToolsVersion')
-            ? project.property('android.buildToolsVersion') : "23.0.2" )
+            ? project.property('android.buildToolsVersion') : "23.0.3" )
 
     publishNonDefault true
 
@@ -73,7 +95,6 @@ android {
     //
     //     "How can I upload multiple flavors/artifacts with different POM-files using mavenDeployer?"
     //     https://discuss.gradle.org/t/how-can-i-upload-multiple-flavors-artifacts-with-different-pom-files-using-mavendeployer/5887
-
     if (isAndroidProject) {
         buildTypes {
             def variants
@@ -107,13 +128,6 @@ android {
                 keyPassword "${project.property('android.signingConfigs.release.keyPassword')}"
             }
         }
-
-        buildTypes {
-            release {
-                signingConfig signingConfigs.release
-                zipAlignEnabled true
-            }
-        }
     }
     else {
         // "Doing it this way gives you flexibility to build on a computer that has the [the
@@ -121,6 +135,20 @@ android {
         // From http://stackoverflow.com/a/15753461/3093897:
         signingConfigs {
             release
+        }
+        // NOTE: At some point in time this stopped working due to a Gradle version or Android tools
+        // plugin upgrade.  I am unwilling to waste any further time isolating it down to a specific
+        // cause because I'm sure it will cost me more time in the future when they inevitably break
+        // it again.  For now, the above "tasks" looper hack provides a "fix".  --Doyle
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+        }
+        release {
+            signingConfig signingConfigs.release
         }
     }
     // END Digitally sign all Release artifacts ----------------------------------------------------
