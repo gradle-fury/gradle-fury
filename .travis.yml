@@ -1,0 +1,37 @@
+language: android
+jdk: oraclejdk7
+android:
+  components:
+    # The BuildTools version used by your project
+    - tools
+    - platform-tools
+    - build-tools-23.0.2 # 23.0.2 was not available on build
+    - build-tools-23.0.1
+    - build-tools-23.0.3
+    # The SDK version used to compile your project
+    - android-23
+
+    # Additional components
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - addon-google_apis-google-19
+
+sudo: required
+
+# fun fact, travis doesn't really support multiple AVDs running currently for a single build (tried it, build timed out constantly while starting up the AVDs)
+# thus we're using a build matrix (which makes more sense anyhow)
+env:
+    global:
+    #minutes (2 minutes by default), prevents CommandShellUnresponsiveExceptions
+    #- ADB_INSTALL_TIMEOUT=14
+
+before_script:
+
+#build
+script:
+  #build using gradle
+  - ./gradlew -version
+  - ./gradlew clean install
+  #verify publish
+  - ./verify.sh
