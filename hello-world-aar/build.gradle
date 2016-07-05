@@ -10,4 +10,7 @@ dependencies {
     testCompile "junit:junit:${project.property('junit.version')}"
 }
 
-apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'
+//use this line for your projects
+//apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'
+
+apply from: "${rootDir}/gradle/android-support.gradle"

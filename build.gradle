@@ -19,7 +19,9 @@ allprojects  {
     project.version =
             ( project.hasProperty('pom.version') ? project.property('pom.version') : "1.0" )
 
-    apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'
+    //Use this for your project
+    // apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'
+    apply from: "${rootDir}/gradle/maven-support.gradle"
 
     // forces all changing dependencies (i.e. SNAPSHOTs) to automagicially download
     // (thanks, @BillBarnhill!)

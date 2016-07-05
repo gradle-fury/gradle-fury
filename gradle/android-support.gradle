@@ -37,6 +37,27 @@ ext.canSign = project.hasProperty('android.signingConfigs.release.storeFile') &&
         !project.property('android.signingConfigs.release.keyPassword').trim().isEmpty();
 
 afterEvaluate { project ->
+
+    if (!rootProject.hasProperty('fury')) {
+
+        println "\n #####                                        #######                     \n" +
+                "#     # #####    ##   #####  #      ######    #       #    # #####  #   # \n" +
+                "#       #    #  #  #  #    # #      #         #       #    # #    #  # #  \n" +
+                "#  #### #    # #    # #    # #      #####     #####   #    # #    #   #   \n" +
+                "#     # #####  ###### #    # #      #         #       #    # #####    #   \n" +
+                "#     # #   #  #    # #    # #      #         #       #    # #   #    #   \n" +
+                " #####  #    # #    # #####  ###### ######    #        ####  #    #   #   \n";
+
+        println "== Gradle Fury, bringing maven sensibility to gradle. It's NOT an incubating feature.";
+        println "== Gradle Fury: ProTip: Use 'gradle.properties' to set all your version and pom related information.";
+        if (isAndroidProject || isAndroidApplication){
+            println "== Gradle Fury: ProTip: Use 'gradle install' to publish to mavenLocal, works with AARs and APKs, even with variants";
+        }
+        println "== Gradle Fury: ProTip: Use 'gradle publish' to publish to a nexus repository, works with AARs and APKs, even with variants";
+        println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues"
+    }
+
+
     if (!canSign) {
         if ((isAndroidProject) && !rootProject.hasProperty('noSigningConfigWarningDisplayed')) {
             // only display this error message on the first pass...
@@ -71,6 +92,7 @@ afterEvaluate { project ->
     // albeit a bit hacky, but this is used to limit the display of the warning message above if no
     // signing configuration is provided...
     rootProject.ext.noSigningConfigWarningDisplayed = true
+    rootProject.ext.fury = true
 }
 // END Digitally sign all Release artifacts --------------------------------------------------------
 
