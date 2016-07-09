@@ -244,6 +244,26 @@ Similar to the `install` task, the Gradle pipeline has been "hacked" such that t
 task simply invokes the `publish` task, along with a friendly "warning".  So technically, you should
 be able to use `uploadArchives` in place of the `publish` task.
 
+##### Bonus: Javadoc and Source jars
+
+Gradle Fury supports build profiles (similar to how Maven does things). Here's the profiles that exist today and how to use them.
+
+To generate Javadocs (Android projects included)
+```bash
+$ gradle install -Pprofile=javadoc
+```
+
+To generate Sources (Android projects included)
+```bash
+$ gradle install -Pprofile=sources
+```
+
+To generate Javadocs and Sources (Android projects included)
+```bash
+$ gradle install -Pprofile=sources,javadoc
+```
+
+
 *"Well then. It's hacking time." --Kung Fury*
 
 

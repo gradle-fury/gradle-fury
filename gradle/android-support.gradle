@@ -54,6 +54,9 @@ afterEvaluate { project ->
             println "== Gradle Fury: ProTip: Use 'gradle install' to publish to mavenLocal, works with AARs and APKs, even with variants";
         }
         println "== Gradle Fury: ProTip: Use 'gradle publish' to publish to a nexus repository, works with AARs and APKs, even with variants";
+        println "== Gradle Fury: ProTip: Use 'gradle -Pprofile=javadoc' to generate javadocs (android included, even with variants";
+        println "== Gradle Fury: ProTip: Use 'gradle -Pprofile=sources' to generate source jars (android included, even with variants";
+        println "== Gradle Fury: ProTip: Use 'gradle -Pprofile=javadoc,sources' to generate javadocs and source jars (android included, even with variants";
         println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues"
     }
 
