@@ -32,6 +32,6 @@ before_script:
 script:
   #build using gradle
   - ./gradlew -version
-  - ./gradlew clean install
+  - ./gradlew clean install -Pprofile=sources,javadoc
   #verify publish
   - ./verify.sh
