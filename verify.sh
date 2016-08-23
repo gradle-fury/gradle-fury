@@ -2,10 +2,18 @@
 
 #this file verifies that the expected artifacts are published to maven local
 
-#the version we're expecting
+# only run this script from a unix like system with bash
+# and only run it after the following gradle command has been executed
+# ./gradlew install -Pprofile=javadocs,sources
+
+# Exit behavior:
+#    Exit code 0: all tests passed
+#    Exit code > 0: at least one test failed
+
+# the version we're expecting
 version=""
 
-#the properties file that gradle uses
+# the properties file that gradle uses
 PROPERTIES_FILE=gradle.properties
 
 
@@ -25,6 +33,13 @@ function getProp () {
 # get the version number from the gradle build
 version=`eval getProp $PROPERTIES_FILE pom.version`
 
+
+echo " ======== Validation script for gradle fury ======== "
+echo " "
+
+
+# BEGIN Issue 12
+echo "     Issue #12 - verify all artifacts were published to mavenLocal"
 
 # these are all the files we're testing for the existence of
 
@@ -51,15 +66,95 @@ declare -a arr=(
 
 for i in "${arr[@]}"
 do
-    echo "Testing for $i"
+    # echo "Testing for $i"
     if [ ! -f "`eval echo ${i//>}`"  ] ; then
         echo "File $i is not there, aborting."
         exit 1
 
+    #else
+       # echo "$i" "OK";
+
+    fi
+done
+
+echo " Result - PASS"
+
+# END Issue 12
+
+
+
+# BEGIN 23 verify that the dependencies within the AAR are declared
+# our AAR should have at least two dependencies lists
+echo "     Issue #23 - verify aar pom has dependencies declared"
+
+# strings to search for in our aar pom
+declare -a strs=(
+      "com.android.support" \
+      "support-annotations" \
+      "hello-world-lib" \
+       )
+
+for i in "${strs[@]}"
+do
+    if [ "`eval echo grep -Fxq $i ~/.m2/repository/com/chrisdoyle/hello-world-aar/$version/hello-world-aar-$version.pom`" ];
+    then
+        # code if found
+        echo " PASS - $i found in aar pom"
     else
-       echo "$i" "OK";
+        # code if not found
+        echo " FAIL - $i NOT found in aar pom"
+        exit 1
     fi
 done
 
 
-echo "Test passed!"
+# check the jar
+declare -a strs=(
+      "commons-lang3" \
+       )
+
+for i in "${strs[@]}"
+do
+    if [ "`eval echo grep -Fxq $i ~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version.pom`" ];
+    then
+        # code if found
+        echo " PASS - $i found in jar pom"
+    else
+        # code if not found
+        echo " FAIL - $i NOT found in jar pom"
+        exit 1
+    fi
+done
+
+
+
+# check the apk
+declare -a strs=(
+      "hello-world-aar" \
+      "appcompat-v7" \
+      "cardview-v7" \
+      "design" \
+      "recyclerview-v7" \
+      "support-v4" \
+       )
+
+for i in "${strs[@]}"
+do
+    if [ "`eval echo grep -Fxq $i ~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version.pom`" ];
+    then
+        # code if found
+        echo " PASS - $i found in apk pom"
+    else
+        # code if not found
+        echo " FAIL - $i NOT found in apk pom"
+        exit 1
+    fi
+done
+
+
+
+# END 23 verify that the dependencies within the AAR are declared
+
+echo "     End Result - PASS"
+
+echo "Done."
