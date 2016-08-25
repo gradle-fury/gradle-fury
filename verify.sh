@@ -155,6 +155,39 @@ done
 
 # END 23 verify that the dependencies within the AAR are declared
 
+
+
+
+
+# BEGIN Issue 25
+
+echo "     Issue #25 - verify overrides are correctly applied"
+
+# strings to search for in our aar pom
+declare -a strs=(
+      "package=\"com.chrisdoyle.alex.wuz.here\"" \
+      "android:versionCode=\"9999\"" \
+      "android:versionName=\"OU812\"" \
+      "android:minSdkVersion=\"16\"" \
+       )
+
+for i in "${strs[@]}"
+do
+    if [ "`eval echo grep -Fxq $i hello-world-apk-overrides/build/intermediates/manifests/full/bar/debug/AndroidManifest.xml`" ];
+    then
+        # code if found
+        echo " PASS - $i found in overrides APK AndroidManifest.xml"
+    else
+        # code if not found
+        echo " FAIL - $i NOT found in overrides APK AndroidManifest.xml"
+        exit 1
+    fi
+done
+
+# END Issue 25
+
+
+
 echo "     End Result - PASS"
 
 echo "Done."

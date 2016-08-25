@@ -47,4 +47,12 @@ android {
     //note there's no application id specified, it's derived from the pom group id and the module
     //name. Of course you can override it with whatever you want as you would normally do, BUT
     //only if you apply the gradle fury plugin BEFORE the android {} block!!!
+
+    defaultConfig {
+        applicationId 'com.chrisdoyle.alex.wuz.here'
+        minSdkVersion 16
+        versionCode 9999
+        versionName "OU812"
+    }
+
 }

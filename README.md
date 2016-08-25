@@ -190,10 +190,14 @@ apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gra
 
 ```
 
+ProTip: apply the `apply` line BEFORE the `android { ]` block. This will allow you to override any default values or
+ values defined within your gradle.properties file. 
+
 See the `build.gradle` files defined in the
-[hello-world-aar](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-aar) and
-[hello-world-apk](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-apk) example
-projects for reference.
+[hello-world-aar](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-aar), 
+[hello-world-apk](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-apk),
+[hello-world-apk-overrides](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-apk-overrides) 
+example projects for reference.
 
 Please note that no similar inclusions are required for standard Java subprojects, as illustrated in
 the [hello-world-lib](https://github.com/chrisdoyle/gradle-fury/tree/master/hello-world-lib) example
