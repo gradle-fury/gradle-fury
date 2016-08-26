@@ -296,7 +296,9 @@ Don't get me started.
 + [How can I upload multiple flavors/artifacts with different POM-files using mavenDeployer?](https://discuss.gradle.org/t/how-can-i-upload-multiple-flavors-artifacts-with-different-pom-files-using-mavendeployer/5887)
 + [Gradle Maven plugin “install” task does not work with Android library project](http://stackoverflow.com/questions/18559932/gradle-maven-plugin-install-task-does-not-work-with-android-library-project)
 + [Gradle plugin does not propagate debug/release to dependencies](https://code.google.com/p/android/issues/detail?id=52962)
-
++ [samskivert: Gradle Difficulties](http://samskivert.com/blog/2015/03/gradle-difficutles/)
++ [It's not yet possible to upload artifact signatures...is not currently on our priority list.](https://discuss.gradle.org/t/how-to-publish-artifacts-signatures-asc-files-using-maven-publish-plugin/7422)
++ [Why can't our builds have the same levels of complexity and non-deterministic failures as our front end code does?](https://recordnotfound.com/gradle-js-danveloper-131869)
 
 *"Knock...kles" --Kung Fury*
 
