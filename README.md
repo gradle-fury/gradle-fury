@@ -13,6 +13,11 @@ Purpose
 An alternative Gradle helper to publish multi-flavored Android artifacts to local and remote Maven
 repositories with pretty POM files using simple property configuration.
 
+Build Status
+------------
+
+Develop: [![Build Status](https://travis-ci.org/chrisdoyle/gradle-fury.svg?branch=develop)](https://travis-ci.org/chrisdoyle/gradle-fury)
+Master: [![Build Status](https://travis-ci.org/chrisdoyle/gradle-fury.svg?branch=master)](https://travis-ci.org/chrisdoyle/gradle-fury)
 
 Usage
 -----
