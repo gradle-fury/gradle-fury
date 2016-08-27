@@ -275,6 +275,30 @@ $ gradle install -Pprofile=sources,javadoc
 
 *"Well then. It's hacking time." --Kung Fury*
 
+## Publishing to maven central with GPG signatures
+
+Not tested yet, but there's a specific procedure in place. It's tempting to slam then all
+together into a single command, but unfortunately it won't work. _Why?_ Because gradle.
+
+_Seriously why?_
+Well gradle simply won't let us do what needs to be done. It's lifecycle taskgraph thing
+is strange and fires in all kinds of strange unintuitive ways. For instance, Android pom
+generation is out of our hands. We can alter it but not control when it's written to disk.
+That's a problem if you're trying to sign it. Unfortunately, we couldn't find a way to get
+the hooks in place at the right time in the cycle to both sign and not get cleaned and still
+be present in the right locations for the publish steps.
+
+```bash
+$ ./gradlew clean
+$ ./gradlew install -Pprofile=sources,javadoc
+$ ./gradlew publish -Pprofile=sources,javadoc,sign
+```
+
+## Publishing to Nexus like repos without GPG signatures
+
+```bash
+$ ./gradlew clean publish -Pprofile=sources,javadoc,sign
+```
 
 Acknowledgements
 ----------------

@@ -40,13 +40,13 @@ afterEvaluate { project ->
 
     if (!rootProject.hasProperty('fury')) {
 
-        println "\n #####                                        #######                     \n" +
-                "#     # #####    ##   #####  #      ######    #       #    # #####  #   # \n" +
-                "#       #    #  #  #  #    # #      #         #       #    # #    #  # #  \n" +
-                "#  #### #    # #    # #    # #      #####     #####   #    # #    #   #   \n" +
-                "#     # #####  ###### #    # #      #         #       #    # #####    #   \n" +
-                "#     # #   #  #    # #    # #      #         #       #    # #   #    #   \n" +
-                " #####  #    # #    # #####  ###### ######    #        ####  #    #   #   \n";
+        println "\n       ,--.--._    #####                                        #######                     \n" +
+                  "------\" _, \\___)  #     # #####    ##   #####  #      ######    #       #    # #####  #   # \n" +
+                  "        / _/____) #       #    #  #  #  #    # #      #         #       #    # #    #  # #  \n" +
+                  "        \\//(____) #  #### #    # #    # #    # #      #####     #####   #    # #    #   #   \n" +
+                  "------\\     (__)  #     # #####  ###### #    # #      #         #       #    # #####    #   \n" +
+                  "       `-----\"    #     # #   #  #    # #    # #      #         #       #    # #   #    #   \n" +
+                  "                   #####  #    # #    # #####  ###### ######    #        ####  #    #   #   \n";
 
         println "== Gradle Fury, bringing maven sensibility to gradle. It's NOT an incubating feature.";
         println "== Gradle Fury: ProTip: Use 'gradle.properties' to set all your version and pom related information.";

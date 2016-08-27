@@ -35,3 +35,12 @@ script:
   - ./gradlew clean install -Pprofile=sources,javadoc
   #verify publish
   - ./verify.sh
+
+  # ok let's blow up the local maven repo
+  - rm -rf ~/.m2/
+  # build again with signatures, then verify the signatures
+  - ./gradlew clean
+  - ./gradlew install -Pprofile=sources,javadoc
+  - ./gradlew signArtifacts -Pprofile=sources,javadoc,sign
+  - ./verifySignatures.sh
+

@@ -25,11 +25,29 @@ project.ext.pgpAvailable=false;
 project.ext.pomAdded=false;
 
 
+def dumpTasks(TaskExecutionGraph graph){
+    List<Task> allTasks = graph.getAllTasks();
+    for (int i=0; i < allTasks.size(); i++){
+        System.out.println("TASK DUMP " + allTasks.get(i).name);
+    }
+
+}
+
+def furyHasTask(TaskExecutionGraph graph, String task){
+    List<Task> allTasks = graph.getAllTasks();
+    for (int i=0; i < allTasks.size(); i++){
+        if (allTasks.get(i).name.endsWith(task))
+            return true;
+    }
+    return false;
+
+}
 
 ext.gpgPath = (
         hasProperty('GPG_PATH')
                 ? GPG_PATH
                 : "/usr/local/bin/gpg"
+    //TODO maybe a defaut path for windows?
 );
 
 
@@ -190,6 +208,7 @@ uploadArchives.dependsOn publish
 
 uploadArchives {
     doFirst {
+        //execution phase
         println "\n\n========================================================="
         println "==> WARNING: The 'uploadArchives' task is deprecated. <=="
         println "==> Calling the 'publish' task instead...             <=="
@@ -201,6 +220,7 @@ uploadArchives {
 
 
 afterEvaluate { project ->
+
 
     project.ext.isJavaProject = project.plugins.hasPlugin('java');
     project.ext.isWarProject = project.plugins.hasPlugin('war');
@@ -276,11 +296,14 @@ afterEvaluate { project ->
 
         project.ext.set("sourcesProfileEnabled", project.ext.profiles.contains("sources")
                 || project.ciProfileEnabled);
+
+        project.ext.set("sign", project.ext.profiles.contains("sign"));
     }
     else {
         project.ext.set("ciProfileEnabled", false);
         project.ext.set("javadocProfileEnabled", false);
         project.ext.set("sourcesProfileEnabled", false);
+        project.ext.set("sign", false);
     }
 
     if (project.isJavaProject) {
@@ -639,6 +662,7 @@ def modifyGeneratedPom(pom) {
                 }
             }
         }
+        //reflect(pom);
     }
 }
 
@@ -663,6 +687,8 @@ def modifyGeneratedPom(pom) {
 //
 // --Doyle
 //
+
+//Note: this block fires BEFORE the taskGraph is ready :(
 project.plugins.withType(MavenPublishPlugin) {
     project.extensions.configure PublishingExtension,
             new org.gradle.api.internal.ClosureBackedAction( {
@@ -690,9 +716,11 @@ project.plugins.withType(MavenPublishPlugin) {
                     c.fileNameAndPath = "${artifactRoot}${artifactName}";
                     c.type="jar";
                     project.ext.artifacts.add(c);
+                    logger.debug("Adding " + "${artifactRoot}${artifactName}" + " to artifact list");
 
 
                     if (isGPGAvailable()){
+                        logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
                         artifact(c.fileNameAndPath + ".asc") {
                             extension 'jar.asc'
                         }
@@ -706,9 +734,11 @@ project.plugins.withType(MavenPublishPlugin) {
                     c.fileNameAndPath = "$buildDir/publications/javaArtifacts/pom-default.xml";
                     c.type="jar";
                     project.ext.artifacts.add(c);
+                    logger.debug("Adding " + "$buildDir/publications/javaArtifacts/pom-default.xml" + " to artifact list");
 
 
                     if (isGPGAvailable()){
+                        logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
                         artifact(c.fileNameAndPath + ".asc") {
                             extension 'pom.asc'
                         }
@@ -735,9 +765,11 @@ project.plugins.withType(MavenPublishPlugin) {
                         c.fileNameAndPath = "${buildDir}" +"/libs/" + project.name + "-" + project.version + "-javadoc.jar";
                         c.type="jar";
                         project.ext.artifacts.add(c);
+                        logger.debug("Adding " + "${buildDir}" +"/libs/" + project.name + "-" + project.version + "-javadoc.jar" + " to artifact list");
 
 
                         if (isGPGAvailable()){
+                            logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
                             artifact(c.fileNameAndPath + ".asc") {
                                 extension project.pom.packaging
                                 classifier "javadoc"
@@ -768,9 +800,11 @@ project.plugins.withType(MavenPublishPlugin) {
                         c.fileNameAndPath = "${buildDir}" +"/libs/" + project.name + "-" + project.version + "-sources.jar";
                         c.type="jar";
                         project.ext.artifacts.add(c);
+                        logger.debug("Adding " + "${buildDir}" +"/libs/" + project.name + "-" + project.version + "-sources.jar" + " to artifact list");
 
 
                         if (isGPGAvailable()){
+                            logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
                             artifact(c.fileNameAndPath + ".asc") {
                                 extension project.pom.packaging
                                 classifier "sources"
@@ -803,6 +837,7 @@ project.plugins.withType(MavenPublishPlugin) {
 
                     variants.all { variant ->
 
+
                         if (!variant.name.toLowerCase().endsWith("release")
                                 || (variant.name.toLowerCase().endsWith("release") && canSign)) {
 
@@ -811,27 +846,25 @@ project.plugins.withType(MavenPublishPlugin) {
                             def artifactPrefix = project.name + "-" + project.version + "-" +
                                     variant.name;
 
-
-
-
                             //signs the pom
                             Container c = new Container();
                             c.fileName = variant.name + ".pom";
                             c.fileNameAndPath = "${artifactRoot}/${artifactName}.pom";
-                            c.buildDir ="${buildDir}";
+                            c.buildDir = "${buildDir}";
                             if (project.isAndroidApplication)
-                                c.type="apk";
-                            else c.type="aar";
+                                c.type = "apk";
+                            else c.type = "aar";
                             project.ext.artifacts.add(c);
 
 
-                           //leaving this as is failures because the pom is generated multiple times,
-                            //mostly because of variants and debug/release
 
                             if (!project.ext.pomAdded) {
-                                project.ext.pomAdded=true;
+                                //this check prevents failures because the pom is generated multiple times,
+                                //mostly because of variants and debug/release
+                                project.ext.pomAdded = true;
 
                                 if (isGPGAvailable()) {
+                                    logger.debug("Adding " + "${buildDir}/publications/androidArtifacts/pom-default.xml.asc" + ".asc" + " to artifact list");
                                     artifact("${buildDir}/publications/androidArtifacts/pom-default.xml.asc") {
                                         extension "asc"
                                         classifier "pom"
@@ -842,25 +875,27 @@ project.plugins.withType(MavenPublishPlugin) {
                             //signs the actual output
                             c = new Container();
                             if (project.isAndroidApplication)
-                                c.type="apk";
-                            else c.type="aar";
-                            c.buildDir ="${buildDir}";
+                                c.type = "apk";
+                            else c.type = "aar";
+                            c.buildDir = "${buildDir}";
                             c.fileName = variant.name;
                             c.fileNameAndPath = "${artifactRoot}/${artifactName}";
                             project.ext.artifacts.add(c);
 
 
+                            logger.debug("Adding " + "${artifactRoot}/${artifactName}" + " to artifact list");
                             artifact("${artifactRoot}/${artifactName}") {
                                 classifier variant.name
                                 extension project.pom.packaging
                             }
 
 
-                            if (isGPGAvailable()){
+                            if (isGPGAvailable()) {
+                                logger.debug("Adding " + "${artifactRoot}/${artifactName}" + ".asc" + " to artifact list");
                                 artifact("${artifactRoot}/${artifactName}" + ".asc") {
                                     classifier c.fileName
-                                    extension project.pom.packaging +'.asc'
-                                  }
+                                    extension project.pom.packaging + '.asc'
+                                }
                             }
 
 
@@ -869,17 +904,19 @@ project.plugins.withType(MavenPublishPlugin) {
 
                             if (project.javadocProfileEnabled) {
                                 artifact tasks["generate${variant.name.capitalize()}JavadocJar"]
+                                logger.debug("Adding " + "${buildDir}/libs/${artifactPrefix}-javadoc.jar" + " to artifact list");
                                 c = new Container();
                                 if (project.isAndroidApplication)
-                                    c.type="apk";
-                                else c.type="aar";
-                                c.buildDir ="${buildDir}";
+                                    c.type = "apk";
+                                else c.type = "aar";
+                                c.buildDir = "${buildDir}";
                                 c.fileName = variant.name;
                                 c.fileNameAndPath = "${buildDir}/libs/${artifactPrefix}-javadoc.jar";
                                 //c.artifact=publications;
                                 project.ext.artifacts.add(c);
 
                                 if (isGPGAvailable()) {
+                                    logger.debug("Adding " + "${artifactRoot}/${artifactName}" + ".asc" + " to artifact list");
                                     artifact("${artifactRoot}/${artifactName}" + ".asc") {
                                         extension project.pom.packaging
                                         classifier c.fileName + "-javadoc"
@@ -894,13 +931,14 @@ project.plugins.withType(MavenPublishPlugin) {
                                 artifact tasks["generate${variant.name.capitalize()}SourcesJar"]
                                 c = new Container();
                                 if (project.isAndroidApplication)
-                                    c.type="apk";
-                                else c.type="aar";
-                                c.buildDir ="${buildDir}";
+                                    c.type = "apk";
+                                else c.type = "aar";
+                                c.buildDir = "${buildDir}";
                                 c.fileName = variant.name;
                                 c.fileNameAndPath = "${buildDir}/libs/${artifactPrefix}-sources.jar";
-                                //c.artifact=publications;
                                 project.ext.artifacts.add(c);
+
+                                logger.debug("Adding " + "${buildDir}/libs/${artifactPrefix}-sources.jar" + " to artifact list");
 
                                 if (isGPGAvailable()) {
                                     artifact("${artifactRoot}/${artifactName}" + ".asc") {
@@ -915,19 +953,18 @@ project.plugins.withType(MavenPublishPlugin) {
                     }
                 }
             }
-
-
-
         }
 
-        repositories {
-            maven {
-                url project.targetRepositoryUrl
+        if (!"".equalsIgnoreCase(project.targetRepositoryUrl)){
+            repositories {
+                maven {
+                    url project.targetRepositoryUrl
 
-                if (!project.nexusUsername.equals("")) {
-                    credentials {
-                        username project.nexusUsername
-                        password project.nexusPassword
+                    if (!project.nexusUsername.equals("")) {
+                        credentials {
+                            username project.nexusUsername
+                            password project.nexusPassword
+                        }
                     }
                 }
             }
@@ -940,10 +977,10 @@ project.plugins.withType(MavenPublishPlugin) {
  * @param file string path to the file
  * @return false is signing failed or gpg is not available
  */
-def signFile(file){
-    System.out.println("attempting to sign " + file)
+ext.signFile =  { file ->
+    logger.debug("attempting to sign " + file)
     if (!new File(file).exists()){
-        System.out.println("WARN - skipping gpg signature of " + file + ", it probably hasn't been created yet!");
+        logger.warn("WARN - skipping gpg signature of " + file + ", it probably hasn't been created yet!");
         return false;
     }
     File f = new File(file + ".asc");
@@ -973,80 +1010,120 @@ class Container{
 }
 
 /**
+ * this bit is kind of interesting
+ * when the signing code runs, it tends to run out of order, thiis part will force the signing method
+ * to rerun as the rest of the project is built.
+ *
+ * is it unnecessary work? you bet, however the signer skips
+ */
+gradle.taskGraph.whenReady { taskGraph ->
+    def tasks = taskGraph.getAllTasks()
+    tasks.each {
+        def taskName = it.getName()
+        if (taskName == 'signArtifacts' || taskName == "signArtifacts2" ||
+        taskName == "generatePomFileForAndroidArtifactsPublication") {
+            logger.debug("Found $taskName")
+
+            it.setOnlyIf { true }
+            it.outputs.upToDateWhen { false }
+        }
+    }
+}
+
+/**
  * dev note: this function could possibly be used to completely override gradle's publish mechanism
  * by injecting an HTTP PUT, effectively solving the rediciously problem of not being able to specify
  * the name of the artifact when it's uploaded.
  */
-publish.dependsOn {
-    if (isGPGAvailable()){
-        Iterator<Container> myiterator = project.ext.artifacts.iterator();
-        while (myiterator.hasNext()){
 
-            Container item = myiterator.next();
-            System.out.println(item.fileNameAndPath + " " + item.fileName + " " + item.type);
-            if (item.fileNameAndPath.endsWith(".pom")) {
-                if ("jar".equals(item.type)) {
+task signArtifacts() << {
+   // this line just makes gradle angry, left as a warn for future self
+    // outputs.upToDateWhen { false }
+    logger.info("Attempting to sign artifacts "  + project.ext.artifacts.size());
 
-                    item.fileNameAndPath = item.buildDir + "/publications/javaArtifacts/pom-default.xml";
-                }
-                if ("aar".equals(item.type)) {
+    Iterator<Container> myiterator = project.ext.artifacts.iterator();
+    while (myiterator.hasNext()){
 
-                    item.fileNameAndPath = item.buildDir + "/publications/androidArtifacts/pom-default.xml";
-                }
-                if ("apk".equals(item.type)) {
+        Container item = myiterator.next();
+        logger.debug(item.fileNameAndPath + " " + item.fileName + " " + item.type);
+        if (item.fileNameAndPath.endsWith(".pom")) {
+            if ("jar".equals(item.type)) {
 
-                    item.fileNameAndPath = item.buildDir + "/publications/androidArtifacts/pom-default.xml";
-                }
+                item.fileNameAndPath = item.buildDir + "/publications/javaArtifacts/pom-default.xml";
             }
-            if (signFile(item.fileNameAndPath)) {
-                System.out.println(item.fileNameAndPath + " signed!");
-/*
-                Method[] bits = item.artifact.class.methods
-                for (int k =0; k < bits.length; k++){
-                    System.out.println(bits[k].name);
-                    for (int x=0; x < bits[k].parameterTypes.length; x++) {
-                        System.out.println("\t" + bits[k].parameterTypes[x].name);
-                    }
-                }
+            if ("aar".equals(item.type)) {
 
+                item.fileNameAndPath = item.buildDir + "/publications/androidArtifacts/pom-default.xml";
+            }
+            if ("apk".equals(item.type)) {
 
-                item.add(artifact(item.fileNameAndPath + ".asc") {
-                    extension project.pom.packaging
-                    classifier item.fileName + "asc"
-                })*/
-            } else {
-                System.out.println("WARN - failed to sign artifact at " - item.fileNameAndPath);
+                item.fileNameAndPath = item.buildDir + "/publications/androidArtifacts/pom-default.xml";
             }
         }
+        if (isGPGAvailable()) {
+            if (signFile(item.fileNameAndPath)) {
+                logger.info(item.fileNameAndPath + " signed!");
+            } else {
+                logger.warn("WARN - failed to sign artifact at " - item.fileNameAndPath);
+            }
+        } else {
+            logger.warn("GPG not available " - item.fileNameAndPath);
+
+        }
     }
-
-
-
-
 }
+
+
+def reflect(object){
+    Method[] bits = object.class.methods
+    for (int k =0; k < bits.length; k++){
+        System.out.println(bits[k].name);
+        for (int x=0; x < bits[k].parameterTypes.length; x++) {
+            System.out.println("\t" + bits[k].parameterTypes[x].name);
+        }
+    }
+}
+
+build.finalizedBy(signArtifacts)
+
+
+
+
+
+//used to surpress output from pgp's help method
+def dummyOutputStream = new OutputStream() {
+    @Override
+    public void write(int b) {}
+}
+
 
 /**
  * Attempts to call pgp --help
  * @return true if gpg is available on the system
  */
 def isGPGAvailable(){
+    if (!project.sign)
+        return false;
     if (project.ext.pgpSearch)
         return project.ext.pgpAvailable;
     project.ext.pgpSearch=true;
-    System.out.println("searching for GPG")
+    logger.debug("searching for GPG")
     try {
         exec {
             executable ext.gpgPath
             args "--help"
+            standardOutput = new ByteArrayOutputStream()
+            errorOutput = new ByteArrayOutputStream()
         }
-        System.out.println("GPG found at " + gpgPath);
+        logger.debug("GPG found at " + gpgPath);
         project.ext.pgpAvailable=true;
         return true;
     }catch (Exception ex){
         ex.printStackTrace();
     }
     //TODO search commons paths for windows?
-    System.out.println("GPG NOT found, signing will not be possible");
+    logger.warn("GPG NOT found, signing will not be possible");
     project.ext.pgpAvailable=false;
     return false;
 }
+
