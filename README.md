@@ -1,3 +1,5 @@
+Note: There may be some strong language on this site. Discretion advised.
+
 # gradle-fury
 
 *"Before I could pull the trigger, I was hit by lightning and bitten by a cobra. I blacked out, and
@@ -6,6 +8,7 @@ prophecy about a new form of kung-fu so powerful, only one man can master it: Th
 woke up, I saw the kung-fu master running towards me. I could feel my body mutate, into some sort of
 kung-fu freak of nature." --Kung Fury*
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/bS5P_LAqiVg" frameborder="0" allowfullscreen></iframe>
 
 Purpose
 -------
