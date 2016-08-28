@@ -79,6 +79,12 @@ declare -a arr=(
       "./hello-world-lib/build/libs/hello-world-lib-$version-javadoc.jar" \
       "./hello-world-lib/build/libs/hello-world-lib-$version-sources.jar" \
       "./hello-world-lib/build/publications/javaArtifacts/pom-default.xml" \
+
+
+      "./hello-world-war/build/libs/hello-world-war-$version.war" \
+      "./hello-world-war/build/libs/hello-world-war-$version-javadoc.jar" \
+      "./hello-world-war/build/libs/hello-world-war-$version-sources.jar" \
+      "./hello-world-war/build/publications/webApp/pom-default.xml" \
       )
 
 for i in "${arr[@]}"

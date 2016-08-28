@@ -726,9 +726,10 @@ def modifyGeneratedPom(pom) {
 
                     publications {
                         if (project.isWarProject) {
+                            project.pom.packaging = 'war'
+
                             def artifactName = project.name + "-" + project.version + "." + project.pom.packaging;
                             def artifactRoot = "${buildDir}/libs/"
-                            project.pom.packaging = 'war'
 
                             webApp(MavenPublication) {
                                 from components.web
@@ -738,9 +739,42 @@ def modifyGeneratedPom(pom) {
                                 version project.version
 
                                 modifyGeneratedPom(pom)
-                                //TODO #27 pgp signatures on
-                                // ${buildDir}/publications/webApp/pom-default.xml
+
+
                                 //primary out
+                                Container c;
+                                c = new Container();
+                                c.buildDir = "${buildDir}";
+                                c.fileName = artifactName;
+                                c.fileNameAndPath = "${artifactRoot}${artifactName}";
+                                c.type = "war";
+                                project.ext.artifacts.add(c);
+                                logger.debug("Adding " + "${artifactRoot}${artifactName}" + " to artifact list");
+
+
+                                if (isGPGAvailable()) {
+                                    logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
+                                    artifact(c.fileNameAndPath + ".asc") {
+                                        extension 'jar.asc'
+                                    }
+                                }
+
+                                //the pom
+                                c = new Container();
+                                c.buildDir = "${buildDir}";
+                                c.fileName = artifactName;
+                                c.fileNameAndPath = "$buildDir/publications/webApp/pom-default.xml";
+                                c.type = "war";
+                                project.ext.artifacts.add(c);
+                                logger.debug("Adding " + "$buildDir/publications/webApp/pom-default.xml" + " to artifact list");
+
+
+                                if (isGPGAvailable()) {
+                                    logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
+                                    artifact(c.fileNameAndPath + ".asc") {
+                                        extension 'pom.asc'
+                                    }
+                                }
 
                             }
                             if (project.javadocProfileEnabled) {
@@ -754,7 +788,26 @@ def modifyGeneratedPom(pom) {
                                     modifyGeneratedPom(pom)
 
                                     artifact javadocJar
-                                    //TODO #27 pgp signatures
+
+                                    //#27 pgp signatures
+                                    Container c;
+                                    c = new Container();
+                                    c.buildDir = "${buildDir}";
+                                    c.fileName = artifactName;
+                                    c.fileNameAndPath = "${buildDir}" + "/libs/" + project.name + "-" + project.version + "-javadoc.jar";
+                                    c.type = "jar";
+                                    project.ext.artifacts.add(c);
+                                    logger.debug("Adding " + "${buildDir}" + "/libs/" + project.name + "-" + project.version + "-javadoc.jar" + " to artifact list");
+
+
+                                    if (isGPGAvailable()) {
+                                        logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
+                                        artifact(c.fileNameAndPath + ".asc") {
+                                            extension project.pom.packaging
+                                            classifier "javadoc"
+                                            extension 'asc'
+                                        }
+                                    }
                                 }
                             }
 
@@ -769,7 +822,26 @@ def modifyGeneratedPom(pom) {
                                     modifyGeneratedPom(pom)
 
                                     artifact sourcesJar
-                                    //TODO #27 pgp signatures
+                                    //#27 pgp signatures
+
+                                    Container c;
+                                    c = new Container();
+                                    c.buildDir = "${buildDir}";
+                                    c.fileName = artifactName;
+                                    c.fileNameAndPath = "${buildDir}" + "/libs/" + project.name + "-" + project.version + "-sources.jar";
+                                    c.type = "jar";
+                                    project.ext.artifacts.add(c);
+                                    logger.debug("Adding " + "${buildDir}" + "/libs/" + project.name + "-" + project.version + "-sources.jar" + " to artifact list");
+
+
+                                    if (isGPGAvailable()) {
+                                        logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
+                                        artifact(c.fileNameAndPath + ".asc") {
+                                            extension project.pom.packaging
+                                            classifier "sources"
+                                            extension 'asc'
+                                        }
+                                    }
                                 }
                             }
 
