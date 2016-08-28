@@ -291,6 +291,33 @@ done
 
 # END Issue 31
 
+
+# BEGIN Issue 22, pom overrides
+
+echo "     Issue #22 pom overrides"
+
+# strings to search for in our aar pom
+declare -a strs=(
+      "LGPL" \
+       )
+
+
+for i in "${strs[@]}"
+do
+    if [ "`eval echo grep -Fxq $i ~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-$version.pom`" ];
+    then
+        # code if found
+        echo " PASS - $i found in override apk pom"
+    else
+        # code if not found
+        echo " FAIL - $i NOT found in override apk pom"
+        exit 1
+    fi
+done
+
+
+
+
 echo "     End Result - PASS"
 
 echo "Done."

@@ -420,6 +420,18 @@ afterEvaluate { project ->
 
 
 def modifyGeneratedPom(pom) {
+
+
+    File overrides = new File("${projectDir}/gradle.properties");
+    if (overrides.exists()){
+        logger.info("${projectDir}/gradle.properties exists, apply overrides");
+        Properties props = new Properties();
+        props.load(new FileInputStream("${projectDir}/gradle.properties"));
+        props.each { prop ->
+            project.ext.set(prop.key, prop.value)
+        }
+    }
+
     pom.withXml { provider ->
         def node = provider.asNode()
 
