@@ -19,6 +19,13 @@ Build Status
 Develop: [![Build Status](https://travis-ci.org/chrisdoyle/gradle-fury.svg?branch=develop)](https://travis-ci.org/chrisdoyle/gradle-fury)
 Master: [![Build Status](https://travis-ci.org/chrisdoyle/gradle-fury.svg?branch=master)](https://travis-ci.org/chrisdoyle/gradle-fury)
 
+Requirements
+------------
+
+* Gradle 2+
+* For Android suport, gradle android plugin v1.5 or higher
+* For digital signature support, GPG must be installed on your computer. We test with gnugpg.
+
 Usage
 -----
 

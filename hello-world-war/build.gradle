@@ -1,0 +1,14 @@
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Java Web Application (WAR)'
+
+apply plugin: 'war'
+
+compileJava {
+    sourceCompatibility = "${project.property('compileJava.sourceCompatibility')}"
+    targetCompatibility = "${project.property('compileJava.targetCompatibility')}"
+}
+
+dependencies {
+    compile "org.apache.commons:commons-lang3:${project.property('commons-lang3.version')}"
+    compile project(':hello-world-lib')
+    testCompile "junit:junit:${project.property('junit.version')}"
+}
