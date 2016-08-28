@@ -6,9 +6,8 @@ Note: There may be some strong language on this site. Discretion advised.
 saw images of ancient Shaolin temples and monks mastering the art of kung-fu. There was an ancient
 prophecy about a new form of kung-fu so powerful, only one man can master it: The Chosen One. When I
 woke up, I saw the kung-fu master running towards me. I could feel my body mutate, into some sort of
-kung-fu freak of nature." --Kung Fury*
+kung-fu freak of nature." --[Kung Fury](https://www.youtube.com/embed/bS5P_LAqiVg)*
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/bS5P_LAqiVg" frameborder="0" allowfullscreen></iframe>
 
 Purpose
 -------
