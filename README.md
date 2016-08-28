@@ -307,6 +307,23 @@ $ ./gradlew publish -Pprofile=sources,javadoc,sign
 $ ./gradlew clean publish -Pprofile=sources,javadoc,sign
 ```
 
+## Gradle to Maven Scope Mappings
+
+|Gradle qualifier   	| Maven Scope  	
+|---	                |---	
+| compile               | compile   
+| releaseCompile        | compile
+| debugCompile          | NOT MAPPED*
+| runtime               | runtime
+| testCompile  	        | test   	
+| androidTestCompile    | test
+| provided              | provided
+
+* Items marked as not mapped are not referenced in the pom. Pom's are 
+generally used for releases, such as, items specific to a scope, such as
+'debugCompile' aren't useful since it won't be in the release version. 
+
+
 Acknowledgements
 ----------------
 

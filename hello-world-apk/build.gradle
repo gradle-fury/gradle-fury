@@ -9,19 +9,6 @@ apply plugin: 'com.android.application'
 apply from: "${rootDir}/gradle/android-support.gradle"
 
 
-
-dependencies {
-    compile project(':hello-world-aar')
-
-    compile "com.android.support:appcompat-v7:${project.property('android-support.version')}"
-    compile "com.android.support:cardview-v7:${project.property('android-support.version')}"
-    compile "com.android.support:design:${project.property('android-support.version')}"
-    compile "com.android.support:recyclerview-v7:${project.property('android-support.version')}"
-    compile "com.android.support:support-v4:${project.property('android-support.version')}"
-
-    testCompile "junit:junit:${project.property('junit.version')}"
-}
-
 //Protip: apply the gradle fury plugin before setting up your android specific stuff (if needed)
 //i.e. the following block. Gradle Fury will automagically setup up application id, minSdk, etc
 //based on your gradle.properties file and some other magic.
@@ -50,12 +37,37 @@ android {
 }
 
 dependencies {
+
+    compile project(':hello-world-aar')
+
+    compile "com.android.support:appcompat-v7:${project.property('android-support.version')}"
+    compile "com.android.support:cardview-v7:${project.property('android-support.version')}"
+    compile "com.android.support:design:${project.property('android-support.version')}"
+    compile "com.android.support:recyclerview-v7:${project.property('android-support.version')}"
+    compile "com.android.support:support-v4:${project.property('android-support.version')}"
+
+    testCompile "junit:junit:${project.property('junit.version')}"
     //included just to test wildcard pom generation
     //if you add or change anything, also update the verify.sh bash script
+
+    provided project(":hello-universe-lib")
+
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.+'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.+'
     compile group: 'commons-codec', name: 'commons-codec', version: '1+'
 
-
+    //just to have an AAR that's in mavenCentral
+    compile 'org.osmdroid:osmdroid-android:5.2@aar'
     compile "junit:junit:+"
+
+
+    //memory leak testing
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+
+    //on device testing
+    androidTestCompile 'com.android.support:support-annotations:23+'
+    androidTestCompile 'com.android.support.test:runner:0.4.+'
+    androidTestCompile 'com.android.support.test:rules:0.4.+'
 }

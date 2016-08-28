@@ -613,19 +613,48 @@ def modifyGeneratedPom(pom) {
             }
             if (project.isAndroidProject || project.isWarProject) {
 
-                // modified from "Gradle not including dependencies in published pom.xml"
-                // http://stackoverflow.com/a/32451846/3093897
-                def dependenciesNode = asNode().appendNode('dependencies')
-                def configurationNames = ['compile']
-                // FIXME :: Issue #21: POM dependency generation shall support type and scope
+            // modified from "Gradle not including dependencies in published pom.xml"
+            // http://stackoverflow.com/a/32451846/3093897
+            def dependenciesNode = asNode().appendNode('dependencies')
+            def configurationNames;
+            if (project.isAndroidProject)
+                configurationNames = ['default','compile','testCompile','androidTestCompile','provided'] // FIXME :: Issue #21: POM dependency generation shall support type and scope
+            else{
+                configurationNames = ['default','compile','testCompile'] // FIXME :: Issue #21: POM dependency generation shall support type and scope
+            }
 
-                configurationNames.each { configurationName ->
-                    configurations[configurationName].allDependencies.each { dependency ->
-                        if (dependency.group != null && dependency.name != null) {
+            configurations.findAll { set ->
+                set.each { config ->
+                    // Note to future self
+                    // this apparently dumps all every jar/aar/war/etc file name of the dependency
+                    //useful for #21 and getting the type. This was initially written to get a list
+                    //of all configurationNames since they vary from android/jar/war projects
+                    // System.out.println("CONFIG " +config.name);
+                }
+            }
+
+            //https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
+            //maven only supports the following scope identifiers
+            //test, compile, provided, runtime, system,
+            configurationNames.each { configurationName ->
+                configurations[configurationName].allDependencies.each { dependency ->
+                    if (dependency.group != null && dependency.name != null) {
 
                         def dependencyNode = dependenciesNode.appendNode('dependency')
                         dependencyNode.appendNode('groupId', dependency.group)
                         dependencyNode.appendNode('artifactId', dependency.name)
+                        if ("default".equalsIgnoreCase(configurationName) ||
+                                "compile".equalsIgnoreCase(configurationName) ||
+                                "releaseCompile".equalsIgnoreCase(configurationName))
+                            dependencyNode.appendNode('scope', "compile");
+                        else if ("testCompile".equalsIgnoreCase(configurationName) ||
+                                "androidTestCompile".equalsIgnoreCase(configurationName))
+                            dependencyNode.appendNode('scope', "test");
+                        else if ("provided".equalsIgnoreCase(configurationName))
+                            dependencyNode.appendNode('scope', "provided");
+                        else if ("runtime".equalsIgnoreCase(configurationName))
+                            dependencyNode.appendNode('scope', "runtime");
+
                         if (dependency.version.endsWith("+")){
                             //a gradle wildcard
                             if ("+".equals(dependency.version)) {
