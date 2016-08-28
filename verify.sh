@@ -211,6 +211,10 @@ echo "     Issue #27 - verify poms has dependencies declared correctly with wild
 declare -a strs=(
       "\<version\>\[1\.3\,\)\<\/version\>" \
       "\<version\>LATEST\<\/version\>" \
+      "\<version\>\[3\,\)\<\/version\>" \
+      "\<artifactId\>commons\-math3\<\/artifactId\>" \
+      "\<artifactId\>commons\-codec\<\/artifactId\>" \
+      "\<version\>\[1\,\)\<\/version\>" \
        )
 
 for i in "${strs[@]}"

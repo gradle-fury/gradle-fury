@@ -634,9 +634,15 @@ def modifyGeneratedPom(pom) {
                             //a gradle wildcard
                             if ("+".equals(dependency.version)) {
                                 dependencyNode.appendNode('version', "LATEST")
-                            } else {
+                            } else if (dependency.version.endsWith(".+")){
                                 //the version is something.+
                                 dependencyNode.appendNode('version', "[" + dependency.version.replace(".+",",)")  )
+                            } else if (dependency.version.endsWith("+")) {
+                                dependencyNode.appendNode('version', "[" + dependency.version.replace("+",",)")  )
+                            }
+                            else {
+                                System.out.println("WARN - unhandled case for dependency version mediation for " +
+                                        dependency.group + ":" + dependency.name + ":" + dependency.version);
                             }
                             //TODO there may be other cases here
 
