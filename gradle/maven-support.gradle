@@ -516,6 +516,20 @@ def modifyGeneratedPom(pom) {
                 }
             }
 
+
+
+            def repositoriesNode = node.appendNode("repositories")
+            project.repositories.each {
+                if (!it.url.toString().startsWith("file:/")) {
+                    def repoNode = repositoriesNode.appendNode("repository")
+                    repoNode.appendNode("id", it.name);
+                    repoNode.appendNode("name", it.name);
+                    repoNode.appendNode("url", it.url);
+                    println "Name: " + it.name + "; url: " + it.url
+                }
+
+            }
+
             def licenses = project.pom.licenses
 
             if ((licenses != null) && (licenses.size() > 0)) {
