@@ -828,9 +828,9 @@ def modifyGeneratedPom(pom) {
                                     if (isGPGAvailable()) {
                                         logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
                                         artifact(c.fileNameAndPath + ".asc") {
-                                            extension project.pom.packaging
+                                            //extension project.pom.packaging
                                             classifier "javadoc"
-                                            extension 'asc'
+                                            extension 'jar.asc'
                                         }
                                     }
                                 }
@@ -862,9 +862,9 @@ def modifyGeneratedPom(pom) {
                                     if (isGPGAvailable()) {
                                         logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
                                         artifact(c.fileNameAndPath + ".asc") {
-                                            extension project.pom.packaging
+                                            //extension project.pom.packaging
                                             classifier "sources"
-                                            extension 'asc'
+                                            extension 'jar.asc'
                                         }
                                     }
                                 }
@@ -944,9 +944,9 @@ def modifyGeneratedPom(pom) {
                                     if (isGPGAvailable()) {
                                         logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
                                         artifact(c.fileNameAndPath + ".asc") {
-                                            extension project.pom.packaging
+                                            //extension project.pom.packaging
                                             classifier "javadoc"
-                                            extension 'asc'
+                                            extension 'jar.asc'
                                         }
                                     }
 
@@ -979,9 +979,9 @@ def modifyGeneratedPom(pom) {
                                     if (isGPGAvailable()) {
                                         logger.debug("Adding " + c.fileNameAndPath + ".asc" + " to artifact list");
                                         artifact(c.fileNameAndPath + ".asc") {
-                                            extension project.pom.packaging
+                                            //extension project.pom.packaging
                                             classifier "sources"
-                                            extension 'asc'
+                                            extension 'jar.asc'
                                         }
                                     }
                                 }
@@ -1037,8 +1037,8 @@ def modifyGeneratedPom(pom) {
                                             if (isGPGAvailable()) {
                                                 logger.debug("Adding " + "${buildDir}/publications/androidArtifacts/pom-default.xml.asc" + ".asc" + " to artifact list");
                                                 artifact("${buildDir}/publications/androidArtifacts/pom-default.xml.asc") {
-                                                    extension "asc"
-                                                    classifier "pom"
+                                                    extension "pom.asc"
+                                                    //classifier "pom"
                                                 }
                                             }
                                         }
@@ -1089,9 +1089,9 @@ def modifyGeneratedPom(pom) {
                                             if (isGPGAvailable()) {
                                                 logger.debug("Adding " + "${artifactRoot}/${artifactName}" + ".asc" + " to artifact list");
                                                 artifact("${artifactRoot}/${artifactName}" + ".asc") {
-                                                    extension project.pom.packaging
+                                                    //extension project.pom.packaging
                                                     classifier c.fileName + "-javadoc"
-                                                    extension 'asc'
+                                                    extension  project.pom.packaging + '.asc'
                                                 }
                                             }
 
@@ -1113,9 +1113,9 @@ def modifyGeneratedPom(pom) {
 
                                             if (isGPGAvailable()) {
                                                 artifact("${artifactRoot}/${artifactName}" + ".asc") {
-                                                    extension project.pom.packaging
+                                                    //extension project.pom.packaging
                                                     classifier c.fileName + "-sources"
-                                                    extension 'asc'
+                                                    extension project.pom.packaging +'.asc'
                                                 }
                                             }
                                         }
