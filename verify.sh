@@ -61,7 +61,38 @@ declare -a arr=(
       "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version-fooDebug.apk" \
       "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version-fooDebug-sources.jar" \
       "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version-fooDebug-javadoc.jar" \
-      "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version.pom" )
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version.pom" \
+
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-barDebug.apk" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-barDebug-sources.jar" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-barDebug-javadoc.jar" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-bazDebug.apk" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-bazDebug-sources.jar" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-bazDebug-javadoc.jar" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug.apk" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug-sources.jar" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug-javadoc.jar" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version.pom" \
+
+      "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version.war" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version-sources.jar" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version-javadoc.jar" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version.pom" \
+
+      )
+
+
+
+declare -a pomFiles=(
+      "~/.m2/repository/com/chrisdoyle/hello-world-aar/$version/hello-world-aar-$version.pom" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version.pom" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version.pom" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version-overrides.pom" \
+      "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-war-$version.pom" \
+       )
+
+
+
 
 
 for i in "${arr[@]}"
@@ -315,6 +346,34 @@ do
     fi
 done
 
+
+
+# BEGIN issue 51 pom's with URL
+echo "     Issue #51 pom URL's missing"
+# strings to search for in our pom's
+declare -a strs=(
+      "\\<url\>http\:\/\/chrisdoyle\.github\.io\/gradle\-fury\/\<\/url\>" \
+       )
+
+
+for i in "${pomFiles[@]}"
+do
+    for k in "${strs[@]}"
+    do
+        # echo "Testing for $i"
+        if [ "`eval echo grep -Fxq $k $i`" ]; then
+            echo " PASS - $k found in $i found apk pom"
+
+        else
+            echo "FAIL $k not found in file $i, aborting."
+            exit 1
+
+        fi
+    done
+done
+
+
+echo " Result - PASS"
 
 
 

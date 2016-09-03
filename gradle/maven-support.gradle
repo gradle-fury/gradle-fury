@@ -149,7 +149,7 @@ ext.pom = [
         packaging: ( hasProperty('pom.packaging') ? project.property('pom.packaging') : "jar" ), // use JAR as the default ???
         name: ( hasProperty('project.name') ? project.property('project.name') : "" ),
         description: ( hasProperty('project.description') ? project.property('project.description') : "" ),
-        url: ( hasProperty('pom.url') ? project.property('pom.url') : "" ),
+        url: ( hasProperty('pom.url') ? project.property('pom.url') : "http://TBD" ),
         inceptionYear: ( hasProperty('pom.inceptionYear') ? project.property('pom.inceptionYear') : "" ),
         licenses: licenses,
         organization: [
@@ -483,21 +483,28 @@ def modifyGeneratedPom(pom) {
                 }
             }
 
-            if (!project.pom.url.equals("")) {
-                if (!node.url) {
-                    node.appendNode('url', project.pom.url)
-                } else {
-                    node.url.replaceNode {
-                        url(project.pom.url)
-                    }
+            //fix for issue #51 url element missing from pom
+            //a URL is mandatory for mavenCentral, this injects a placeholder
+            logger.debug("POM URL should be " + project.pom.url);
+            if ("".equals(project.pom.url)) {
+                project.pom.url = "http://TBD";
+            }
+            if (!node.url) {
+                logger.debug("POM URL APPENDED");
+                node.appendNode('url', project.pom.url)
+            } else {
+                logger.debug("POM URL REPLACE");
+                node.url.replaceNode {
+                    url(project.pom.url)
                 }
             }
+            logger.debug("POM URL IS NOW " + node.url);
 
             if (!project.pom.inceptionYear.equals("")) {
-                if (!node.url) {
+                if (!node.inceptionYear) {
                     node.appendNode('inceptionYear', project.pom.inceptionYear)
                 } else {
-                    node.url.replaceNode {
+                    node.inceptionYear.replaceNode {
                         inceptionYear(project.pom.inceptionYear)
                     }
                 }
