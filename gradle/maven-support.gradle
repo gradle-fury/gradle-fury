@@ -51,6 +51,12 @@ ext.gpgPath = (
 );
 
 
+ext.gpgPassphrase = (
+        hasProperty('GPG_PASSPHRASE')
+                ? GPG_PASSPHRASE
+                : ""
+);
+
 // default to Maven Central if not provided
 ext.releaseRepositoryUrl = (
         hasProperty('RELEASE_REPOSITORY_URL')
@@ -1151,11 +1157,18 @@ def modifyGeneratedPom(pom) {
         File f = new File(file + ".asc");
         if (f.exists())
             f.delete();
-        exec {
 
-            executable ext.gpgPath
-
-            args "-a", "--output", file + ".asc", "--detach-sig", file
+        if ("".equalsIgnoreCase(ext.gpgPassphrase)) {
+            exec {
+                executable ext.gpgPath
+                args "-a", "--output", file + ".asc", "--detach-sig", file
+            }
+        } else {
+            //pass phrase supplied
+            exec {
+                executable ext.gpgPath
+                args "-a", "--passphrase", ext.gpgPassphrase, "--output", file+".asc", "--detach-sig", file
+            }
         }
     return true;
 }
