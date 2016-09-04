@@ -37,81 +37,14 @@ version=`eval getProp $PROPERTIES_FILE pom.version`
 echo " ======== Validation script for gradle fury ======== "
 echo " "
 
+gpglocation=$(which gpg)
+if [[ -z "${param// }" ]]; then
+    echo "WARN GPG not available"
+    exit 0
+fi
 
-# BEGIN Issue 12
-echo "     Issue #12 - verify all artifacts were published to mavenLocal"
+cat "\nGPG_PATH=$gpglocation" >> local.properties
 
-# these are all the files we're testing for signatures
+cat local.properties
 
-declare -a arr=(
-      "./hello-world-aar/build/outputs/aar/hello-world-aar-$version-debug.aar" \
-      "./hello-world-aar/build/outputs/aar/hello-world-aar-$version-release.aar" \
-      "./hello-world-aar/build/libs/hello-world-aar-$version-debug-javadoc.jar" \
-      "./hello-world-aar/build/libs/hello-world-aar-$version-debug-sources.jar" \
-      "./hello-world-aar/build/libs/hello-world-aar-$version-release-javadoc.jar" \
-      "./hello-world-aar/build/libs/hello-world-aar-$version-release-sources.jar" \
-      "./hello-world-aar/build/publications/androidArtifacts/pom-default.xml" \
-
-      "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-barDebug.apk" \
-      "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-barRelease.apk" \
-      "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-bazDebug.apk" \
-      "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-bazRelease.apk" \
-      "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-fooDebug.apk" \
-      "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-fooRelease.apk" \
-
-      "./hello-world-apk/build/libs/hello-world-apk-$version-barDebug-javadoc.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-barDebug-sources.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-barRelease-javadoc.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-barRelease-sources.jar" \
-
-      "./hello-world-apk/build/libs/hello-world-apk-$version-bazDebug-javadoc.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-bazDebug-sources.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-bazRelease-javadoc.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-bazRelease-sources.jar" \
-
-      "./hello-world-apk/build/libs/hello-world-apk-$version-fooDebug-javadoc.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-fooDebug-sources.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-fooRelease-javadoc.jar" \
-      "./hello-world-apk/build/libs/hello-world-apk-$version-fooRelease-sources.jar" \
-      "./hello-world-apk/build/publications/androidArtifacts/pom-default.xml" \
-
-      "./hello-world-lib/build/libs/hello-world-lib-$version.jar" \
-      "./hello-world-lib/build/libs/hello-world-lib-$version-javadoc.jar" \
-      "./hello-world-lib/build/libs/hello-world-lib-$version-sources.jar" \
-      "./hello-world-lib/build/publications/javaArtifacts/pom-default.xml" \
-
-
-      "./hello-world-war/build/libs/hello-world-war-$version.war" \
-      "./hello-world-war/build/libs/hello-world-war-$version-javadoc.jar" \
-      "./hello-world-war/build/libs/hello-world-war-$version-sources.jar" \
-      "./hello-world-war/build/publications/webApp/pom-default.xml" \
-      )
-
-for i in "${arr[@]}"
-do
-    # echo "Testing for $i"
-    if [ ! -f "`eval echo ${i//>}`"  ] ; then
-        echo "File $i is not there, aborting."
-        exit 1
-
-    else
-        echo "$i" "checking signature";
-        eval "/usr/local/bin/gpg --version $1.asc"
-        ret_code=$?
-        if [ret_code !=0]; then
-            echo "Signatures didn't verify!"
-            exit 1
-        fi
-
-
-    fi
-done
-
-echo " Result - PASS"
-
-# END Issue 12
-
-
-echo "     End Result - PASS"
-
-echo "Done."
+java -jar gradle-fury-validation/build/libs/gradle-fury-validation-$version.jar -withSig

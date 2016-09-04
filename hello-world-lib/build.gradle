@@ -10,5 +10,9 @@ compileJava {
 dependencies {
     compile "org.apache.commons:commons-lang3:${project.property('commons-lang3.version')}"
 
+    //since gradle 2.12, similar to maven "provided"
+    compileOnly "commons-io:commons-io:${project.property('commons-io.version')}"
+
+
     testCompile "junit:junit:${project.property('junit.version')}"
 }

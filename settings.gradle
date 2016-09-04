@@ -5,4 +5,7 @@ include ':hello-world-apk'
 include ':hello-world-apk-overrides'
 include ':hello-world-lib'
 include ':hello-world-war'
-include ':hello-universe-lib'
+include ':hello-universe-aar'
+
+//test and validation jar app
+include ':gradle-fury-validation'

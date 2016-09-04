@@ -34,6 +34,7 @@ script:
   - ./gradlew -version
   - ./gradlew clean install -Pprofile=sources,javadoc
   #verify publish
+  - chmod 755 verify.sh
   - ./verify.sh
 
   # ok let's blow up the local maven repo
@@ -41,6 +42,7 @@ script:
   # build again with signatures, then verify the signatures
   - ./gradlew clean
   - ./gradlew install -Pprofile=sources,javadoc
-  - ./gradlew signArtifacts -Pprofile=sources,javadoc,sign
+  - ./gradlew publish -Pprofile=sources,javadoc,sign
+  - chmod 755 verifySignatures.sh
   - ./verifySignatures.sh
 

@@ -1,4 +1,4 @@
-description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Java Library (JAR)'
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello Universe Java Library (JAR)'
 
 apply plugin: 'java'
 

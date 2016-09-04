@@ -51,7 +51,7 @@ dependencies {
     //included just to test wildcard pom generation
     //if you add or change anything, also update the verify.sh bash script
 
-    provided project(":hello-universe-lib")
+    provided project(":hello-universe-aar")
 
     compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.+'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.+'
