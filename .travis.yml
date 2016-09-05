@@ -42,7 +42,18 @@ script:
   # build again with signatures, then verify the signatures
   - ./gradlew clean
   - ./gradlew install -Pprofile=sources,javadoc
-  - ./gradlew publish -Pprofile=sources,javadoc,sign
-  - chmod 755 verifySignatures.sh
-  - ./verifySignatures.sh
+  - chmod 755 verify.sh
+  - ./verify.sh
+  #- wget http://download.sonatype.com/nexus/oss/nexus-2.13.0-01-bundle.zip
+  #- unzip nexus-2.13.0-01-bundle.zip
+  #- cd nexus-2.13.0-01-bundle/nexus-2.13.0-01/bin
+  #- chmod 755 nexus
+  #- nexus &
+  #- cd ..
+  #- cd ..
+  #- cd ..
+
+  #- ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign
+  #- chmod 755 verifySignatures.sh
+  #- ./verifySignatures.sh
 

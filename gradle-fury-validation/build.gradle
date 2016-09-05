@@ -11,9 +11,11 @@ compileJava {
 dependencies{
     compile "org.apache.commons:commons-lang3:${project.property('commons-lang3.version')}"
     compile "commons-io:commons-io:${project.property('commons-io.version')}"
-    compile group: 'commons-cli', name: 'commons-cli', version: '1.3'
+    compile "commons-cli:commons-cli:${project.property('commons-cli.version')}"
 
-
+    //even though these are normally test dependencies, we need this for runtime since the actual
+    //tests are performed after a number of gradle steps and scripts during ci builds
+    compile "org.jsoup:jsoup:${project.property('jsoup.version')}"
     compile "junit:junit:${project.property('junit.version')}"
 }
 

@@ -297,10 +297,14 @@ That's a problem if you're trying to sign it. Unfortunately, we couldn't find a 
 the hooks in place at the right time in the cycle to both sign and not get cleaned and still
 be present in the right locations for the publish steps.
 
+We're also not using the built in "publish" or "uploadArchive" task here because it does not 
+publish pom signatures correctly. It also uploads an additional variant of android libraries and APKs
+for no apparent reason and we can't find a way to sign those before uploading.
+
 ```bash
 $ ./gradlew clean
 $ ./gradlew install -Pprofile=sources,javadoc
-$ ./gradlew publish -Pprofile=sources,javadoc,sign
+$ ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign
 ```
 
 ## Publishing to Nexus like repos without GPG signatures

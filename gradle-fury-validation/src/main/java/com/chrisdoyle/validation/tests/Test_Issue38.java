@@ -21,7 +21,7 @@ public class Test_Issue38 {
 
         String[] search = new String[]{
         //#provided#
-        "<dependency>\\s*<groupId>com.chrisdoyle</groupId>\\s*<artifactId>hello-universe-aar</artifactId>\\s*<scope>provided</scope>",
+        "<dependency>\\s*<groupId>com.chrisdoyle</groupId>\\s*<artifactId>hello-universe-lib</artifactId>\\s*<scope>provided</scope>",
         //#test
         "<dependency>\\s*<groupId>junit</groupId>\\s*<artifactId>junit</artifactId>\\s*<scope>test</scope>" ,
         //compile

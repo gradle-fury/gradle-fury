@@ -1,5 +1,6 @@
 package com.chrisdoyle.validation;
 
+import com.chrisdoyle.validation.tests.TestPostPublication;
 import com.chrisdoyle.validation.tests.Test_Issue12;
 import com.chrisdoyle.validation.tests.Test_Issue12Sigs;
 import com.chrisdoyle.validation.tests.Test_Issue22;
@@ -66,7 +67,8 @@ public class Main {
      *
      */
     static final Class[] signatureTests = new Class[]{
-            Test_Issue12Sigs.class
+            Test_Issue12Sigs.class,
+            TestPostPublication.class,
     };
 
 
