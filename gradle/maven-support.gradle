@@ -1,4 +1,4 @@
-import okhttp3.*
+
 
 import java.lang.reflect.Method
 import java.security.MessageDigest
@@ -11,10 +11,6 @@ import java.security.MessageDigest
 buildscript {
     repositories {
         mavenCentral()
-    }
-    dependencies {
-        classpath 'com.squareup.okhttp3:okhttp:3.4.1'
-
     }
 }
 
@@ -1386,19 +1382,15 @@ task publishArtifacts << {
         throw new Exception("Cannot publish without a repository password");
     }
 
-    OkHttpClient client = new OkHttpClient.Builder()
-            .authenticator(new Authenticator() {
-        @Override
-        public Request authenticate(Route route, Response response) throws IOException {
-            logger.debug("Authenticating for response: " + response);
-            logger.debug("Challenges: " + response.challenges());
-            String credential = Credentials.basic(project.nexusUsername, project.nexusPassword);
-            return response.request().newBuilder()
-                    .header("Authorization", credential)
-                    .build();
+    Authenticator.setDefault (new Authenticator() {
+        protected PasswordAuthentication getPasswordAuthentication() {
+            return new PasswordAuthentication (project.nexusUsername, project.nexusPassword.toCharArray());
         }
-    })
-            .build();
+    });
+
+
+
+
 
 
 
@@ -1418,17 +1410,11 @@ task publishArtifacts << {
             continue;
         try {
 
-            Request request = new Request.Builder()
-                    .url(targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName)
-                    .put(RequestBody.create(MediaType.parse("application/octet-stream; charset=utf-8"), f))
-            //.put(body) // here we use put
-            // .addHeader("Authorization", header)
-                    .build();
+            if (uploadedFileName.endsWith(".pom"))
+            uploadFile(f,targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName , "text/xml; charset=utf-8");
+            else
+                uploadFile(f,targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName , "application/octet-stream; charset=utf-8");
 
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-            logger.warn("Upload: " + request.url());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1436,17 +1422,7 @@ task publishArtifacts << {
         signFile(f.absolutePath)
         try {
 
-            Request request = new Request.Builder()
-                    .url(targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName + ".asc")
-                    .put(RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), new File(f.absolutePath + ".asc")))
-            //.put(body) // here we use put
-            // .addHeader("Authorization", header)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-            logger.warn("Upload: " + request.url());
+            uploadFile(new File(f.absolutePath + ".asc"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".asc", "text/plain; charset=utf-8");
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1460,17 +1436,8 @@ task publishArtifacts << {
 
         try {
 
-            Request request = new Request.Builder()
-                    .url(targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName + ".md5")
-                    .put(RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), new File(f.absolutePath + ".md5")))
-            //.put(body) // here we use put
-            // .addHeader("Authorization", header)
-                    .build();
+            uploadFile(new File(f.absolutePath + ".md5"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".md5", "text/plain; charset=utf-8");
 
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-            logger.warn("Upload: " + request.url());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1478,17 +1445,7 @@ task publishArtifacts << {
 
         try {
 
-            Request request = new Request.Builder()
-                    .url(targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName + ".sha1")
-                    .put(RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), new File(f.absolutePath + ".sha1")))
-            //.put(body) // here we use put
-            // .addHeader("Authorization", header)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-            logger.warn("Upload: " + request.url());
+            uploadFile(new File(f.absolutePath + ".sha1"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".sha1", "text/plain; charset=utf-8");
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1496,18 +1453,8 @@ task publishArtifacts << {
 
 
         try {
+            uploadFile(new File(f.absolutePath + ".asc.md5"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".asc.md5", "text/plain; charset=utf-8");
 
-            Request request = new Request.Builder()
-                    .url(targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName + ".asc.md5")
-                    .put(RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), new File(f.absolutePath + ".asc.md5")))
-            //.put(body) // here we use put
-            // .addHeader("Authorization", header)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-            logger.warn("Upload: " + request.url());
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1515,17 +1462,7 @@ task publishArtifacts << {
 
         try {
 
-            Request request = new Request.Builder()
-                    .url(targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName + ".asc.sha1")
-                    .put(RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), new File(f.absolutePath + ".asc.sha1")))
-            //.put(body) // here we use put
-            // .addHeader("Authorization", header)
-                    .build();
-
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-            logger.warn("Upload: " + request.url());
+            uploadFile(new File(f.absolutePath + ".asc.sha1"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".asc.sha1", "text/plain; charset=utf-8");
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1537,7 +1474,49 @@ task publishArtifacts << {
 
 }
 
+/**
+ * uploads a file to the given url
+ * borrowed from <a href="http://stackoverflow.com/questions/11420971/send-a-file-with-a-put-request-using-a-httpurlconnection">here</a>
+ * @param input
+ * @param urlDestination
+ * @param contentType
+ * @return
+ */
+def uploadFile(File input, String urlDestination, String contentType){
+    URL url = new URL(urlDestination);
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setDoOutput(true);
+    connection.setRequestMethod("PUT");
+    connection.setRequestProperty("Content-Type", contentType);
+    connection.setRequestProperty("Content-Length", String.valueOf(input.length()));
+    connection.setUseCaches(false);
+    connection.setDoOutput(true);
+    connection.connect();
+    FileInputStream streamFileInputStream = new FileInputStream(input);
+    BufferedInputStream streamFileBufferedInputStream = new BufferedInputStream(streamFileInputStream);
+    OutputStream outputStream = connection.getOutputStream();
+    byte[] streamFileBytes = new byte[4096];
+    int bytesRead = 0;
+    int totalBytesRead = 0;
 
+    while ((bytesRead = streamFileBufferedInputStream.read(streamFileBytes)) > 0) {
+        outputStream.write(streamFileBytes, 0, bytesRead);
+
+        totalBytesRead += bytesRead;
+       // notifyListenersOnProgress((double)totalBytesRead / (double)input.length());
+    }
+
+    outputStream.flush();
+    outputStream.close();
+
+    System.out.println("Upload " + urlDestination + " : " + connection.getResponseCode() + ": "+ connection.getResponseMessage());
+
+    connection.disconnect();
+
+    logger.debug("Wrote " + totalBytesRead + " bytes of " + input.length() + ", ratio: " +(double)totalBytesRead / (double)input.length());
+
+
+}
 
 build.finalizedBy(signArtifacts)
 publishArtifacts.mustRunAfter(signArtifacts)
