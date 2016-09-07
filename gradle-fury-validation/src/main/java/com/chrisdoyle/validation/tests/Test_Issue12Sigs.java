@@ -23,7 +23,7 @@ public class Test_Issue12Sigs {
             f= new File(Main.allSignedArtifacts[i] + ".asc");
             Assert.assertTrue(Main.allSignedArtifacts[i] + " does not exist", f.exists());
 
-            Process p = Runtime.getRuntime().exec(new String[]{"gpg", f.getAbsolutePath()});
+            Process p = Runtime.getRuntime().exec(new String[]{Main.gpg, f.getAbsolutePath()});
             int exitcode =p.waitFor();
             p.destroy();
             Assert.assertEquals("Signature validation failed for " + f.getAbsolutePath(), 0, exitcode);

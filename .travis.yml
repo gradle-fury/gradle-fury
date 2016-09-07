@@ -16,44 +16,99 @@ android:
     - extra-google-m2repository
     - extra-android-m2repository
     - addon-google_apis-google-19
+env:
+  matrix:
+    # default out of the box set
+    - GRADLE_VERSION='3.0' GRADLE_PLUGIN_VERSION='2.1.3'
+    - GRADLE_VERSION='2.14' GRADLE_PLUGIN_VERSION='2.1.3'
+    - GRADLE_VERSION='2.10' GRADLE_PLUGIN_VERSION='2.1.2'
+    - GRADLE_VERSION='2.14' GRADLE_PLUGIN_VERSION='2.1.0'
+    - GRADLE_VERSION='2.14' GRADLE_PLUGIN_VERSION='2.0.0'
+    - GRADLE_VERSION='2.2.1' GRADLE_PLUGIN_VERSION='1.5.0'
+    - GRADLE_VERSION='2.2.1' GRADLE_PLUGIN_VERSION='1.3.1'
+    - GRADLE_VERSION='2.2.1' GRADLE_PLUGIN_VERSION='1.3.0'
+
+    #- GRADLE_VERSION='2.9' GRADLE_PLUGIN_VERSION='1.3.1'
+    #- GRADLE_VERSION='2.4' GRADLE_PLUGIN_VERSION='1.3.1'
+    #- GRADLE_VERSION='2.6' GRADLE_PLUGIN_VERSION='1.3.1'
+    #- GRADLE_VERSION='2.8' GRADLE_PLUGIN_VERSION='1.3.1'
+
+    #- GRADLE_VERSION='2.14.1' GRADLE_PLUGIN_VERSION='2.1.3'
+    #- GRADLE_VERSION='2.10' GRADLE_PLUGIN_VERSION='2.0.0'
+    #- GRADLE_VERSION='2.11' GRADLE_PLUGIN_VERSION='2.0.0'
+    #- GRADLE_VERSION='2.12' GRADLE_PLUGIN_VERSION='2.0.0'
+    #- GRADLE_VERSION='2.13' GRADLE_PLUGIN_VERSION='2.0.0'
+    #
+    #- GRADLE_VERSION='2.11' GRADLE_PLUGIN_VERSION='2.1.2'
+    #- GRADLE_VERSION='2.12' GRADLE_PLUGIN_VERSION='2.1.2'
+    #- GRADLE_VERSION='2.13' GRADLE_PLUGIN_VERSION='2.1.2'
 
 sudo: required
 
-# fun fact, travis doesn't really support multiple AVDs running currently for a single build (tried it, build timed out constantly while starting up the AVDs)
-# thus we're using a build matrix (which makes more sense anyhow)
-env:
-    global:
-    #minutes (2 minutes by default), prevents CommandShellUnresponsiveExceptions
-    #- ADB_INSTALL_TIMEOUT=14
 
 before_script:
+ - sudo apt-get install gnupg2
+ - sudo apt-get install rng-tools gnupg-agent pinentry-curses
+ #- sudo echo EXTRAOPTIONS=\"-r /dev/random\" >> /etc/conf.d/rngd
+ - export RNGD_OPTS="-o /dev/random -r /dev/urandom"
+ #- sudo mknod /dev/hwrng c 10 183
+ #- ls /dev | grep hwrng
+ #- sudo rngd -f
+ #- sudo service rngd start
+ #setup gpg first
+ - which gpg
+ - gpg --version
+ - gpg --help
+ #generate a bonus gpg key for signing
+ - gpg --verbose --batch --gen-key ci/gpginput.txt &
+ - gpg --list-keys
+ #set the location of gpg in our gradle.properties file
+ - echo GPG_PATH=$(which gpg) >> gradle.properties
+ - echo GPG_PASSPHRASE=abc >> gradle.properties
+ - chmod 755 ci/*.sh
 
 #build
 script:
+
+  #setup the username/passwords for nexus defaults
+  - ci/configure.sh
+
   #build using gradle
   - ./gradlew -version
   - ./gradlew clean install -Pprofile=sources,javadoc
   #verify publish
-  - chmod 755 verify.sh
-  - ./verify.sh
+  - ci/verify.sh
 
   # ok let's blow up the local maven repo
   - rm -rf ~/.m2/
   # build again with signatures, then verify the signatures
   - ./gradlew clean
   - ./gradlew install -Pprofile=sources,javadoc
-  - chmod 755 verify.sh
-  - ./verify.sh
-  #- wget http://download.sonatype.com/nexus/oss/nexus-2.13.0-01-bundle.zip
-  #- unzip nexus-2.13.0-01-bundle.zip
-  #- cd nexus-2.13.0-01-bundle/nexus-2.13.0-01/bin
-  #- chmod 755 nexus
-  #- nexus &
-  #- cd ..
-  #- cd ..
-  #- cd ..
+  - ci/verify.sh
 
-  #- ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign
-  #- chmod 755 verifySignatures.sh
-  #- ./verifySignatures.sh
+
+
+  #setup nexus, should this be moved to before script?
+  - wget http://download.sonatype.com/nexus/oss/nexus-2.13.0-01-bundle.zip
+  - unzip nexus-2.13.0-01-bundle.zip
+  - cd nexus-2.13.0-01/bin
+  - pwd
+  - chmod 755 nexus
+  - ./nexus start &
+  - pwd
+  - cd ..
+  - cd ..
+  - pwd
+  -
+
+  # wait for nexus
+  - ci//waitForNexus.sh
+  # build with signatures and publish
+  - ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign -i
+  # verify correctness
+  - ci/verifySignatures.sh
+
+  #stop nexus
+  - cd nexus-2.13.0-01/bin
+  - ./nexus stop
 

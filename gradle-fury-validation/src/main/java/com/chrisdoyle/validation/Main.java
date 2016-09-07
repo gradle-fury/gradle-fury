@@ -249,6 +249,9 @@ public class Main {
         cwdDir = cwd.getAbsolutePath();
         init(cwd);
 
+        System.out.println("using " + gpg );
+        System.out.println("using " + version );
+
         //this part does some basic string replacements for home dir, versioning etc
         String homeDir = System.getProperty("user.home");
         for (int i=0; i < allArtifacts.length; i++){
