@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.chrisdoyle.it.gradleconsumer"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:23.+'
+    //note, the following line is updated by the gradle-fury ci scripts to have the correct
+    //version information applied, if you change it, also change the ci scripts
+    compile "com.chrisdoyle:hello-world-aar:${project.property('TIME.HACKER.VERSION')}:debug@aar"
+    //we HAVE to add this because gradle with AAR usage is stupid and can't resolve dependencies
+    //of AARs, even if we set transitive=true on the aar.
+    compile "com.chrisdoyle:hello-world-lib:${project.property('TIME.HACKER.VERSION')}"
+}

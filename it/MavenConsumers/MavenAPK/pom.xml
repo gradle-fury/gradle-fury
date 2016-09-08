@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.chrisdoyle</groupId>
+        <artifactId>MavenConsumers</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>MavenAPK</artifactId>
+    <packaging>apk
+    </packaging>
+    <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- at test time this will be overridden with snapshot version -->
+        <it-plugin.version>4.4.1</it-plugin.version>
+    </properties>
+    <dependencies>
+        <dependency>
+                <groupId>android</groupId>
+                <artifactId>android</artifactId>
+                <version>[(5,)</version>
+                <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.chrisdoyle</groupId>
+            <artifactId>hello-world-aar</artifactId>
+            <version>1.0.9-SNAPSHOT</version>
+            <scope>compile</scope>
+            <classifier>release</classifier>
+            <type>aar</type>
+        </dependency>
+        <!-- note the lack of a reference to hello-world-lib
+            because maven has matter within it's skull cap and is capable of resolving
+            transitive dependencies with aar's.
+        -->
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.simpligility.maven.plugins</groupId>
+
+                    <artifactId>android-maven-plugin</artifactId>
+                    <version>${it-plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.simpligility.maven.plugins</groupId>
+
+                <artifactId>android-maven-plugin</artifactId>
+                <configuration>
+                    <sdk>
+                        <platform>23</platform>
+                        <buildTools>23.0.3</buildTools>
+                    </sdk>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

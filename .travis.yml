@@ -67,6 +67,19 @@ before_script:
  - echo GPG_PASSPHRASE=abc >> gradle.properties
  - chmod 755 ci/*.sh
 
+ #setup the maven android sdk stuff
+ #- mkdir temp
+ #- cd temp
+ #- git clone https://github.com/simpligility/maven-android-sdk-deployer
+ #- cd maven-android-sdk-deployer
+ # -q quite, log level to warn
+ # -B batch mode
+ # -fn fail never
+ # -U force repo updates
+ #- mvn clean install -fn -B -U
+ #- cd ..
+ #- cd ..
+
 #build
 script:
 
@@ -111,4 +124,23 @@ script:
   #stop nexus
   - cd nexus-2.13.0-01/bin
   - ./nexus stop
+  - cd ..
+  - cd ..
 
+
+
+  # by this point, we've verified everything gradle related is working
+  # now let's build some it projects to confirm stuff is working and dependencies are resolved
+  - cd it
+  - cd GradleConsumers
+  - ./gradlew build
+  - cd ..
+  - cd MavenConsumers
+  #build using maven with integration tests
+  #we build 3 times due to issues with the maven-android-plugin. root cause is unknown but seems to be related to how artifacts are resolved for android projects
+  #in case you're wondering -fn means fail never, which loosely means, if the build fails, the exit code is always 0, which is basically all CI engines look for.
+
+  #commented out because of maven-android issues on travis, but it does work on my local machine
+  #- mvn install -fn -U
+  #- mvn install -fn -U
+  #- mvn install -U

@@ -14,6 +14,7 @@ apply from: "${rootDir}/gradle/android-support.gradle"
 dependencies {
     compile project(':hello-world-lib')
 
+    // apparently the support-annotations package was compiled with java8, thanks for that
     compile "com.android.support:support-annotations:${project.property('android-support.version')}"
 
     testCompile "junit:junit:${project.property('junit.version')}"
