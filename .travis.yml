@@ -116,6 +116,11 @@ script:
 
   # wait for nexus
   - ci//waitForNexus.sh
+
+  # build with signatures and publish
+  - ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign -i
+  - ci/verifyNoSignatures.sh
+
   # build with signatures and publish
   - ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign -i
   # verify correctness

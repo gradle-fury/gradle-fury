@@ -1,24 +1,11 @@
 package com.chrisdoyle.validation;
 
-import com.chrisdoyle.validation.tests.TestPostPublication;
-import com.chrisdoyle.validation.tests.Test_Issue12;
-import com.chrisdoyle.validation.tests.Test_Issue12Sigs;
-import com.chrisdoyle.validation.tests.Test_Issue22;
-import com.chrisdoyle.validation.tests.Test_Issue25;
-import com.chrisdoyle.validation.tests.Test_Issue27;
-import com.chrisdoyle.validation.tests.Test_Issue31;
-import com.chrisdoyle.validation.tests.Test_Issue38;
-import com.chrisdoyle.validation.tests.Test_Issue46;
-import com.chrisdoyle.validation.tests.Test_Issue51;
-import com.chrisdoyle.validation.tests.Test_Issue59;
-import com.chrisdoyle.validation.tests.Test_Issues_23_27;
+import com.chrisdoyle.validation.tests.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintStream;
 import java.util.Properties;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -63,12 +50,22 @@ public class Main {
     /**
      * run these tests after
      * 'gradlew install -Pprofile=sources,javadoc'
-     * 'gradlew publish -Pprofile=sources,javadoc,sign'
+     * 'gradlew publishArtifacts -Pprofile=sources,javadoc,sign'
      *
      */
     static final Class[] signatureTests = new Class[]{
             Test_Issue12Sigs.class,
             TestPostPublication.class,
+    };
+
+    /**
+     * run these tests after
+     * 'gradlew install -Pprofile=sources,javadoc'
+     * 'gradlew publishArtifacts -Pprofile=sources,javadoc'
+     *
+     */
+    static final Class[] noSignatureTests = new Class[]{
+            TestPostPublicationNoSig.class,
     };
 
 
@@ -276,7 +273,8 @@ public class Main {
         // create Options object
         Options options = new Options();
 
-        options.addOption("withSig", false, "Also run the gpg signature tests");
+        options.addOption("publishWithSig", false, "Also run tests against nexus with gpg signatures");
+        options.addOption("publishWithNoSig", false, "Also run tests against nexus without signatures");
         options.addOption("help", false, "Help");
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse( options, args);
@@ -287,7 +285,7 @@ public class Main {
             return;
         }
 
-        if (cmd.hasOption("withSig")){
+        if (cmd.hasOption("publishWithSig")){
             classesToRun = new Class[normalTests.length + signatureTests.length];
             int index=0;
             for (int i=0; i < normalTests.length; i++){
@@ -299,6 +297,17 @@ public class Main {
                 index++;
             }
 
+        } else if (cmd.hasOption("publishWithNoSig")){
+            classesToRun = new Class[normalTests.length + noSignatureTests.length];
+            int index=0;
+            for (int i=0; i < normalTests.length; i++){
+                classesToRun[index] = normalTests[i];
+                index++;
+            }
+            for (int i=0; i < noSignatureTests.length; i++){
+                classesToRun[index] = noSignatureTests[i];
+                index++;
+            }
         } else {
             classesToRun = normalTests;
         }
