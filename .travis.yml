@@ -64,9 +64,7 @@ before_script:
  #generate a bonus gpg key for signing
  - gpg --verbose --batch --gen-key ci/gpginput.txt &
  - gpg --list-keys
- #set the location of gpg in our gradle.properties file
- - echo GPG_PATH=$(which gpg) >> gradle.properties
- - echo GPG_PASSPHRASE=abc >> gradle.properties
+
  - chmod 755 ci/*.sh
 
  #setup the maven android sdk stuff
