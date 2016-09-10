@@ -15,6 +15,15 @@ Purpose
 An alternative Gradle helper to publish multi-flavored Android artifacts to local and remote Maven
 repositories with pretty POM files using simple property configuration.
 
+Why use Gradle-Fury
+-------------------
+
+Great question, with a sea of many maven publisher helpers (this along should raise a red flag that
+something is wrong) what stands gradle-fury apart?
+
+Check out [the wiki](https://github.com/chrisdoyle/gradle-fury/wiki) for the most update to date set
+of features. It's always growing and it's easier to update the wiki.
+
 Build Status
 ------------
 
@@ -25,7 +34,7 @@ Requirements
 ------------
 
 * Gradle 2+
-* For Android suport, gradle android plugin v1.5 or higher
+* For Android support, gradle android plugin v1.3.0 or higher, we test using a variety of configurations. See the [Travis build matrix](https://github.com/chrisdoyle/gradle-fury/blob/develop/.travis.yml)
 * For digital signature support, GPG must be installed on your computer. We test with gnugpg.
 
 Usage
@@ -312,6 +321,52 @@ $ ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign
 ```bash
 $ ./gradlew clean publish -Pprofile=sources,javadoc,sign
 ```
+
+
+## Encryption
+
+We searched high and low for an encrypted password capable maven helper and we couldn't find one.
+
+So thanks for that. I have no problem storing my password in clear text nor sending my private gpg keys
+to jcenter/bintray.
+
+Wait a sec, that makes no sense at all.
+
+### Make a master key
+```bash
+./gradlew generateMasterKey
+```
+
+The key is stored in `USER_HOME/.gradle/fury.properties`. Nuke that if there's an unexpected knock on the door.
+
+### Encrypt a password
+```bash
+./gradlew encryptPassword -PstoreField=xyz
+```
+
+Where 'xyz' is one of the supported password Java properties keys that we use. They are (subject to change)
+ - NEXUS_PASSWORD
+ - signing.passPhrase
+ - GPG_PASSPHRASE
+ - android.signingConfigs.release.storePassword
+ - android.signingConfigs.release.keyPassword
+
+The encrypted password is then merged and written to 'local.properties' and picked up later in the build process.
+
+You can also run the following...
+
+#### Encrypt without user interaction
+```bash
+./gradlew encryptPassword -PstoreField=NEXUS_PASSWORD -Ppassword=secret
+```
+
+#### DIY approach
+```bash
+./gradlew encryptPassword
+```
+
+Then you'll have to manually edit local.properties to insert your cipher text.
+
 
 ## Gradle to Maven Scope Mappings
 

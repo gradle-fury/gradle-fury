@@ -85,6 +85,9 @@ script:
 
   #setup the username/passwords for nexus defaults
   - ci/configure.sh
+  - ./gradlew generateMasterKey
+  - ./gradlew encryptPassword -Ppassword=admin123 -PstoreField=NEXUS_PASSWORD
+  - ./gradlew encryptPassword -Ppassword=abc -PstoreField=GPG_PASSPHRASE
 
   #build using gradle
   - ./gradlew -version

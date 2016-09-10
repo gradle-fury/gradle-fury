@@ -1,0 +1,211 @@
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
+import java.security.*;
+import javax.crypto.*;
+import javax.crypto.spec.*;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import groovy.swing.SwingBuilder;
+
+/**=================================================================================================
+ * Common Gradle script encryption support
+ *
+ * @author Alex O'Ree
+ =================================================================================================*/
+
+
+// Issue 67 support password encryption,decryption
+
+task generateMasterKey << {
+
+    String users_home = System.getProperty("user.home");
+    users_home = users_home.replace("\\", "/"); // to support all platforms.
+    users_home = users_home + "/.gradle/";
+    System.out.println("User home dir is " + users_home);
+    File gradlehome = new File(users_home);
+    if (! gradlehome.exists()){
+        gradlehome.mkdirs();
+    }
+
+    //check for existing master key
+    File keys = new File(gradlehome.getAbsolutePath() + "/fury-keys.properties");
+
+    Properties properties = new Properties()
+    if (keys.exists()){
+        properties.load(new FileInputStream(keys));
+    }
+    if (properties.containsKey("FURY_MASTER_PASSWORD")){
+        throw new Exception("Master key already exists! If you overwrite it, all previously encrypted passwords will not be usable")
+    }
+
+    int keysize=256;
+    KeyGenerator kgen;
+    String masterKey=null;
+    boolean success=false;
+    try {
+        kgen = KeyGenerator.getInstance("AES");
+        kgen.init(keysize);
+        SecretKey skey = kgen.generateKey();
+        byte[] raw = skey.getEncoded();
+        masterKey = asHex(raw);
+        System.out.println("Master Key (AES256) generated\n" +
+                "FURY_MASTER_PASSWORD=" + masterKey);
+        success=true;
+    }catch (Exception ex){
+        logger.info("Error generating 256bit key", ex);
+    }
+    if (!success) {
+        keysize = 128;
+        try {
+            kgen = KeyGenerator.getInstance("AES");
+            kgen.init(keysize);
+            SecretKey skey = kgen.generateKey();
+            byte[] raw = skey.getEncoded();
+            masterKey = asHex(raw);
+            System.out.println("Master Key (AES128) generated\n" +
+                    "FURY_MASTER_PASSWORD=" + masterKey);
+            System.out.println("I couldn't do AES256, you probably need to install the Java JCE, good luck!");
+        } catch (Exception ex) {
+            logger.warn("Error generating 128bit key", ex);
+        }
+    }
+    if (success) {
+        properties.setProperty("FURY_MASTER_PASSWORD", masterKey);
+        properties.store(new FileOutputStream(keys), "");
+    } else {
+        throw new Exception("failed to generate a master key, run again with -i for more information")
+    }
+}
+
+/**
+ * mvn --encrypt-password
+ */
+task encryptPassword << {
+
+    System.out.println("== Gradle Fury: ProTip: add '-PstoreField=xyz' to automatically write the cipher text to 'local.properties' as" +
+            " xyz={cipher text}");
+    System.out.println("== Gradle Fury: ProTip: add '-Ppassword=xyz' to use xyz as the text to encrypt instead of prompting");
+    String key=loadKey();
+    String password_input="";
+    if (key==null || key.length()==0){
+        throw new Exception("You must run 'gradlew generateMasterKey to create a master key first!")
+    }
+    def console = System.console()
+
+    String cipher;
+    if (project.hasProperty('password')){
+        password_input = password;
+    } else {
+        //need to ask for it
+        if (console) {
+            password_input = console.readPassword('> Enter Password: ')
+        } else {
+            new SwingBuilder().edt {
+                dialog(modal: true, title: 'Enter password_input', alwaysOnTop: true, resizable: false, locationRelativeTo: null, pack: true, show: true) {
+                    vbox { // Put everything below each other
+                        label(text: "Please enter password_input:")
+                        def input1 = passwordField()
+                        button(defaultButton: true, text: 'OK', actionPerformed: {
+                            password_input = new String(input1.getPassword());
+                            //getPassword doesn't return a string
+                            dispose();
+                        })
+                    }
+                }
+            }
+        }
+    }
+    cipher = encrypt(password_input, key);
+    System.out.println("Cipher Text is\n\t {" + cipher + "}");
+
+    if (project.hasProperty('storeField')) {
+        Properties p = new Properties();
+        File localProps = new File("local.properties");
+        if (localProps.exists()) {
+        p.load(new FileInputStream("local.properties"));
+        }
+        p.setProperty(storeField, "{"+cipher+"}");
+        p.store(new FileOutputStream("local.properties"),"");
+        System.out.println("Cipher text stored to local.properties");
+
+    }
+}
+
+def asHex(byte[] buf) {
+
+    //return new String(buf);
+    StringBuilder strbuf = new StringBuilder(buf.length * 2);
+    int i;
+
+    for (i = 0; i < buf.length; i++) {
+        if (((int) buf[i] & 0xff) < 0x10) {
+            strbuf.append("0");
+        }
+
+        strbuf.append(Long.toString((int) buf[i] & 0xff, 16));
+    }
+
+    return strbuf.toString();
+}
+
+
+def  hexToBytes(String s) {
+    //return s.getBytes();
+    return hexToBytes(s.toCharArray());
+}
+
+def loadKey(){
+    String users_home = System.getProperty("user.home");
+    users_home = users_home.replace("\\", "/"); // to support all platforms.
+    users_home = users_home + "/.gradle/";
+    System.out.println("User home dir is " + users_home);
+    File gradlehome = new File(users_home);
+    //check for existing master key
+    File keys = new File(gradlehome.getAbsolutePath() + "/fury-keys.properties");
+
+    if (keys.exists()){
+        Properties properties = new Properties()
+        properties.load(keys.newDataInputStream())
+        if (properties.containsKey("FURY_MASTER_PASSWORD"))
+            return properties.getProperty("FURY_MASTER_PASSWORD");
+
+    }
+
+    //defined in the project gradle.properties file
+    if (hasProperty('FURY_MASTER_PASSWORD')){
+        return FURY_MASTER_PASSWORD
+    }
+
+    return "";
+}
+
+def encrypt(String clearText, String key){
+    byte[] raw = hexToBytes(key); //
+    SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+    // Instantiate the cipher
+    Cipher cipher = Cipher.getInstance("AES");
+    cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+    byte[] encrypted = cipher.doFinal(clearText.getBytes());
+    return asHex(encrypted);
+}
+
+
+
+def  hexToBytes(char[] hex) {
+    int length = hex.length / 2;
+    byte[] raw = new byte[length];
+    for (int i = 0; i < length; i++) {
+        int high = Character.digit(hex[i * 2], 16);
+        int low = Character.digit(hex[i * 2 + 1], 16);
+        int value = (high << 4) | low;
+        if (value > 127) {
+            value -= 256;
+        }
+        raw[i] = (byte) value;
+    }
+    return raw;
+}

@@ -56,3 +56,5 @@ subprojects {
     // (thanks, @spyhunter99!)
     task allDeps(type: DependencyReportTask) {}
 }
+
+apply from: "${rootDir}/gradle/encryption.gradle"

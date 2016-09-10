@@ -1,5 +1,7 @@
 
 
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
 import java.lang.reflect.Method
 import java.security.MessageDigest
 
@@ -19,7 +21,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 
-// Maven Repository (i.e. Sonatype Nexus RepositorypassPhrase Manager) Configuration -------------------------
+// Maven Repository (i.e. Sonatype Nexus Repository Manager) Configuration -------------------------
 
 ext.isReleaseBuild = (!project.version.equals("unspecified") &&
         project.version.contains("SNAPSHOT") == false)
@@ -49,6 +51,27 @@ def furyHasTask(TaskExecutionGraph graph, String task){
 
 }
 
+
+
+
+// another hack, import local.properties into the current context
+// used for crypto settings
+File local = new File("$rootDir/local.properties");
+if (local.exists()){
+
+    Properties properties = new Properties();
+    properties.load(local.newDataInputStream());
+    def iterator = properties.entrySet().iterator();
+    while (iterator.hasNext()){
+
+        def next = iterator.next();
+        ext.set(next.getKey(), next.value);
+    }
+
+}
+
+
+
 ext.gpgPath = (
         hasProperty('GPG_PATH')
                 ? GPG_PATH
@@ -67,6 +90,10 @@ ext.gpgPassphrase = (
                 ? project.property("signing.passPhrase")
                 : ""
 );
+
+if (mightBeEncrypted(ext.gpgPassphrase)){
+    ext.gpgPassphrase=tryDecrypt(ext.gpgPassphrase);
+}
 
 ext.gpgisInteractive = (
         hasProperty('signing.isInteractive')
@@ -114,6 +141,7 @@ ext.gpgPublicKeyring  = (
                 : ""
 );
 
+
 // default to Maven Central if not provided
 ext.releaseRepositoryUrl = (
         hasProperty('RELEASE_REPOSITORY_URL')
@@ -132,6 +160,25 @@ ext.targetRepositoryUrl = ( isReleaseBuild ? releaseRepositoryUrl : snapshotRepo
 
 ext.nexusUsername = ( hasProperty('NEXUS_USERNAME') ? NEXUS_USERNAME : "" )
 ext.nexusPassword = ( hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : "" )
+
+if (mightBeEncrypted(ext.nexusPassword)){
+    ext.nexusPassword=tryDecrypt(ext.nexusPassword);
+}
+
+if (hasProperty("android.signingConfigs.release.storePassword")){
+    try {
+        if (mightBeEncrypted(project.property("android.signingConfigs.release.storePassword"))) {
+            project.setProperty("android.signingConfigs.release.storePassword", tryDecrypt(project.property("android.signingConfigs.release.storePassword")))
+        }
+    }catch (Exception ex){}
+}
+if (hasProperty("android.signingConfigs.release.keyPassword")){
+    try{
+    if (mightBeEncrypted(project.property("android.signingConfigs.release.keyPassword"))){
+        project.setProperty("android.signingConfigs.release.keyPassword", tryDecrypt(project.property("android.signingConfigs.release.keyPassword")))
+    }
+    }catch (Exception ex){}
+}
 
 
 // Maven POM Properties ----------------------------------------------------------------------------
@@ -354,9 +401,11 @@ afterEvaluate { project ->
         project.ext.set("ciProfileEnabled", project.ext.profiles.contains("ci"));
 
         project.ext.set("javadocProfileEnabled", project.ext.profiles.contains("javadoc")
+                || project.ext.profiles.contains("javadocs") //for typos
                 || project.ciProfileEnabled);
 
         project.ext.set("sourcesProfileEnabled", project.ext.profiles.contains("sources")
+                || project.ext.profiles.contains("source")  //for typos
                 || project.ciProfileEnabled);
 
         project.ext.set("sign", project.ext.profiles.contains("sign"));
@@ -1616,3 +1665,92 @@ def uploadFile(File input, String urlDestination, String contentType){
 
 build.finalizedBy(signArtifacts)
 publishArtifacts.mustRunAfter(signArtifacts)
+
+
+
+// crypto support
+
+
+def  hexToBytes(String s) {
+    //return s.getBytes();
+    return hexToBytes(s.toCharArray());
+}
+
+/**
+ * gets the master key
+ * @return
+ */
+def loadKey(){
+    String users_home = System.getProperty("user.home");
+    users_home = users_home.replace("\\", "/"); // to support all platforms.
+    users_home = users_home + "/.gradle/";
+    System.out.println("User home dir is " + users_home);
+    File gradlehome = new File(users_home);
+    //check for existing master key
+    File keys = new File(gradlehome.getAbsolutePath() + "/fury-keys.properties");
+
+    if (keys.exists()){
+        //defined in rooDir/local.properties file
+        Properties properties = new Properties()
+
+            properties.load(keys.newDataInputStream())
+            if (properties.containsKey("FURY_MASTER_PASSWORD"))
+                return properties.getProperty("FURY_MASTER_PASSWORD");
+    }
+    //defined in the project gradle.properties file
+    if (hasProperty('FURY_MASTER_PASSWORD')){
+        return FURY_MASTER_PASSWORD
+    }
+
+    return "";
+}
+
+
+
+
+def tryDecrypt(String ciphertext){
+    //we're using {cipher} so trim off the first and last char
+    String textToDecrypt = ciphertext.substring(1, ciphertext.length()-1);
+    try {
+        String text= decrypt(textToDecrypt, loadKey());
+        return text;
+    }catch (Exception ex){
+        logger.warn("Descryption failure - input text was not encrypted or encrypted with a different key," , ex)
+        throw ex;
+    }
+    return ciphertext
+}
+
+def decrypt(String ciphertext, String key){
+    byte[] raw = hexToBytes(key); //
+    SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+    Cipher cipher = Cipher.getInstance("AES");
+    cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+    byte[] original = cipher.doFinal(hexToBytes(ciphertext));
+    return new String(original);
+}
+
+def  hexToBytes(char[] hex) {
+    int length = hex.length / 2;
+    byte[] raw = new byte[length];
+    for (int i = 0; i < length; i++) {
+        int high = Character.digit(hex[i * 2], 16);
+        int low = Character.digit(hex[i * 2 + 1], 16);
+        int value = (high << 4) | low;
+        if (value > 127) {
+            value -= 256;
+        }
+        raw[i] = (byte) value;
+    }
+    return raw;
+}
+
+def mightBeEncrypted(String text){
+    if (text==null)
+        return false;
+    if (text.length()==null)
+        return false;
+    if (text.startsWith("{") && text.endsWith("}"))
+        return true;
+    return false;
+}
