@@ -411,6 +411,11 @@ public class Main {
         }
         Properties p = new Properties();
         p.load(new FileInputStream(prop));
+
+        prop = new File(cwd.getAbsolutePath() + File.separator + "local.properties");
+        if (prop.exists()){
+            p.load(new FileInputStream(prop));
+        }
         if (p.containsKey("GPG_PATH"))
             gpg = p.getProperty("GPG_PATH");
         version = p.getProperty("pom.version");

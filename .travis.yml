@@ -121,11 +121,11 @@ script:
   - ci//waitForNexus.sh
 
   # build with signatures and publish
-  - ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign -i
+  - ./gradlew publishArtifacts -Pprofile=sources,javadoc
   - ci/verifyNoSignatures.sh
 
   # build with signatures and publish
-  - ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign -i
+  - ./gradlew publishArtifacts -Pprofile=sources,javadoc
   # verify correctness
   - ci/verifySignatures.sh
 

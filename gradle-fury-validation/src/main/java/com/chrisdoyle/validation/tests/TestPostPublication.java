@@ -32,6 +32,7 @@ public class TestPostPublication {
 
 
         List<String> expectedModules = getModules();    //from file system
+        expectedModules.remove("hello-gradhell");
         //TODO recursive iteration
 
         List<String> remoteModulesUrls;

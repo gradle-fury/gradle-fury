@@ -1,0 +1,18 @@
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: This project should never publish'
+
+apply plugin: 'java'
+
+compileJava {
+    sourceCompatibility = "${project.property('compileJava.sourceCompatibility')}"
+    targetCompatibility = "${project.property('compileJava.targetCompatibility')}"
+}
+
+dependencies {
+    compile "org.apache.commons:commons-lang3:${project.property('commons-lang3.version')}"
+
+    testCompile "junit:junit:${project.property('junit.version')}"
+}
+
+//don't publish this bugger of a project to nexus when using 'publishArtifacts'
+//it will, however, publish to mavenLocal
+ext.skipPublish=true

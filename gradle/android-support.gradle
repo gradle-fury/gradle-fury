@@ -50,15 +50,16 @@ afterEvaluate { project ->
 
         println "== Gradle Fury, bringing maven sensibility to gradle. It's NOT an incubating feature.";
         println "== Gradle Fury: ProTip: Use 'gradle.properties' to set all your version and pom related information.";
-        if (isAndroidProject || isAndroidApplication){
-            println "== Gradle Fury: ProTip: Use 'gradle install' to publish to mavenLocal, works with AARs and APKs, even with variants";
-        }
-        println "== Gradle Fury: ProTip: Use 'gradle publish' to publish to a nexus repository, works with AARs and APKs, even with variants";
-        println "== Gradle Fury: ProTip: Use 'gradle -Pprofile=javadoc' to generate javadocs (android included, even with variants";
-        println "== Gradle Fury: ProTip: Use 'gradle -Pprofile=sources' to generate source jars (android included, even with variants";
-        println "== Gradle Fury: ProTip: Use 'gradle -Pprofile=javadoc,sources' to generate javadocs and source jars (android included, even with variants";
+        println "== Gradle Fury: ProTip: Use 'gradle install' to publish to mavenLocal, works with AARs and APKs, even with variants";
+        println "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=javadoc' to generate javadocs (android included, even with variants";
+        println "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=sources' to generate source jars (android included, even with variants";
+        println "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=javadoc,sources' to generate javadocs and source jars (android included, even with variants";
         println "== Gradle Fury: ProTip: For Android projects, apply gradle fury BEFORE the android{} block in your gradle.build file.";
-        println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues"
+        println "== Gradle Fury: ProTip: Use 'gradle publishArtifacts' to publish to a nexus repository, works with AARs and APKs, even with variants";
+        println "== Gradle Fury: ProTip: Use 'gradle publishArtifacts -Pprofile=javadoc,source' to publish to a nexus repository with javadocs and sources";
+        println "== Gradle Fury: ProTip: Use 'gradle generateMasterKey' to make an encryption key";
+        println "== Gradle Fury: ProTip: Use 'gradle encryptPassword -PstoreField=NEXUS_PASSWORD' to encrypt your nexus password";
+        println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues, also see the wiki for more info"
     }
 
 

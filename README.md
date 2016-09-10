@@ -313,13 +313,13 @@ for no apparent reason and we can't find a way to sign those before uploading.
 ```bash
 $ ./gradlew clean
 $ ./gradlew install -Pprofile=sources,javadoc
-$ ./gradlew publishArtifacts -Pprofile=sources,javadoc,sign
+$ ./gradlew publishArtifacts -Pprofile=sources,javadoc
 ```
 
 ## Publishing to Nexus like repos without GPG signatures
 
 ```bash
-$ ./gradlew clean publish -Pprofile=sources,javadoc,sign
+$ ./gradlew clean publish -Pprofile=sources,javadoc
 ```
 
 

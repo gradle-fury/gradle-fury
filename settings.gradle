@@ -1,6 +1,8 @@
 rootProject.name = 'gradle-fury'
 
-include ':hello-world-aar', ':hello-world-gmaps'
+include ':hello-world-aar'
+include ':hello-world-gmaps'
+include ':hello-gradhell'
 include ':hello-world-apk'
 include ':hello-world-apk-overrides'
 include ':hello-world-lib'
