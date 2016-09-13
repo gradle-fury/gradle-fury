@@ -120,6 +120,8 @@ script:
   # wait for nexus
   - ci//waitForNexus.sh
 
+  - ./gradlew distZip -Pprofile=sources,javadoc
+
   # build with signatures and publish
   - ./gradlew publishArtifacts -Pprofile=sources,javadoc
   - ci/verifyNoSignatures.sh

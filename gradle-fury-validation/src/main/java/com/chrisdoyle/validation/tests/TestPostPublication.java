@@ -48,6 +48,7 @@ public class TestPostPublication {
         List<String> remoteModules = normalize(remoteModulesUrls,baseUrl);
         Assert.assertTrue("lists were not equal", compare(remoteModules, expectedModules));
 
+        Assert.assertFalse("Remote nexus should not have the hello-gradhell artifacts", remoteModules.contains("hello-gradhell"));
         //ok so we've uploaded the right number of modules as expected...
 
         for (int i=0; i < remoteModulesUrls.size(); i++){

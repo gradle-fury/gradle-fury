@@ -82,6 +82,17 @@ public class Main {
             "./hello-world-aar/build/libs/hello-world-aar-$version-release-sources.jar" ,
             "./hello-world-aar/build/publications/androidArtifacts/pom-default.xml" ,
 
+
+
+            "./hello-world-gmaps/build/outputs/apk/hello-world-gmaps-$version-debug.apk" ,
+            "./hello-world-gmaps/build/outputs/apk/hello-world-gmaps-$version-release.apk" ,
+            "./hello-world-gmaps/build/libs/hello-world-gmaps-$version-debug-javadoc.jar" ,
+            "./hello-world-gmaps/build/libs/hello-world-gmaps-$version-debug-sources.jar" ,
+            "./hello-world-gmaps/build/libs/hello-world-gmaps-$version-release-javadoc.jar" ,
+            "./hello-world-gmaps/build/libs/hello-world-gmaps-$version-release-sources.jar" ,
+            "./hello-world-gmaps/build/publications/androidArtifacts/pom-default.xml" ,
+
+
             "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-barDebug.apk" ,
             "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-barRelease.apk" ,
             "./hello-world-apk/build/outputs/apk/hello-world-apk-$version-bazDebug.apk" ,
@@ -136,14 +147,19 @@ public class Main {
             "./hello-world-lib/build/libs/hello-world-lib-$version-javadoc.jar" ,
             "./hello-world-lib/build/libs/hello-world-lib-$version-sources.jar" ,
             "./hello-world-lib/build/publications/javaArtifacts/pom-default.xml" ,
+            "./gradle-fury-validation/build/libs/gradle-fury-validation-$version.jar" ,
+            "./gradle-fury-validation/build/libs/gradle-fury-validation-$version-javadoc.jar" ,
+            "./gradle-fury-validation/build/libs/gradle-fury-validation-$version-sources.jar" ,
+            "./gradle-fury-validation/build/distributions/gradle-fury-validation-$version.zip" ,
+            "./gradle-fury-validation/build/publications/javaArtifacts/pom-default.xml" ,
 
 
-            /*
-            "./hello-world-universe/build/libs/hello-universe-lib-$version.jar" ,
-            "./hello-world-universe/build/libs/hello-universe-lib-$version-javadoc.jar" ,
-            "./hello-world-universe/build/libs/hello-universe-lib-$version-sources.jar" ,
-            "./hello-world-universe/build/publications/javaArtifacts/pom-default.xml" ,
-*/
+
+            "./hello-universe-lib/build/libs/hello-universe-lib-$version.jar" ,
+            "./hello-universe-lib/build/libs/hello-universe-lib-$version-javadoc.jar" ,
+            "./hello-universe-lib/build/libs/hello-universe-lib-$version-sources.jar" ,
+            "./hello-universe-lib/build/publications/javaArtifacts/pom-default.xml" ,
+
 
             "./hello-world-war/build/libs/hello-world-war-$version.war" ,
             "./hello-world-war/build/libs/hello-world-war-$version-javadoc.jar" ,
@@ -160,16 +176,26 @@ public class Main {
             "~/.m2/repository/com/chrisdoyle/hello-world-aar/$version/hello-world-aar-$version-debug-javadoc.jar",
             "~/.m2/repository/com/chrisdoyle/hello-world-aar/$version/hello-world-aar-$version.pom",
 
+            //gradhell is also published locally, but shouldn't be, ignoring for now
+
             "~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version.jar",
             "~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version-sources.jar",
             "~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version-javadoc.jar",
             "~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version.pom",
 
-          /*  "~/.m2/repository/com/chrisdoyle/hello-univers-lib/$version/hello-univers-lib-$version.jar",
-            "~/.m2/repository/com/chrisdoyle/hello-univers-lib/$version/hello-univers-lib-$version-sources.jar",
-            "~/.m2/repository/com/chrisdoyle/hello-univers-lib/$version/hello-univers-lib-$version-javadoc.jar",
-            "~/.m2/repository/com/chrisdoyle/hello-univers-lib/$version/hello-univers-lib-$version.pom",
-*/
+            "~/.m2/repository/com/chrisdoyle/gradle-fury-validation/$version/gradle-fury-validation-$version.jar",
+            "~/.m2/repository/com/chrisdoyle/gradle-fury-validation/$version/gradle-fury-validation-$version-sources.jar",
+            "~/.m2/repository/com/chrisdoyle/gradle-fury-validation/$version/gradle-fury-validation-$version-javadoc.jar",
+            "~/.m2/repository/com/chrisdoyle/gradle-fury-validation/$version/gradle-fury-validation-$version.pom",
+            //broke for local publishing
+            //"~/.m2/repository/com/chrisdoyle/gradle-fury-validation/$version/gradle-fury-validation-$version.zip",
+
+            "~/.m2/repository/com/chrisdoyle/hello-universe-lib/$version/hello-universe-lib-$version.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-universe-lib/$version/hello-universe-lib-$version-sources.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-universe-lib/$version/hello-universe-lib-$version-javadoc.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-universe-lib/$version/hello-universe-lib-$version.pom",
+
+            //TODO there should be a hello-world-dist too but it's broken for local publishing
 
             "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version.war",
             "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version-sources.jar",
@@ -206,8 +232,11 @@ public class Main {
      */
     public final static String[] allPoms = new String[]{
             "~/.m2/repository/com/chrisdoyle/hello-world-aar/$version/hello-world-aar-$version.pom",
+            "~/.m2/repository/com/chrisdoyle/gradle-fury-validation/$version/gradle-fury-validation-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version.pom",
-           // "~/.m2/repository/com/chrisdoyle/hello-universe-lib/$version/hello-universe-lib-$version.pom",
+            //broken with local publishing
+            // "~/.m2/repository/com/chrisdoyle/hello-world-dist/$version/hello-world-dist-$version.pom",
+            "~/.m2/repository/com/chrisdoyle/hello-universe-lib/$version/hello-universe-lib-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version.pom",

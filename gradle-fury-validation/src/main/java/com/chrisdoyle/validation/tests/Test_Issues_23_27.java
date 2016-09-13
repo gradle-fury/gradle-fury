@@ -25,7 +25,7 @@ public class Test_Issues_23_27 {
             "<developers>",
             "<issueManagement>",
             "<scm>",
-        //    "<repositories>",
+            "<repositories>",
             "<dependencies>",
             "<url>"
 

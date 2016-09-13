@@ -360,6 +360,11 @@ You can also run the following...
 ./gradlew encryptPassword -PstoreField=NEXUS_PASSWORD -Ppassword=secret
 ```
 
+#### Just GPG sign the artifacts
+```bash
+./gradlew signArtifacts -Pprofile=javadoc,sources
+```
+
 #### DIY approach
 ```bash
 ./gradlew encryptPassword

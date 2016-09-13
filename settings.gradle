@@ -1,13 +1,23 @@
 rootProject.name = 'gradle-fury'
 
-include ':hello-world-aar'
-include ':hello-world-gmaps'
+//jars
+include ':hello-world-lib'
 include ':hello-gradhell'
+include ':hello-universe-lib'
+
+//dists
+include ':hello-world-dist'
+
+//aars
+include ':hello-world-aar'
+
+//apks
+include ':hello-world-gmaps'
 include ':hello-world-apk'
 include ':hello-world-apk-overrides'
-include ':hello-world-lib'
+
+//wars
 include ':hello-world-war'
-include ':hello-universe-lib'
 
 //test and validation jar app
 include ':gradle-fury-validation'

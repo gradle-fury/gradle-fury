@@ -1,9 +1,33 @@
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.w3c.dom.CharacterData;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource
+
+import javax.xml.transform.OutputKeys
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult;
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import java.lang.reflect.Method
 import java.security.MessageDigest
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.DOMException;
+
+import java.io.*;
 
 /**=================================================================================================
  * Common Gradle script configuration for Maven tasks.
@@ -202,7 +226,7 @@ def licenses = []
 // parse the license list
 if (hasProperty("pom.licenses.license.0.name")) {
 
-    // parse the roles of each developer
+    // parse the roles of each license
     for (def i = 0; hasProperty("pom.licenses.license.${i}.name"); ++i) {
 
         def license = [
@@ -337,7 +361,9 @@ afterEvaluate { project ->
 
 
     project.ext.isJavaProject = project.plugins.hasPlugin('java');
+    project.ext.isDistribution = project.plugins.hasPlugin('distribution') ||project.plugins.hasPlugin('application');
     project.ext.isWarProject = project.plugins.hasPlugin('war');
+
 
     // FIXME :: @chrisdoyle :: DRY :: these are also defined in android-support.gradle...
     project.ext.isAndroidApplication = project.plugins.hasPlugin("com.android.application");
@@ -902,6 +928,66 @@ project.plugins.withType(MavenPublishPlugin) {
             new org.gradle.api.internal.ClosureBackedAction({
 
                 publications {
+                    if (project.isDistribution){
+                        project.pom.packaging = 'zip'
+
+                        //System.out.println("processing dist zip")
+                        zip(MavenPublication) {
+                            groupId project.group
+                            artifactId project.name
+                            version project.version
+
+                            modifyGeneratedPom(pom)
+
+                            //System.out.println("processing dist zip pom")
+                            def artifactName = project.name + "-" + project.version + "." + project.pom.packaging;
+                            def artifactRoot = "${buildDir}/distributions/"
+
+
+                            //fun fact, gradle does not generate poms for dist only packages. thanks for that.
+                            //here we manually reparse rootDir/gradle.properties for all the pom settings
+                            //then create a pom on the fly and write it to disk
+                            if (project.isDistribution && !project.isJavaProject) {
+                                //System.out.println("processing dist only package generating pom")
+                                createPom("${artifactRoot}", "pom-default.xml")
+                                //the pom
+                                Container c = new Container();
+                                c.buildDir = "${buildDir}";
+                                c.fileName = artifactName;
+                                c.fileNameAndPath = "$buildDir/distributions/pom-default.xml";
+                                c.type = "pom";
+                                project.ext.artifacts.add(c);
+                                logger.debug("Adding " + "$buildDir/distributions/pom-default.xml" + " to artifact list");
+
+                                //needed for local pom publishing
+                                artifact(c.fileNameAndPath) {
+                                    extension 'pom'
+                                }
+
+                            }
+
+                            //primary out
+                            Container c;
+                            c = new Container();
+                            c.buildDir = "${buildDir}";
+                            c.fileName = artifactName;
+                            c.fileNameAndPath = "${artifactRoot}${artifactName}";
+                            c.type = "zip";
+                            project.ext.artifacts.add(c);
+                            logger.debug("Adding " + "${artifactRoot}${artifactName}" + " to artifact list");
+
+
+                            //needed for local publishing
+                            artifact("${artifactRoot}/${artifactName}") {
+                                extension project.pom.packaging
+                            }
+
+
+                        }
+
+
+
+                    }
                     if (project.isWarProject) {
                         project.pom.packaging = 'war'
 
@@ -995,8 +1081,11 @@ project.plugins.withType(MavenPublishPlugin) {
                         }
 
                     } else if (project.isJavaProject) {
+
+                        project.pom.packaging = 'jar'
                         def artifactName = project.name + "-" + project.version + "." + project.pom.packaging;
                         def artifactRoot = "${buildDir}/libs/"
+
                         javaArtifacts(MavenPublication) {
                             from components.java
 
@@ -1568,6 +1657,244 @@ def uploadFile(File input, String urlDestination, String contentType){
 
 //build.finalizedBy(signArtifacts)
 publishArtifacts.mustRunAfter(signArtifacts)
+
+
+def createPom(String outdir, String filename) {
+    System.out.println("Generating pom for distzip")
+    File overrides = new File("${projectDir}/gradle.properties");
+    if (overrides.exists()) {
+        logger.info("${projectDir}/gradle.properties exists, apply overrides");
+        Properties props = new Properties();
+        props.load(new FileInputStream("${projectDir}/gradle.properties"));
+        props.each { prop ->
+            project.ext.set(prop.key, prop.value)
+        }
+    }
+
+    new File(outdir).mkdirs();
+    def custompom = pom {
+
+        project {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            packaging 'zip'
+
+            name = project.getName();
+
+
+            description = project.getDescription();
+            //a description is mandatory for mavenCentral, this injects a placeholder
+            if ("".equals(description)) {
+                description = "A description should be added in the near future, as soon as I hack time.";
+            }
+
+            inceptionYear = project.pom.inceptionYear
+
+        }
+
+
+    }
+    StringWriter sw = new StringWriter();
+    custompom.writeTo(sw);
+    DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    InputSource is = new InputSource();
+    is.setCharacterStream(new StringReader(sw.toString()));
+
+    Document doc = db.parse(is);
+    //now the hard part, construct all the missing bits from the pom, because gradle shitty DSL
+    //only covers the basics when construction a pom. why? who the hell knows. total oversight
+
+    Element root = doc.getDocumentElement();
+
+    //project ulr
+    Element projectUrl = doc.createElement("url");
+    projectUrl.setTextContent(ext.pom.url);
+    root.appendChild(projectUrl);
+
+    //organization
+    Element organization = doc.createElement("organization");
+    Element org_name = doc.createElement("name");
+    org_name.setTextContent(project.pom.organization.name)
+    Element org_url = doc.createElement("url");
+    org_url.setTextContent(project.pom.organization.url)
+    organization.appendChild(org_url)
+    organization.appendChild(org_name)
+    root.appendChild(organization);
+
+    //repositories
+    Element repos = doc.createElement("repositories");
+    project.repositories.each {
+        if (!it.url.toString().startsWith("file:/")) {
+            Element repository = doc.createElement("repository");
+            Element id = doc.createElement("id");
+            id.setTextContent(it.name)
+            Element name = doc.createElement("name");
+            name.setTextContent(it.name);
+            Element url = doc.createElement("url");
+            url.setTextContent(it.url.toString())
+            repository.appendChild(id)
+            repository.appendChild(name)
+            repository.appendChild(url);
+            repos.appendChild(repository)
+        }
+    }
+    root.appendChild(repos);
+
+    //licenses
+    Element licensesNode = doc.createElement("licenses");
+
+// parse the license list
+    if (hasProperty("pom.licenses.license.0.name")) {
+
+        for (def i = 0; hasProperty("pom.licenses.license.${i}.name"); ++i) {
+            Element license = doc.createElement("license");
+            Element licensename = doc.createElement("name");
+            licensename.setTextContent(project.property("pom.licenses.license.${i}.name"))
+
+            Element licenseurl = doc.createElement("url");
+            licenseurl.setTextContent(hasProperty("pom.licenses.license.${i}.url")
+                    ? project.property("pom.licenses.license.${i}.url") : "")
+
+            Element licensedist = doc.createElement("distribution");
+            licensedist.setTextContent(hasProperty("pom.licenses.license.${i}.distribution")
+                    ? project.property("pom.licenses.license.${i}.distribution") : "")
+            if (licensedist.getTextContent()!=null && licensedist.getTextContent().length()>0)
+                license.appendChild(licensedist);
+            if (licensename.getTextContent()!=null && licensename.getTextContent().length()>0)
+                license.appendChild(licensename);
+            if (licenseurl.getTextContent()!=null && licenseurl.getTextContent().length()>0)
+                license.appendChild(licenseurl);
+
+            licensesNode.appendChild(license)
+
+        }
+    }
+
+
+    root.appendChild(licensesNode);
+
+// parse the developer list
+    ////developers
+
+    if (hasProperty("pom.developers.developer.0.id")) {
+
+        Element developersNode = doc.createElement("developers");
+        // parse the roles of each developer
+        for (def i = 0; hasProperty("pom.developers.developer.${i}.id"); ++i) {
+
+            Element dev = doc.createElement("developer")
+
+            if (hasProperty("pom.developers.developer.${i}.role.0")) {
+                Element roles = doc.createElement("roles");
+                for (def j = 0; hasProperty("pom.developers.developer.${i}.role.${j}"); ++j) {
+                    Element role = doc.createElement("role");
+                    role.setTextContent(project.property("pom.developers.developer.${i}.role.${j}"))
+                    roles.appendChild(role);
+                }
+                dev.appendChild(roles)
+            }
+
+
+            Element devid = doc.createElement("id");
+            devid.setTextContent(project.property("pom.developers.developer.${i}.id"))
+            dev.appendChild(devid);
+
+            devid = doc.createElement("name");
+            devid.setTextContent(hasProperty("pom.developers.developer.${i}.name")
+                    ? project.property("pom.developers.developer.${i}.name") : "")
+            dev.appendChild(devid);
+
+            devid = doc.createElement("email");
+            devid.setTextContent(hasProperty("pom.developers.developer.${i}.email")
+                    ? project.property("pom.developers.developer.${i}.email") : "")
+            dev.appendChild(devid);
+
+            devid = doc.createElement("organization");
+            devid.setTextContent(hasProperty("pom.developers.developer.${i}.organization")
+                    ? project.property("pom.developers.developer.${i}.organization") : "")
+            dev.appendChild(devid);
+
+            developersNode.appendChild(dev);
+
+        }
+        root.appendChild(developersNode)
+    }
+
+
+    String tempurl=null;
+
+    Element group = doc.createElement("issueManagement");
+    Element item = doc.createElement("system");
+    item.setTextContent(hasProperty('pom.issueManagement.system') ? project.property('pom.issueManagement.system') : "");
+    group.appendChild(item)
+    item = doc.createElement("url");
+    item.setTextContent(hasProperty('pom.issueManagement.url') ? project.property('pom.issueManagement.url') : "");
+    group.appendChild(item)
+    if (item.getTextContent()!=null && item.getTextContent().length()>0)
+        root.appendChild(group);
+
+
+    group = doc.createElement("ciManagement");
+    item = doc.createElement("system");
+    item.setTextContent(hasProperty('pom.ciManagement.system') ? project.property('pom.ciManagement.system') : "");
+    group.appendChild(item)
+    item = doc.createElement("url");
+    item.setTextContent(hasProperty('pom.ciManagement.url') ? project.property('pom.ciManagement.url') : "");
+    group.appendChild(item)
+    if (item.getTextContent()!=null && item.getTextContent().length()>0)
+        root.appendChild(group);
+
+
+    group = doc.createElement("scm");
+    item = doc.createElement("url");
+    tempurl=hasProperty('pom.scm.url') ? project.property('pom.scm.url') : "";
+    item.setTextContent(hasProperty('pom.scm.url') ? project.property('pom.scm.url') : "");
+    group.appendChild(item)
+    item = doc.createElement("connection");
+    item.setTextContent(hasProperty('pom.scm.connection') ? project.property('pom.scm.connection') : "");
+    group.appendChild(item)
+    item = doc.createElement("developerConnection");
+    item.setTextContent(hasProperty('pom.scm.developerConnection')
+            ? project.property('pom.scm.developerConnection') : "");
+    group.appendChild(item)
+    if (tempurl!=null && tempurl.length()>0)
+        root.appendChild(group);
+
+
+    group = doc.createElement("distributionManagement");
+    Element site = doc.createElement("site");
+    item = doc.createElement("id");
+    item.setTextContent(hasProperty('pom.distributionManagement.site.id')
+            ? project.property('pom.distributionManagement.site.id') : "")
+    site.appendChild(item)
+    item = doc.createElement("url");
+    item.setTextContent(hasProperty('pom.distributionManagement.site.url')
+            ? project.property('pom.distributionManagement.site.url') : "");
+    if (item.getTextContent() != null && item.getTextContent().length() > 0) {
+        site.appendChild(item);
+        group.appendChild(site);
+        root.appendChild(group);
+    }
+
+
+    //finally write out the xml
+    // Use a Transformer for output
+    TransformerFactory tFactory =
+            TransformerFactory.newInstance();
+    tFactory.setAttribute("indent-number", 2);
+    javax.xml.transform.Transformer transformer =
+            tFactory.newTransformer();
+    //pretty print of course, anything less would be uncivilized
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+    transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+
+    DOMSource source = new DOMSource(doc);
+    StreamResult result = new StreamResult(new FileOutputStream( outdir+"/"+filename));
+    transformer.transform(source, result);
+    //reflect(custompom)
+}
 
 
 
