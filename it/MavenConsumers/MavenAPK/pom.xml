@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.chrisdoyle</groupId>
             <artifactId>hello-world-aar</artifactId>
-            <version>1.0.9</version>
+            <version>1.0.10-SNAPSHOT</version>
             <scope>compile</scope>
             <classifier>release</classifier>
             <type>aar</type>
