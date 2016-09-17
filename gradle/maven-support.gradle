@@ -1660,7 +1660,7 @@ publishArtifacts.mustRunAfter(signArtifacts)
 
 
 def createPom(String outdir, String filename) {
-    System.out.println("Generating pom for distzip")
+    logger.debug("Generating pom for distzip")
     File overrides = new File("${projectDir}/gradle.properties");
     if (overrides.exists()) {
         logger.info("${projectDir}/gradle.properties exists, apply overrides");
@@ -1914,7 +1914,7 @@ def loadKey(){
     String users_home = System.getProperty("user.home");
     users_home = users_home.replace("\\", "/"); // to support all platforms.
     users_home = users_home + "/.gradle/";
-    System.out.println("User home dir is " + users_home);
+    logger.info("User home dir is " + users_home);
     File gradlehome = new File(users_home);
     //check for existing master key
     File keys = new File(gradlehome.getAbsolutePath() + "/fury-keys.properties");
