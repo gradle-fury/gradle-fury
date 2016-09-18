@@ -38,6 +38,10 @@ android {
 
 dependencies {
 
+    compile('ch.acra:acra:4.7.0') {
+        exclude group: 'org.json'
+    }
+
     compile project(':hello-world-aar')
 
     compile "com.android.support:appcompat-v7:${project.property('android-support.version')}"

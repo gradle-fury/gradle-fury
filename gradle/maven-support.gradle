@@ -884,7 +884,7 @@ def modifyGeneratedPom(pom) {
                             // if there are any exclusions in dependency
                             if (dependency.excludeRules.size() > 0) {
                                 def exclusionsNode = dependencyNode.appendNode('exclusions')
-                                it.excludeRules.each { rule ->
+                                dependency.excludeRules.each { rule ->
                                     def exclusionNode = exclusionsNode.appendNode('exclusion')
                                     exclusionNode.appendNode('groupId', rule.group)
                                     exclusionNode.appendNode('artifactId', rule.module)
