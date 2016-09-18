@@ -50,4 +50,5 @@ subprojects {
 
 //this gives us the generateMasterKey and encryptPassword tasks
 //see https://github.com/chrisdoyle/gradle-fury/issues/67
+//apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle'
 apply from: "${rootDir}/gradle/encryption.gradle"

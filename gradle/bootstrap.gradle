@@ -1,0 +1,415 @@
+import groovy.swing.SwingBuilder
+
+import java.nio.file.StandardCopyOption
+
+/**
+ * Gradle-Fury bootstrap script.
+ *
+ * Usage: You have an existing project or new project gradle project that you want to use
+ * gradle-fury with and don't have the time to actually read the readme.md or look at the examples
+ *
+ * Purpose: automagically look at your existing gradle build files, apply gradle fury with minimal
+ * changes and making backups along the way.
+ *
+ *
+ * put this in your root gradle.build file
+ apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle'
+ apply from: "${rootDir}/gradle/encryption.gradle"
+
+
+ * then run
+ ./gradlew hackTime
+
+ * backups go to fury-backup
+ */
+
+
+task hackTime() << {
+    description = "Applying the basic elements from gradle-fury to this project..."
+    println "\n   ----.--.     #####                                        #######                     \n" +
+            "--/ _  |___)  #     #  #####    ##   #####  #      ######    #       #    # #####  #   # \n" +
+            "     \\_|____) #        #    #  #  #  #    # #      #         #       #    # #    #  # #  \n" +
+            "       |____) #  ####  #    # #    # #    # #      #####     #####   #    # #    #   #   \n" +
+            "---\\___(__)   #     #  #####  ###### #    # #      #         #       #    # #####    #   \n" +
+            "               #    #  #   #  #    # #    # #      #         #       #    # #   #    #   \n" +
+            "                #####  #    # #    # #####  ###### ######    #        ####  #    #   #   \n";
+
+    System.out.println(description);
+    File backupDir = new File("${rootDir}/fury-backup/" + System.currentTimeMillis() + "/");
+    backupDir.mkdirs();
+    System.out.println("----------------------------------------------------------------------------");
+    System.out.println("Notice: backups of all modified files will end up at the following location:");
+    System.out.println("\t" + backupDir.getAbsolutePath());
+    System.out.println("----------------------------------------------------------------------------");
+
+    //make backups first
+    File rootBuild = new File("${rootDir}/build.gradle");
+    File rootBuildBak = new File(backupDir.getAbsolutePath() + "/build.gradle");
+    java.nio.file.Files.copy(rootBuild.toPath(), rootBuildBak.toPath(), StandardCopyOption.REPLACE_EXISTING)
+
+    File props = new File("${rootDir}/gradle.properties");
+    java.nio.file.Files.copy(props.toPath(), new File(backupDir.getAbsolutePath() + "/gradle.properties").toPath(), StandardCopyOption.REPLACE_EXISTING)
+
+    modifyRootBuildFile(rootBuild);
+    modifyGradleProperties(props)
+
+    //for recursing into the build
+    //ignore folders that start with . or build or libs
+    //if it has an android lib or app plugin, apply the android file
+    //if the file has no plugins applied, skip it
+    //otherwise ignore it
+    File rootDirectory = new File("${rootDir}/");
+    File[] files = rootDirectory.listFiles();
+    if (files != null) {
+        for (int i = 0; i < files.length; i++) {
+
+            if (files[i].getName().startsWith("."))
+                continue;
+            if (files[i].isHidden())
+                continue;
+            if (files[i].getName().equalsIgnoreCase("fury-backup"))
+                continue;
+
+            if (files[i].isDirectory()) {
+                //recurse
+                modifyBuildFileRecursive(files[i], backupDir, "")
+            }
+        }
+    }
+
+    //TODO in the future, we could pull store the build scripts locally and add a task for
+    //updating the build scripts and/or checking for updates, which implies we have a way to version
+    //everything reliably
+}
+
+def modifyBuildFileRecursive(File thisDir, File backupDir, String relativePath) {
+
+    File[] files = thisDir.listFiles();
+    if (files != null) {
+        for (int i = 0; i < files.length; i++) {
+
+            if (files[i].getName().startsWith("."))
+                continue;
+            if (files[i].isHidden())
+                continue;
+
+            if (files[i].isDirectory()) {
+                //recurse
+                modifyBuildFileRecursive(files[i], backupDir, relativePath + "/" + files[i].getName() + "/")
+            }
+            if (files[i].getName().equalsIgnoreCase("build.gradle")) {
+                //make a backup first
+
+                new File(backupDir.getAbsolutePath() + "/" + relativePath + "/" + thisDir.getName() + "/").mkdirs();
+                File rootBuildBak = new File(backupDir.getAbsolutePath() + "/" + relativePath + "/" + thisDir.getName() + "/" + files[i].getName());
+                java.nio.file.Files.copy(files[i].toPath(), rootBuildBak.toPath(), StandardCopyOption.REPLACE_EXISTING)
+
+                modifyBuildFile(files[i]);
+            }
+        }
+    }
+}
+
+
+def String readFile(File file) {
+    InputStream is = new FileInputStream(file)
+    StringBuilder sb = new StringBuilder(512);
+    try {
+        Reader r = new InputStreamReader(is, "UTF-8");
+        int c = 0;
+        while ((c = r.read()) != -1) {
+            sb.append((char) c);
+        }
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+    is.close();
+    return sb.toString();
+}
+
+def hasMavenSupport(String content) {
+    //apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'
+    return content.matches("\\s*apply\\s+from\\s*:\\s*['\"]https*:\\/\\/raw\\.githubusercontent\\.com\\/chrisdoyle\\/gradle-fury\\/master\\/gradle\\/maven-support.gradle")
+}
+
+
+def modifyRootBuildFile(File rootBuildFile) {
+
+    File temp = new File(rootBuildFile.getAbsolutePath() + ".tmp");
+    String allprojectsRegex = "allprojects\\s+\\{"
+    String contents = readFile(rootBuildFile);
+    if (hasMavenSupport(contents)) {
+
+        logger.warn(rootBuildFile.getAbsolutePath() + " already applied!");
+        return;
+    }
+
+    boolean needsPomVersion = !contents.contains("project.version");
+    boolean needsPomGroupId = !contents.contains("project.group");
+    boolean needsEncryption = !contents.contains("apply from: \"https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle\"")
+    boolean needsMaven = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'")
+    boolean needsCentral = !contents.contains("mavenCentral()");
+
+    //do the mods
+    BufferedReader br = null;
+    BufferedWriter bw = null;
+    try {
+        br = new BufferedReader(new FileReader(rootBuildFile));
+        bw = new BufferedWriter(new FileWriter(temp));
+        String line;
+        int skipCount = 0;
+        while ((line = br.readLine()) != null) {
+
+            if (skipCount > 0) {
+                skipCount--;
+                continue;
+            }
+            if (line.contains("https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/bootstrap.gradle")) {     //fixme this is for testing only
+                logger.info("bootstrap removed");
+                continue;       //remove the bootstrap
+            }
+            if (line.contains("task clean(type: Delete) {")) {
+                skipCount = 2;
+                continue;
+            }
+            bw.write(line + "\n");
+            if (line.contains("jcenter()") && needsCentral)
+                bw.write("\t\tmavenCentral()\n");
+
+            if (line.matches(allprojectsRegex)) {
+                if (needsPomVersion || needsPomGroupId) {
+                    bw.write("\t// NOTE: project.group and project.version must be defined before including\n" +
+                            "\t// maven-support.gradle since it uses these values...\n\n");
+                }
+                if (needsPomVersion) {
+                    logger.info("pom version injected");
+                    bw.write("\tproject.version =\n" +
+                            "\t\t( project.hasProperty('pom.version') ? project.property('pom.version') : \"1.0\" )\n")
+                }
+                if (needsPomGroupId) {
+                    logger.info("pom group injected");
+                    bw.write("\tproject.group = ( project.hasProperty('pom.groupId')\n" +
+                            "\t\t? project.property('pom.groupId') : \"\" )\n")
+                }
+                if (needsMaven) {
+                    bw.write("\t//Gradle Fury note: this gives us the publishArtifacts task and all the other features of gradle-fury\n");
+                    bw.write("\tapply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'\n")
+                    logger.info("apply from maven injected");
+                }
+            }
+
+
+        }
+        if (needsEncryption) {
+            logger.info("apply from enc injected");
+            //at the end, add the encryption bit
+            bw.write("\n\n//Gradle Fury note: this gives us the generateMasterKey and encryptPassword tasks\n");
+            bw.write("apply from: \"https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle\"\n");
+        }
+    } catch (Exception e) {
+        e.printStackTrace()
+        return;
+    } finally {
+        try {
+            if (br != null)
+                br.close();
+        } catch (IOException e) {
+            //
+        }
+        try {
+            if (bw != null)
+                bw.close();
+        } catch (IOException e) {
+            //
+        }
+    }
+
+    //delete the original, then rename the new one
+    rootBuildFile.delete();
+    temp.renameTo(rootBuildFile);
+    logger.warn(rootBuildFile.getAbsolutePath() + " processed successfully");
+
+}
+
+def modifyBuildFile(File buildDotGradle) {
+
+    //make a backup before calling this method
+
+    String androidRegex = "apply\\s+plugin\\s*:\\s*['\"]com.android.((\\bapplication\\b)|(\\blibrary\\b))['\"]";
+    //determine if there's work to be done.
+    String contents = readFile(buildDotGradle);
+    if (!contents.contains("apply plugin:")) {
+        logger.warn(buildDotGradle.getAbsolutePath() + " skip, no plugins detected, probably another parent build.gradle file");
+        return;
+    }
+    if (!contents.contains("com.android.application") &&
+            !contents.contains("com.android.library")) {
+        logger.warn(buildDotGradle.getAbsolutePath() + " skip, not an android build file, no changed needed");
+        return;
+    }
+
+    boolean needsAndroid = !contents.contains("https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle");
+    File temp = new File(buildDotGradle.getAbsolutePath() + ".tmp");
+
+    //do the mods
+    BufferedReader br = null;
+    BufferedWriter bw = null;
+    try {
+        br = new BufferedReader(new FileReader(buildDotGradle));
+        bw = new BufferedWriter(new FileWriter(temp));
+        String line;
+        while ((line = br.readLine()) != null) {
+
+            bw.write(line + "\n");
+            if (line.matches(androidRegex)) {
+                if (needsAndroid)
+                    bw.write("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'\n")
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace()
+        return;
+    } finally {
+        try {
+            if (br != null)
+                br.close();
+        } catch (IOException e) {
+
+        }
+        try {
+            if (bw != null)
+                bw.close();
+        } catch (IOException e) {
+
+        }
+    }
+
+    //delete the original, then rename the new one
+    buildDotGradle.delete();
+    temp.renameTo(buildDotGradle);
+    logger.warn(buildDotGradle.getAbsolutePath() + " processed successfully");
+}
+
+def modifyGradleProperties(File props) {
+
+    Properties p = new Properties();
+    p.load(new FileInputStream(props));
+
+    if (!p.containsKey("pom.version")) {
+        p.setProperty("pom.version", getString("Version", "1.0.0-SNAPSHOT"));
+    }
+    if (!p.containsKey("pom.groupId")) {
+        p.setProperty("pom.groupId", getString("Group Id", new File("${rootDir}").getName()));
+    }
+    if (!p.containsKey("description")) {
+        p.setProperty("description", getString("Project description", new File("${rootDir}").getName()));
+    }
+    if (!p.containsKey("pom.url")) {
+        p.setProperty("pom.url", getString("Project URL", "https://github.com/" + p.getProperty("pom.groupId") + "/project"));
+    }
+    if (!p.containsKey("pom.inceptionYear")) {
+        p.setProperty("pom.inceptionYear", getString("Inception Year", Calendar.getInstance().get(Calendar.YEAR) + ""));
+    }
+    if (!p.containsKey("pom.licenses.license.0.name")) {
+        //more complex stuff goes here
+    }
+    if (!p.containsKey("pom.organization.name")) {
+        p.setProperty("pom.organization.name", getString("Organization Name", p.getProperty("pom.groupId")));
+    }
+    if (!p.containsKey("pom.organization.url")) {
+        p.setProperty("pom.organization.url", getString("Organization Url", "http://github.com"));
+    }
+    if (!p.containsKey("pom.issueManagement.system")) {
+        p.setProperty("pom.issueManagement.system", getString("Issue Management", "Github"));
+    }
+    if (!p.containsKey("pom.issueManagement.url")) {
+        p.setProperty("pom.issueManagement.url", getString("Issue URL", "https://github.com/" + p.getProperty("pom.groupId") + "/" + new File("${rootDir}").getName() + "/issues"));
+    }
+    if (!p.containsKey("pom.ciManagement.system")) {
+        p.setProperty("pom.ciManagement.system", getString("CI Management", "Travis"));
+    }
+    if (!p.containsKey("pom.ciManagement.url")) {
+        p.setProperty("pom.ciManagement.url", getString("CI URL", "http://TBD"));
+    }
+    if (!p.containsKey("pom.scm.url")) {
+        p.setProperty("pom.scm.url", getString("SCM URL", p.getProperty("pom.url")));
+    }
+    if (!p.containsKey("pom.scm.connection")) {
+        p.setProperty("pom.scm.connection", getString("SCM URL", p.getProperty("pom.url") + ".git"));
+    }
+    if (!p.containsKey("pom.scm.developerConnection")) {
+        p.setProperty("pom.scm.developerConnection", getString("SCM URL", p.getProperty("pom.url") + ".git"));
+    }
+    if (!p.containsKey("pom.distributionManagement.site.id")) {
+        p.setProperty("pom.distributionManagement.site.id", getString("Distribution Management Id", "Github"));
+    }
+    if (!p.containsKey("pom.distributionManagement.site.url")) {
+        p.setProperty("pom.distributionManagement.site.url", getString("Distribution URL", p.getProperty("pom.url") + "/releases"));
+    }
+
+
+    if (!p.containsKey("pom.developers.developer.0.id")) {
+        String devCount = getString("How many developers?", "1");
+        int count = Integer.parseInt(devCount);
+        for (int i = 0; i < count; i++) {
+
+            //do stuff
+
+            if (!p.containsKey("pom.developers.developer." + i + ".id")) {
+                p.setProperty("pom.developers.developer." + i + ".id", getString("[" + i + "] Developer Id", "bob"));
+            }
+            if (!p.containsKey("pom.developers.developer." + i + ".name")) {
+                p.setProperty("pom.developers.developer." + i + ".name", getString("[" + i + "] Developer Name", "bob"));
+            }
+            if (!p.containsKey("pom.developers.developer." + i + ".email")) {
+                p.setProperty("pom.developers.developer." + i + ".email", getString("[" + i + "] Developer Email", "bob@bob.com"));
+            }
+            if (!p.containsKey("pom.developers.developer." + i + ".organization")) {
+                p.setProperty("pom.developers.developer." + i + ".organization", getString("[" + i + "] Developer Organization", p.getProperty("pom.groupId")));
+            }
+            if (!p.containsKey("pom.developers.developer." + i + ".role.0")) {
+                p.setProperty("pom.developers.developer." + i + ".role.0", getString("[" + i + "] Developer Role", "Software Engineer"));
+            }
+
+        }
+    }
+
+    if (!p.containsKey("RELEASE_REPOSITORY_URL")) {
+        p.setProperty("RELEASE_REPOSITORY_URL", getString("Nexus release url", "https://oss.sonatype.org/service/local/staging/deploy/maven2/"));
+    }
+    if (!p.containsKey("SNAPSHOT_REPOSITORY_URL")) {
+        p.setProperty("SNAPSHOT_REPOSITORY_URL", getString("Nexus snapshot url", "https://oss.sonatype.org/content/repositories/snapshots/"));
+    }
+    p.store(new FileOutputStream(props), "Updated by gradle-fury at " + System.currentTimeMillis());
+
+}
+
+
+def getString(String description, String defaultValue) {
+    def console = System.console()
+
+    String userinput;
+
+    //need to ask for it
+    if (console) {
+        userinput = console.readPassword('> ' + description + '[' + defaultValue + ']: ')
+    } else {
+        new SwingBuilder().edt {
+            dialog(modal: true, title: description, alwaysOnTop: true, resizable: false, locationRelativeTo: null, pack: true, show: true) {
+                vbox { // Put everything below each other
+                    label(text: description + " :")
+                    def input1 = textField();
+                    input1.setText(defaultValue);
+                    button(defaultButton: true, text: 'OK', actionPerformed: {
+                        userinput = new String(input1.getText());
+                        //getPassword doesn't return a string
+                        dispose();
+                    })
+                }
+            }
+        }
+    }
+    System.out.println("DEBUG " + userinput)
+    return userinput
+}
+
