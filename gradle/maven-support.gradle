@@ -1463,11 +1463,11 @@ def isGPGAvailable(){
  * the name of the artifact when it's uploaded.
  */
 
-task signArtifacts() << {
-    description 'Attempts to gpg sign all artifacts to mavenCentral/nexus type repository. Use with\n' +
-            'gradlew clean\n' +
-            'gradlew install -Pprofile=sources,javadocs\n' +
-            'gradlew signArtifacts -Pprofile=sources,javadocs,sign\n'
+task signArtifacts(description: 'Attempts to gpg sign all artifacts to mavenCentral/nexus type repository. Use with\n' +
+        '\tgradlew clean\n' +
+        '\tgradlew install -Pprofile=sources,javadocs\n' +
+        '\tgradlew signArtifacts -Pprofile=sources,javadocs,sign\n', group:"Gradle Fury Crypto") << {
+
     // this line just makes gradle angry, left as a warn for future self
     // outputs.upToDateWhen { false }
     logger.info("Attempting to sign artifacts "  + project.ext.artifacts.size());
@@ -1530,11 +1530,12 @@ def generateChecksumForFile(File file, String algorithm, int length) {
 //so why did we have to write this? because gradle....
 //android artifact poms would sign but not upload using the standard naming convention
 //all of this was just to fix it
-task publishArtifacts << {
-    description 'Attempts to publish all artifacts to mavenCentral/nexus type repository. Use with\n' +
-            'gradlew clean\n' +
-            'gradlew install -Pprofile=sources,javadocs\n' +
-            'gradlew publishArtifacts -Pprofile=sources,javadocs,sign\n'
+task publishArtifacts( description: 'Attempts to publish all artifacts to mavenCentral/nexus type repository. Use with\n' +
+        '\tgradlew clean\n' +
+        '\tgradlew install -Pprofile=sources,javadocs\n' +
+        '\tgradlew publishArtifacts -Pprofile=sources,javadocs,sign\n',
+        group: "Gradle Fury Publishing"
+        ) << {
 
 
     if ((project.ext.skipPublish)) {
@@ -1945,8 +1946,7 @@ def tryDecrypt(String ciphertext){
         String text= decrypt(textToDecrypt, loadKey());
         return text;
     }catch (Exception ex){
-        logger.warn("Descryption failure - input text was not encrypted or encrypted with a different key," , ex)
-        throw ex;
+        logger.warn("Decryption failure - input text was not encrypted or encrypted with a different key," , ex)
     }
     return ciphertext
 }
