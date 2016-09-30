@@ -4,6 +4,8 @@ rootProject.name = 'gradle-fury'
 include ':hello-world-lib'
 include ':hello-gradhell'
 include ':hello-universe-lib'
+include ':hello-child'
+include ':hello-child:hello-grandchild-lib'
 
 //dists
 include ':hello-world-dist'

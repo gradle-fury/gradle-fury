@@ -1,0 +1,263 @@
+/**
+ *
+ * The Quality plugin - runs findbugs, checkstyle, and pmd on all your projects (android and java)
+ *
+ * This file was mostly lifted...ehm borrowed from
+ * https://github.com/MasonLiuChn/AndroidCodeQuality
+ * original author Email:MasonLiuChn@gmail.com
+ *
+ * It originally only worked on android projects but was modified to support both android
+ * and regular java/jar/war projects too.
+ *
+ *
+ * To apply to your project, apply this file under 'allprojects'
+ * then copy the files from gradle-fury/config and place it in your project
+ *
+ * allprojects {
+ *        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
+ *  }
+ *  then execute with `gradelw build`
+ *
+ * Since the checks can add a lot of time to your build, you probably want to make it optional...
+ *
+ * allprojects {
+ *      if (project.hasProperty('profile') && project.profile.split(',').contains("ci")) {
+ *        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
+ *     }
+ *  }
+ *
+ *  then execute with `gradelw build -Pprofile=ci`
+ *
+ *  @since 1.0.10
+ *  @author Alex
+ *
+ *
+ *  addendum
+ *  jdepend stuff came from here
+ *
+ *  https://github.com/azagniotov/stubby4j/blob/master/conf/gradle/jdepend.gradle
+ */
+
+
+
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
+apply plugin: 'pmd'
+apply plugin: 'jdepend'
+
+
+// setup for java ncss
+configurations {
+    javancss
+}
+
+dependencies {
+    javancss 'org.codehaus.javancss:javancss:33.54'
+}
+task javancss << {
+    new File("${buildDir}/reports/javancss/").mkdirs()
+    ant {
+        taskdef name:'javancss', classname:'javancss.JavancssAntTask', classpath:configurations.javancss.asPath
+
+        //${buildDir}/
+        //javancss srcdir:'src', includes:'**/*.java', packageMetrics:'true', classMetrics:'true', functionMetrics:'true',abortOnFail:false, generateReport:true, outputfile:"${buildDir}/reports/javancss/main.txt", format:'plain'
+        javancss srcdir:'src', includes:'**/*.java', packageMetrics:'true', classMetrics:'true', functionMetrics:'true',abortOnFail:false, generateReport:true, outputfile:"${buildDir}/reports/javancss/main.xml", format:'xml'
+    }
+
+    ant.xslt(
+            in: "$reporting.baseDir/javancss/main.xml",
+            style: "$rootDir/config/javancss/javancss2html.xsl",
+            out: "$reporting.baseDir/javancss/index.html")
+}
+
+javancss.onlyIf { file('src').exists() }
+check.dependsOn javancss
+// END setup for java ncss
+
+
+if (!rootProject.hasProperty('codeQuality')) {
+    rootProject.ext.codeQuality = true
+    println "== Quality plugin active. Hold on to your butts...";
+}
+
+//configure jdepend for 'normal' projects
+jdepend {
+    ignoreFailures = true
+}
+
+task jdependReport(group: 'verification', description: 'Generates a HTML report after executing jdepend checks.') << {
+    //check for 'parent' projects
+    if (new File("$reporting.baseDir/jdepend/main.xml").exists()) {
+        ant.xslt(
+                in: "$reporting.baseDir/jdepend/main.xml",
+                style: "$rootDir/config/jdepend/jdepend-report.xslt",
+                out: "$reporting.baseDir/jdepend/index.html")
+    }
+}
+
+check {
+    dependsOn += ['jdependReport']
+}
+
+
+//configure jdepend for 'android' projects
+task jdependAndroidReport(group: 'verification', description: 'Generates a HTML report after executing jdepend checks.') << {
+    //check for 'parent' projects
+    if (new File("$reporting.baseDir/jdepend/main.xml").exists()) {
+        ant.xslt(
+                in: "$reporting.baseDir/jdepend/main.xml",
+                style: "$rootDir/config/jdepend/jdepend-report.xslt",
+                out: "$reporting.baseDir/jdepend/index.html")
+    }
+}
+
+task jdependAndroid(type: JDepend, dependsOn: 'compileDebugSources') {
+    classesDir file('build/intermediates/')
+    reports {
+        xml {
+            destination "$reporting.baseDir/jdepend/main.xml"
+        }
+    }
+}
+
+jdependAndroidReport.dependsOn jdependAndroid
+
+
+
+//configure checkstyle for 'normal' projects
+checkstyle {
+    ignoreFailures = true
+    configFile new File("${project.rootDir}/config/checkstyle/checkstyle.xml")
+}
+
+//configure checkstyle for 'android' projects
+task checkstyleAndroid(type: Checkstyle) {
+    ignoreFailures = true
+    configFile new File("${project.rootDir}/config/checkstyle/checkstyle.xml")
+
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**', '**/test/**'
+
+    classpath = files()
+}
+
+
+tasks.withType(Checkstyle).each { checkstyleTask ->
+
+    checkstyleTask.doLast {
+        reports.all { report ->
+            def outputFile = report.destination
+            if (outputFile.exists() && outputFile.text.contains("<error ") && !checkstyleTask.ignoreFailures) {
+                throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
+            }
+        }
+    }
+}
+
+//configure pmd for 'normal' projects
+pmd {
+    ignoreFailures = true
+    ruleSetFiles = files("${project.rootDir}/config/pmd/pmd-ruleset.xml")
+    ruleSets = []
+}
+
+
+//configure pmd for 'android' projects
+task pmdAndroid(type: Pmd) {
+    ignoreFailures = true
+    ruleSetFiles = files("${project.rootDir}/config/pmd/pmd-ruleset.xml")
+    ruleSets = []
+
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+
+//configure findbugs for 'normal' projects
+findbugs {
+    ignoreFailures = true
+    excludeFilter = new File("${project.rootDir}/config/findbugs/findbugs-filter.xml")
+    effort = "max"
+    reportLevel = "high"
+}
+
+//configure findbugs for 'android' projects...seriously?
+task findbugsAndroid(type: FindBugs) {
+    ignoreFailures = true
+    excludeFilter = new File("${project.rootDir}/config/findbugs/findbugs-filter.xml")
+    effort = "max"
+    reportLevel = "high"
+    classes = files("$project.buildDir/intermediates/classes")
+
+    source 'src'
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+        xml {
+            destination "$project.buildDir/reports/findbugs/findbugs.xml"
+            xml.withMessages true
+        }
+        html {
+            destination "$project.buildDir/reports/findbugs/findbugs.html"
+        }
+    }
+    classpath = files()
+}
+
+
+afterEvaluate {
+    tasks.withType(Task).each { task ->
+        task.doLast {
+            if(task.name.startsWith("assemble")){
+                if (project.plugins.hasPlugin("com.android.library") || project.plugins.hasPlugin("com.android.application")) {
+                    //dumpTasks(project.tasks)
+                    //tasks.add(findbugsAndroid);
+                    tasks.findByName("findbugsAndroid").execute()
+                    tasks.findByName('pmdAndroid').execute();
+                    tasks.findByName('checkstyleAndroid').execute();
+                    tasks.findByName('jdependAndroid').execute();
+                    tasks.findByName('jdependAndroidReport').execute();
+                }
+            }
+        }
+    }
+}
+
+
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled false
+        html.enabled true
+        //html.stylesheet resources.text.fromFile('config/xsl/findbugs-custom.xsl')
+    }
+}
+
+
+def dumpTasks(TaskExecutionGraph graph){
+    List<Task> allTasks = graph.getAllTasks();
+    for (int i=0; i < allTasks.size(); i++){
+        System.out.println("TASK DUMP " + allTasks.get(i).name);
+    }
+
+}
+
+
+
+def dumpTasks(TaskContainer graph){
+    List<Task> allTasks = graph.all {
+
+        System.out.println("TASK DUMP " + it.name);
+    }
+
+
+}

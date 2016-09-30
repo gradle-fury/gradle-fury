@@ -11,6 +11,8 @@ apply from: "${rootDir}/gradle/android-support.gradle"
 //Protip: apply the gradle fury plugin before setting up your android specific stuff (if needed)
 
 
+
+
 dependencies {
     compile project(':hello-world-lib')
 
@@ -19,4 +21,8 @@ dependencies {
 
     testCompile "junit:junit:${project.property('junit.version')}"
 }
+
+
+
+
 

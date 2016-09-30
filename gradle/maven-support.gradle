@@ -109,14 +109,19 @@ ext.gpgPassphrase = (
                 ? GPG_PASSPHRASE
                 : ""
 );
-ext.gpgPassphrase = (
+
+if (mightBeEncrypted(ext.gpgPassphrase)){
+    ext.gpgPassphrase=tryDecrypt(ext.gpgPassphrase);
+}
+
+ext.gpgPassphraseNew = (
         hasProperty('signing.passPhrase')
                 ? project.property("signing.passPhrase")
                 : ""
 );
 
-if (mightBeEncrypted(ext.gpgPassphrase)){
-    ext.gpgPassphrase=tryDecrypt(ext.gpgPassphrase);
+if (mightBeEncrypted(ext.gpgPassphraseNew)){
+    ext.gpgPassphraseNew=tryDecrypt(ext.gpgPassphraseNew);
 }
 
 ext.gpgisInteractive = (
@@ -461,10 +466,50 @@ afterEvaluate { project ->
                 //classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
                 failOnError false
 
-                // FIXME :: @chrisdoyle :: this assumes Java 7...
-                options.links 'http://docs.oracle.com/javase/7/docs/api/'
-                options.links("http://developer.android.com/reference/");
+                if (hasProperty('compileJava.sourceCompatibility') &&
+                        project.property("compileJava.sourceCompatibility").equals("1.5")) {
+                    options.links 'http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec'
+                    options.links 'http://java.sun.com/j2se/1.5/docs/api/'
+                } else if (hasProperty('compileJava.sourceCompatibility') &&
+                        project.property("compileJava.sourceCompatibility").equals("1.6")) {
+                    options.links 'http://docs.oracle.com/javase/6/docs/api/'
+                } else if (hasProperty('compileJava.sourceCompatibility') &&
+                        project.property("compileJava.sourceCompatibility").equals("1.7")) {
+                    options.links 'http://docs.oracle.com/javase/7/docs/api/'
+                } else if (hasProperty('compileJava.sourceCompatibility') &&
+                        project.property("compileJava.sourceCompatibility").equals("1.8")) {
+                    options.links 'http://docs.oracle.com/javase/8/docs/api/'
+                }
 
+                if (isGraphvizDotAvailable()) {
+
+                    options {
+                        doclet = 'org.umlgraph.doclet.UmlGraphDoc'
+                        options.docletpath = configurations.umljavadoc.files.asType(List)
+                        addStringOption('-inferrel')
+                        addStringOption('-inferdep')
+                        addStringOption('-qualify')
+                        addStringOption('-postfixpackage')
+                        addStringOption('-hide=java.*')
+                        addStringOption('-collpackages=java.util.*')
+                        addStringOption('-nodefontsize=9')
+                        addStringOption('-nodefontpackagesize=7')
+                        if (hasProperty('compileJava.sourceCompatibility') &&
+                                project.property("compileJava.sourceCompatibility").equals("1.5")) {
+                            addStringOption('-link=http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec')
+                            addStringOption('-link=http://java.sun.com/j2se/1.5/docs/api')
+                        } else if (hasProperty('compileJava.sourceCompatibility') &&
+                                project.property("compileJava.sourceCompatibility").equals("1.6")) {
+                            addStringOption('-link=http://docs.oracle.com/javase/6/docs/api/')
+                        } else if (hasProperty('compileJava.sourceCompatibility') &&
+                                project.property("compileJava.sourceCompatibility").equals("1.7")) {
+                            addStringOption('-link=http://docs.oracle.com/javase/7/docs/api/')
+                        } else if (hasProperty('compileJava.sourceCompatibility') &&
+                                project.property("compileJava.sourceCompatibility").equals("1.8")) {
+                            addStringOption('-link=http://docs.oracle.com/javase/8/docs/api/')
+                        }
+                    }
+                }
                 options {
                     setMemberLevel(JavadocMemberLevel.PACKAGE)
                 }
@@ -524,14 +569,57 @@ afterEvaluate { project ->
 //                      classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 //                      classpath += variants.toList().first().javaCompile.classpath
 
+                    if (hasProperty('compileJava.sourceCompatibility') &&
+                            project.property("compileJava.sourceCompatibility").equals("1.5")) {
+                        options.links 'http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec'
+                        options.links 'http://java.sun.com/j2se/1.5/docs/api/'
+                    } else if (hasProperty('compileJava.sourceCompatibility') &&
+                            project.property("compileJava.sourceCompatibility").equals("1.6")) {
+                        options.links 'http://docs.oracle.com/javase/6/docs/api/'
+                    } else if (hasProperty('compileJava.sourceCompatibility') &&
+                            project.property("compileJava.sourceCompatibility").equals("1.7")) {
+                        options.links 'http://docs.oracle.com/javase/7/docs/api/'
+                    } else if (hasProperty('compileJava.sourceCompatibility') &&
+                            project.property("compileJava.sourceCompatibility").equals("1.8")) {
+                        options.links 'http://docs.oracle.com/javase/8/docs/api/'
+                    }
                     options {
-                        links "http://docs.oracle.com/javase/7/docs/api/"
                         linksOffline("http://d.android.com/reference",
                                 "${project.android.sdkDirectory}/docs/reference")
                         setMemberLevel(JavadocMemberLevel.PACKAGE)
                         docEncoding = 'UTF-8'
                         encoding = 'UTF-8'
                         charSet = 'UTF-8'
+                    }
+                    if (isGraphvizDotAvailable()) {
+
+                        options {
+                            doclet = 'org.umlgraph.doclet.UmlGraphDoc'
+                            options.docletpath = configurations.umljavadoc.files.asType(List)
+                            addStringOption('-inferrel')
+                            addStringOption('-inferdep')
+                            addStringOption('-qualify')
+                            addStringOption('-postfixpackage')
+                            addStringOption('-hide=java.*')
+                            addStringOption('-collpackages=java.util.*')
+                            addStringOption('-nodefontsize=9')
+                            addStringOption('-nodefontpackagesize=7')
+                            if (hasProperty('compileJava.sourceCompatibility') &&
+                                 project.property("compileJava.sourceCompatibility").equals("1.5")) {
+                                addStringOption('-link=http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec')
+                                addStringOption('-link=http://java.sun.com/j2se/1.5/docs/api')
+                            } else if (hasProperty('compileJava.sourceCompatibility') &&
+                                    project.property("compileJava.sourceCompatibility").equals("1.6")) {
+                                addStringOption('-link=http://docs.oracle.com/javase/6/docs/api/')
+                            } else if (hasProperty('compileJava.sourceCompatibility') &&
+                                    project.property("compileJava.sourceCompatibility").equals("1.7")) {
+                                addStringOption('-link=http://docs.oracle.com/javase/7/docs/api/')
+                            } else if (hasProperty('compileJava.sourceCompatibility') &&
+                                project.property("compileJava.sourceCompatibility").equals("1.8")) {
+                                addStringOption('-link=http://docs.oracle.com/javase/8/docs/api/')
+                            }
+                            addStringOption('-link=http://developer.android.com/reference/')
+                        }
                     }
 
                     exclude '**/BuildConfig.java'
@@ -868,7 +956,7 @@ def modifyGeneratedPom(pom) {
                                 } else if (dependency.version.endsWith("+")) {
                                     dependencyNode.appendNode('version', "[" + dependency.version.replace("+", ",)"))
                                 } else {
-                                    System.out.println("WARN - unhandled case for dependency version mediation for " +
+                                    logger.warn("WARN - unhandled case for dependency version mediation for " +
                                             dependency.group + ":" + dependency.name + ":" + dependency.version);
                                 }
                                 //TODO there may be other cases here
@@ -884,7 +972,7 @@ def modifyGeneratedPom(pom) {
                             // if there are any exclusions in dependency
                             if (dependency.excludeRules.size() > 0) {
                                 def exclusionsNode = dependencyNode.appendNode('exclusions')
-                                it.excludeRules.each { rule ->
+                                dependency.excludeRules.each { rule ->
                                     def exclusionNode = exclusionsNode.appendNode('exclusion')
                                     exclusionNode.appendNode('groupId', rule.group)
                                     exclusionNode.appendNode('artifactId', rule.module)
@@ -1343,6 +1431,11 @@ ext.signFile = { file ->
         arguments.add("--passphrase");
         arguments.add(ext.gpgPassphrase);
     }
+    if (ext.gpgPassphraseNew!=null && !"".equalsIgnoreCase(ext.gpgPassphraseNew)){
+        arguments.add("--batch");
+        arguments.add("--passphrase");
+        arguments.add(ext.gpgPassphraseNew);
+    }
     if (ext.gpgSecretKeyRingFile!=null && !"".equalsIgnoreCase(ext.gpgSecretKeyRingFile)){
         arguments.add("--secret-keyring");
         arguments.add(ext.gpgSecretKeyRingFile);
@@ -1463,11 +1556,11 @@ def isGPGAvailable(){
  * the name of the artifact when it's uploaded.
  */
 
-task signArtifacts() << {
-    description 'Attempts to gpg sign all artifacts to mavenCentral/nexus type repository. Use with\n' +
-            'gradlew clean\n' +
-            'gradlew install -Pprofile=sources,javadocs\n' +
-            'gradlew signArtifacts -Pprofile=sources,javadocs,sign\n'
+task signArtifacts(description: 'Attempts to gpg sign all artifacts to mavenCentral/nexus type repository. Use with\n' +
+        '\tgradlew clean\n' +
+        '\tgradlew install -Pprofile=sources,javadocs\n' +
+        '\tgradlew signArtifacts -Pprofile=sources,javadocs,sign\n', group:"Gradle Fury Crypto") << {
+
     // this line just makes gradle angry, left as a warn for future self
     // outputs.upToDateWhen { false }
     logger.info("Attempting to sign artifacts "  + project.ext.artifacts.size());
@@ -1530,15 +1623,16 @@ def generateChecksumForFile(File file, String algorithm, int length) {
 //so why did we have to write this? because gradle....
 //android artifact poms would sign but not upload using the standard naming convention
 //all of this was just to fix it
-task publishArtifacts << {
-    description 'Attempts to publish all artifacts to mavenCentral/nexus type repository. Use with\n' +
-            'gradlew clean\n' +
-            'gradlew install -Pprofile=sources,javadocs\n' +
-            'gradlew publishArtifacts -Pprofile=sources,javadocs,sign\n'
+task publishArtifacts( description: 'Attempts to publish all artifacts to mavenCentral/nexus type repository. Use with\n' +
+        '\tgradlew clean\n' +
+        '\tgradlew install -Pprofile=sources,javadocs\n' +
+        '\tgradlew publishArtifacts -Pprofile=sources,javadocs,sign\n',
+        group: "Gradle Fury Publishing"
+        ) << {
 
 
     if ((project.ext.skipPublish)) {
-        System.out.println("publication of " + project.name + " has been skipped due to configuration");
+        logger.warn("publication of " + project.name + " has been skipped due to configuration");
         return;
     }
     if ("".equalsIgnoreCase(targetRepositoryUrl) || targetRepositoryUrl==null){
@@ -1660,7 +1754,7 @@ publishArtifacts.mustRunAfter(signArtifacts)
 
 
 def createPom(String outdir, String filename) {
-    logger.debug("Generating pom for distzip")
+    logger.info("Generating pom for distzip")
     File overrides = new File("${projectDir}/gradle.properties");
     if (overrides.exists()) {
         logger.info("${projectDir}/gradle.properties exists, apply overrides");
@@ -1914,7 +2008,7 @@ def loadKey(){
     String users_home = System.getProperty("user.home");
     users_home = users_home.replace("\\", "/"); // to support all platforms.
     users_home = users_home + "/.gradle/";
-    logger.info("User home dir is " + users_home);
+    logger.debug("User home dir is " + users_home);
     File gradlehome = new File(users_home);
     //check for existing master key
     File keys = new File(gradlehome.getAbsolutePath() + "/fury-keys.properties");
@@ -1945,8 +2039,7 @@ def tryDecrypt(String ciphertext){
         String text= decrypt(textToDecrypt, loadKey());
         return text;
     }catch (Exception ex){
-        logger.warn("Descryption failure - input text was not encrypted or encrypted with a different key," , ex)
-        throw ex;
+        logger.warn("Decryption failure - input text was not encrypted or encrypted with a different key," , ex)
     }
     return ciphertext
 }
@@ -1984,3 +2077,64 @@ def mightBeEncrypted(String text){
         return true;
     return false;
 }
+
+
+
+
+
+configurations {
+    umljavadoc
+}
+
+dependencies {
+    umljavadoc 'org.umlgraph:umlgraph:5.6.6'
+}
+
+def isGraphvizDotAvailable() {
+
+    if (rootProject.hasProperty('isGraphvizDotAvailable')) {
+        return rootProject.ext.isGraphvizDotAvailable;
+    }
+    //if os is mac, return false becasue the DOT build for mac os isn't so great and will cause
+    //javadoc failures
+    String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+    if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
+        logger.warn("WARN - Graphviz/DOT has some issues with MacOS and may cause javadoc generation to fail. Just a heads up");
+    }
+
+    //if opt-in is not set or is false, return false
+    if (!project.hasProperty("fury.javadocs.umlgraph.enabled")) {
+        logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
+        return false;
+    }
+    if (project.property("fury.javadocs.umlgraph.enabled")==null) {
+        logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
+        return false;
+    }
+    if (!"true".equalsIgnoreCase(project.property("fury.javadocs.umlgraph.enabled"))){
+        logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
+        return false;
+    }
+    try {
+        Runtime rt = Runtime.getRuntime();
+        Process proc = rt.exec("dot -?");
+        int exitVal = proc.waitFor();
+
+        if (exitVal == 0) {
+            logger.info("DOT is available");
+            rootProject.ext.isGraphvizDotAvailable=true;
+            return true;
+        }
+    }catch (Exception ex){
+        //ex.printStackTrace();
+    }
+
+    logger.info("DOT is NOT available");
+    rootProject.ext.isGraphvizDotAvailable=false;
+    return false;
+}
+
+

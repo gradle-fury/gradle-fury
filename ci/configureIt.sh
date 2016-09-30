@@ -37,13 +37,13 @@ version=`eval getProp $PROPERTIES_FILE pom.version`
 
 echo Setting gradle version to $version for IT tests
 
-#TIME.HACKER.VERSION=1.0.9
-sed "s/TIME.HACKER.VERSION=1.0.9/TIME.HACKER.VERSION=$version/g" it/GradleConsumers/gradle.properties > it/GradleConsumers/gradle.properties.new
+#TIME.HACKER.VERSION=1.0.10-SNAPSHOT
+sed "s/TIME.HACKER.VERSION=1.0.10/TIME.HACKER.VERSION=$version/g" it/GradleConsumers/gradle.properties > it/GradleConsumers/gradle.properties.new
 mv it/GradleConsumers/gradle.properties it/GradleConsumers/gradle.properties.old
 mv it/GradleConsumers/gradle.properties.new it/GradleConsumers/gradle.properties
 
 
-#<version>1.0.9</version>
-sed "s/\<version\>1.0.9\<\/version\\>/\<version\>$version\<\/version\>/g" it/MavenConsumers/MavenAPK/pom.xml >  it/MavenConsumers/MavenAPK/pom.xml.new
+#<version>1.0.10-SNAPSHOT</version>
+sed "s/\<version\>1.0.10\<\/version\\>/\<version\>$version\<\/version\>/g" it/MavenConsumers/MavenAPK/pom.xml >  it/MavenConsumers/MavenAPK/pom.xml.new
 mv it/MavenConsumers/MavenAPK/pom.xml it/MavenConsumers/MavenAPK/pom.xml.old
 mv it/MavenConsumers/MavenAPK/pom.xml.new it/MavenConsumers/MavenAPK/pom.xml

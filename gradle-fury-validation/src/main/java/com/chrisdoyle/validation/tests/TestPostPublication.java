@@ -133,6 +133,7 @@ public class TestPostPublication {
                 if (!files[i].getName().equalsIgnoreCase("gradle") &&
                         !files[i].getName().startsWith(".") &&
                         !files[i].getName().equalsIgnoreCase("build") &&
+                        !files[i].getName().equalsIgnoreCase("hello-child") &&
                         !files[i].getName().equalsIgnoreCase("..") &&
                         !files[i].getName().equalsIgnoreCase(".")) {
                     if (new File(files[i].getAbsolutePath() + File.separator + "build.gradle").exists()) {
@@ -142,6 +143,7 @@ public class TestPostPublication {
                 }
             }
         }
+        ret.add("hello-grandchild-lib");
         return ret;
     }
 

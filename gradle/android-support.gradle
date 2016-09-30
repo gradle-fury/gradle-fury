@@ -49,16 +49,27 @@ afterEvaluate { project ->
                 "                #####  #    # #    # #####  ###### ######    #        ####  #    #   #   \n";
 
         println "== Gradle Fury, bringing maven sensibility to gradle. It's NOT an incubating feature.";
-        println "== Gradle Fury: ProTip: Use 'gradle.properties' to set all your version and pom related information.";
-        println "== Gradle Fury: ProTip: Use 'gradle install' to publish to mavenLocal, works with AARs and APKs, even with variants";
-        println "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=javadoc' to generate javadocs (android included, even with variants";
-        println "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=sources' to generate source jars (android included, even with variants";
-        println "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=javadoc,sources' to generate javadocs and source jars (android included, even with variants";
-        println "== Gradle Fury: ProTip: For Android projects, apply gradle fury BEFORE the android{} block in your gradle.build file.";
-        println "== Gradle Fury: ProTip: Use 'gradle publishArtifacts' to publish to a nexus repository, works with AARs and APKs, even with variants";
-        println "== Gradle Fury: ProTip: Use 'gradle publishArtifacts -Pprofile=javadoc,source' to publish to a nexus repository with javadocs and sources";
-        println "== Gradle Fury: ProTip: Use 'gradle generateMasterKey' to make an encryption key";
-        println "== Gradle Fury: ProTip: Use 'gradle encryptPassword -PstoreField=NEXUS_PASSWORD' to encrypt your nexus password";
+        String[] MOTD =  [
+            "== Gradle Fury: ProTip: Use 'gradle.properties' to set all your version and pom related information.",
+            "== Gradle Fury: ProTip: Use 'gradle install' to publish to mavenLocal, works with AARs and APKs, even with variants",
+            "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=javadoc' to generate javadocs (android included, even with variants",
+            "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=sources' to generate source jars (android included, even with variants",
+            "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=javadoc,sources' to generate javadocs and source jars (android included, even with variants",
+            "== Gradle Fury: ProTip: For Android projects, apply gradle fury BEFORE the android{} block in your gradle.build file.",
+            "== Gradle Fury: ProTip: Use 'gradle publishArtifacts' to publish to a nexus repository, works with AARs and APKs, even with variants",
+            "== Gradle Fury: ProTip: Use 'gradle publishArtifacts -Pprofile=javadoc,source' to publish to a nexus repository with javadocs and sources",
+            "== Gradle Fury: ProTip: Use 'gradle generateMasterKey' to make an encryption key",
+            "== Gradle Fury: ProTip: Use 'gradle encryptPassword -PstoreField=NEXUS_PASSWORD' to encrypt your nexus password",
+            "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=ci' to build with all the code quality and analysis plugins",
+            "== Gradle Fury: ProTip: Use 'gradle site' to build a maven style set that wraps up all your stuff with one bow",
+            "== Gradle Fury: ProTip: Use 'gradle siteWar' to build a maven style set as a WAR file",
+                ]
+
+
+        Random r= new Random();
+        int index=r.nextInt(MOTD.length);
+        println MOTD[index];
+
         println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues, also see the wiki for more info"
     }
 

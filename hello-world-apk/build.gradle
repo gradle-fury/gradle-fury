@@ -13,6 +13,9 @@ apply from: "${rootDir}/gradle/android-support.gradle"
 //i.e. the following block. Gradle Fury will automagically setup up application id, minSdk, etc
 //based on your gradle.properties file and some other magic.
 
+
+
+
 android {
 
     /*
@@ -37,6 +40,10 @@ android {
 }
 
 dependencies {
+
+    compile('ch.acra:acra:4.7.0') {
+        exclude group: 'org.json'
+    }
 
     compile project(':hello-world-aar')
 
@@ -72,3 +79,4 @@ dependencies {
     androidTestCompile 'com.android.support.test:runner:0.4.+'
     androidTestCompile 'com.android.support.test:rules:0.4.+'
 }
+

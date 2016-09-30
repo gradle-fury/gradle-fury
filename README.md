@@ -1,5 +1,3 @@
-Note: There may be some strong language on this site. Discretion advised.
-
 # gradle-fury
 
 *"Before I could pull the trigger, I was hit by lightning and bitten by a cobra. I blacked out, and
@@ -13,7 +11,9 @@ Purpose
 -------
 
 An alternative Gradle helper to publish multi-flavored Android artifacts to local and remote Maven
-repositories with pretty POM files using simple property configuration.
+repositories with pretty POM files using simple property configuration. It also provides a wide
+variety of things that Maven provides out of the box, in gradle, such as encrypted credentials and
+the maven site plugin.
 
 Why use Gradle-Fury
 -------------------
@@ -32,7 +32,9 @@ Master: [![Build Status](https://travis-ci.org/chrisdoyle/gradle-fury.svg?branch
 
 Requirements
 ------------
+Requirements for using Gradle-Fury
 
+* JDK 7
 * Gradle 2+
 * For Android support, gradle android plugin v1.3.0 or higher, we test using a variety of configurations. See the [Travis build matrix](https://github.com/chrisdoyle/gradle-fury/blob/develop/.travis.yml)
 * For digital signature support, GPG must be installed on your computer. We test with gnugpg.
@@ -389,6 +391,113 @@ Then you'll have to manually edit local.properties to insert your cipher text.
 generally used for releases, such as, items specific to a scope, such as
 'debugCompile' aren't useful since it won't be in the release version. 
 
+
+## Quality Plugin
+
+Runs findbugs, checkstyle, and pmd on all your projects (android and java).
+Based off the work [done here](https://github.com/MasonLiuChn/AndroidCodeQuality).
+
+To apply to your project, apply this file under 'allprojects' then copy the files from gradle-fury/config and place it in your project
+
+```
+allprojects {
+        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
+  }
+```
+
+then execute with `gradelw build`
+
+Since the checks can add a lot of time to your build, you probably want to make it optional...
+
+```
+ allprojects {
+     if (project.hasProperty('profile') && project.profile.split(',').contains("ci")) {
+        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'     }
+  }
+```
+
+Then execute with `gradelw build -Pprofile=ci`
+
+
+## Maven Site Plugin
+
+Well it's not exactly the Maven Site Plugin, but it's our version of it. It's pretty darn close.
+It uses theming inspired by [Apache Fluido](http://maven.apache.org/skins/maven-fluido-skin/) and is loosely based
+on the work Paul Speed-2 @ filament did over [here](https://sourceforge.net/p/filament/code/HEAD/tree/trunk/site/build.gradle).
+
+Instead of the APT based sites, we opted for a simpler solution, a singular page template 
+which is then merged with generated content and your content using Markdown and the
+[Common Mark](https://github.com/atlassian/commonmark-java) renderer. We also
+looked at [Pegdown](https://github.com/sirthias/pegdown) but ran into performance issues.
+[Asciidoc](https://github.com/asciidoctor/asciidoctorj)/docbook
+ 
+### Make the site
+
+Before making the site, you should run all your tests and any gradle tasks that generate reports.
+If they were't created first, they won't be included with site generation.
+
+Also before making, you need to make some directories and files.
+
+```bash
+mkdir src
+mkdir src/site/
+```
+
+Next, you'll want to grab all the files from gradle-fury's [src/site/](https://github.com/chrisdoyle/gradle-fury/tree/develop/src/site).
+Put those files in your `src/site/` folder.
+
+Next, create or edit `index.md`. This will be come your site's `index.html`, the first page people will look at it. 
+
+**Note:** if you're looking for gradle-fury's index.md page, you won't find it. Instead, we copy this readme.md to the right place 
+and rename it.
+
+Most Github flavored markdown tags are supported. You can also any files put in `src/site/` will
+be included in the site. Any html or pdf files in the root `src/site/` will be auto-linked on the left hand site
+navigation menu.
+
+Finally, put this in your root build.gradle file. Do not place it within `allprojects`.
+
+```groovy
+
+apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/site.gradle'
+
+```
+
+We also took some liberties from the maven-site-plugin. Many of the pages it generates can be reduced to just a link.
+For instance, the location of the source (do we really need an entire web page that only shows the link to the source code?). 
+Same goes for CI, distro management and issue tracking.
+
+```bash
+./gradlew install -Pprofile=javadoc,sources
+# if needed, for distribution projects
+./gradlew distZip -Pprofile=javadoc,sources
+# if needed, for on device android test and reports
+./gradlew cC
+# if needed, for findbugs
+./gradlew check
+# if needed, for jacoco
+./gradlew jacocoTestReport
+
+# finally, generate the site
+./gradlew site
+```
+
+The output goes to `rootDir/build/site/` and can be overridden with `ext.buildWebsiteDir = rootDir.absolutePath + "/docs/"`
+
+In the future, we may add some extra tasks for zipping up the site, deploying to an ftp or something else.
+
+### What is generated by the site plugin?
+
+Here's a quick list
+
+ - Project Summary, all of the artifacts of your project, derived from the project itself and gradle.properties
+ - Project Team, from gradle.properties
+ - Links to the source, issue tracker, CI and distribution pages
+ - All javadocs are included and linked
+ - Project repository list, from gradle.properties
+ - Dependency report - for all the artifacts of your project, derived from the project itself
+ - Project reports - for all artifacts of the project, any and all things from the build/reports folder is included and linked (see the quality plugin). Includes test reports, connectedCheck, Findbugs, PMD, etc
+ - Converts and themes all your .md and .asciidoc files from the root/src/site and links them in
 
 Acknowledgements
 ----------------

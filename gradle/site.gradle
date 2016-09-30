@@ -1,0 +1,1383 @@
+/**
+ our attempt at a maven site plugin
+
+ never heard of it? Basically most Apache projects use it
+  - https://maven.apache.org/
+  - http://maven.apache.org/skins/maven-fluido-skin/
+  - http://hadoop.apache.org/
+
+ All of those are 'generated' sites, meaning that most or all of the content is located in the source
+ repo of the project and thus stays synced with the code. Everything else, like project reports, etc
+ are generated as part of the build process to help you make your code better and to provide full
+ disclosure.
+
+ Gradle says they are working on a site plugin, but there hasn't been any activity on it in several years.
+
+ We'd love to reuse doxia, but it is a bit on the complex side and extracting it from maven was attempted
+ and proved to be more difficult that writing one from scratch.
+
+ Heavily based on the work done by Paul Speed-2 @ filament
+ https://sourceforge.net/p/filament/code/HEAD/tree/trunk/site/build.gradle
+
+ http://maven.apache.org/skins/maven-fluido-skin/
+
+ To apply this to your project
+ - Copy the contents from gradle-fury/src/site into your source repo.
+ - Make sure the properties file for your project is configured (see fury's for an example)
+ - In your root build.gradle file, stick this in the end (not in all projects)
+
+     //this is the gradle-fury site plugin, very similar to the maven site plugin
+     apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/site.gradle'
+
+ Then execute it with
+
+ 'gradlew site'
+ or optionally
+
+ 'gradlew siteWar'
+ to produce a deployable war file
+
+ */
+
+
+buildscript{
+    repositories {
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        // https://mvnrepository.com/artifact/org.pegdown/pegdown
+        // oom errors classpath 'org.pegdown:pegdown:1.6.0'
+        classpath 'com.atlassian.commonmark:commonmark:0.7.0'
+        classpath 'com.atlassian.commonmark:commonmark-ext-gfm-tables:0.7.0'
+        classpath 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.7.0'
+        classpath 'com.atlassian.commonmark:commonmark-ext-autolink:0.7.0'
+        classpath 'org.apache.commons:commons-lang3:3.4'
+
+        //no go classpath 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
+
+
+
+        classpath 'org.asciidoctor:asciidoctorj:1.5.4'
+    }
+}
+
+import java.lang.reflect.Method
+import java.nio.charset.Charset
+import java.nio.file.Files
+import java.nio.file.Paths
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.commonmark.node.*;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer
+
+import java.text.SimpleDateFormat;
+
+if (!hasProperty("buildWebsiteDir")){
+    ext.buildWebsiteDir = "${rootDir}/build/site/"
+}
+ext.webSrcDir = "${rootDir}/src/site/"
+//ext.buildWebsiteDir = "${rootDir}/build/site/"
+ext.javadocsModules = new ArrayList<>();
+ext.reports = new ArrayList<>();
+
+if (!hasProperty("site.name"))
+    ext.setProperty("site.name", rootDir.getName());
+
+task site(group: "Gradle Fury Site Generation",
+        description: 'Builds the web-site contents.' )  << {
+    List<File> javadocs = copyJavadocPages(rootDir,true);
+
+    List<File> reportsDocs = copyReports(rootDir,true);
+
+    copyUserSiteSrc();
+
+    generateNavMenu();
+
+    prepareTemplate();
+
+    generateCannedContent(javadocs, reportsDocs);
+
+    int modifiedFiles = convertContent();
+    logger.info("Site generation complete, altered " + modifiedFiles + " files");
+
+    new File(project.ext.buildWebsiteDir + "/template.html").delete();
+
+}
+
+/**
+ * only used for generating a war file
+ */
+void createWebXml() {
+    new File(project.ext.buildWebsiteDir).mkdirs();
+    new File(project.ext.buildWebsiteDir + "/WEB-INF/").mkdirs();
+    String contents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<!DOCTYPE web-app PUBLIC\n" +
+            "    \"-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN\"\n" +
+            "    \"http://java.sun.com/dtd/web-app_2_3.dtd\">\n" +
+            "<web-app>\n" +
+            "    <session-config>\n" +
+            "        <session-timeout>\n" +
+            "            30\n" +
+            "        </session-timeout>\n" +
+            "    </session-config>\n" +
+            "    <welcome-file-list>\n" +
+            "        <welcome-file>index.html</welcome-file>\n" +
+            "    </welcome-file-list>\n" +
+            "</web-app>";
+    File file = new File(project.ext.buildWebsiteDir + "WEB-INF/web.xml");
+    PrintWriter out = new PrintWriter(file);
+    out.println(contents);
+    out.close()
+}
+
+
+task siteWar(group: "Gradle Fury Site Generation",
+        description: 'Builds the web-site as a war file.',
+        dependsOn:[site])  << {
+
+    createWebXml();
+    task(zipResources, type: Zip) {
+        destinationDir new File("${rootDir}/build/")
+        archiveName 'site.war'
+        from project.ext.buildWebsiteDir
+
+    }.execute()
+
+}
+siteWar.dependsOn site
+
+
+
+
+def prepareTemplate(){
+    long time = System.currentTimeMillis();
+    project.ext.siteTemplate = "";
+    project.ext.siteTimestamp = time;
+
+    String header = readFile(ext.webSrcDir + "/template.html", Charset.defaultCharset());
+    header = preprocessContents(header);
+    String fork = getForkMe();
+    header = header.replace('${forkMeOnGitHub}', fork);
+
+    //${generatedMenu}
+    header = header.replace('${generatedMenu}', project.ext.siteMenu);
+
+    project.ext.siteTemplate = header;
+
+
+
+
+
+}
+
+
+int convertContent(){
+    return processContent(new File(ext.buildWebsiteDir));
+}
+
+int processContent(File directory){
+    int count=0;
+    File f= directory;
+    File[] files = f.listFiles();
+    for (int i=0; i < files.length; i++){
+        if (files[i].isDirectory()){
+            //recurse
+            count+=processContent(files[i]);
+        } else if (!files[i].isHidden() && files[i].isFile()){
+            if (processFile(files[i]))
+                count++;
+        }
+    }
+    return count;
+}
+
+/**
+ * processes a file and performs basic find/replace tasks. This is what injects site templates
+ * and whatnot into a file.
+ *
+ * It also processes non-site contents, such as generated reports by converting absolute paths to relevative one
+ * @param file
+ * @return returns true if the file was modified, false otherwise
+ */
+boolean processFile(File file){
+    if (file.getName().endsWith(".html") || file.getName().endsWith(".xml") || file.getName().endsWith(".txt")){
+        //this bit of trickery removes parent paths from reports, because who wants to know what
+        //your local file system looks like when browsing a site
+        long start = System.currentTimeMillis();
+        String contents = readFile(file.getAbsolutePath(), Charset.defaultCharset());
+        contents = contents.replace(rootDir.absolutePath, ".");
+        PrintWriter out = new PrintWriter(file);
+        out.println(contents);
+        out.close()
+        logger.info("Transform (remove absolute paths) " + file.getAbsolutePath() + " complete in " + (System.currentTimeMillis() - start) + "ms");
+        return true;
+    }
+
+
+    if (file.getName().endsWith(".md") || file.getName().endsWith(".asciidoc") ) {
+        //read all contents
+        //process
+        long start = System.currentTimeMillis();
+
+        String contents = readFile(file.getAbsolutePath(), Charset.defaultCharset());
+
+        contents = preprocessContents(contents);
+
+        if (file.getName().toLowerCase().endsWith(".md")) {
+            //render it
+            List<org.commonmark.Extension> extensions = new ArrayList<>();
+            extensions.add(org.commonmark.ext.gfm.tables.TablesExtension.create());
+            extensions.add(org.commonmark.ext.gfm.strikethrough.StrikethroughExtension.create());
+            extensions.add(org.commonmark.ext.autolink.AutolinkExtension.create());
+            Parser parser = Parser.builder().extensions(extensions).build();
+
+            //TODO replace [[ with [, the next | with ]( and ]] with .html)
+
+            Node document = parser.parse(contents);
+            HtmlRenderer renderer = HtmlRenderer.builder().extensions(extensions).build();
+            contents = renderer.render(document);  // "<p>This is <em>Sparta</em></p>\n"
+
+            //inject into the template
+            String template = project.ext.siteTemplate;
+            contents = template.replace('${body}', contents);
+
+            //save it
+            String targetFileName = file.getAbsolutePath();
+            targetFileName = targetFileName.substring(0, targetFileName.lastIndexOf(".")) + ".html"
+
+            PrintWriter out = new PrintWriter(targetFileName);
+            out.println(contents);
+            out.close()
+            logger.info("Transform as markdown " + file.getAbsolutePath() + " complete in " + (System.currentTimeMillis() - start) + "ms");
+            file.delete();
+            return true;
+        }
+        else if (file.getName().toLowerCase().endsWith(".asciidoc")) {
+            org.asciidoctor.Asciidoctor asciidoctor = org.asciidoctor.Asciidoctor.Factory.create();
+            Map<String, Object> asciidoctorOptions = org.asciidoctor.OptionsBuilder.options().safe(
+                    org.asciidoctor.SafeMode.SAFE)
+                    .asMap();
+            //render it
+            contents = asciidoctor.convert(contents,asciidoctorOptions);
+
+            //inject into template
+            String template = project.ext.siteTemplate;
+            contents = template.replace('${body}', contents);
+
+            //save it
+            String targetFileName = file.getAbsolutePath();
+            targetFileName = targetFileName.substring(0,targetFileName.lastIndexOf(".")) + ".html"
+            PrintWriter out = new PrintWriter(targetFileName);
+            out.println(contents);
+            out.close()
+            logger.info("Transform as asciidoc " + file.getAbsolutePath() + " complete in " + (System.currentTimeMillis() - start) + "ms");
+            file.delete();
+            return true;
+        }
+        //TODO future ascii based documentation formats?
+
+    }
+    return false;
+}
+
+/**
+ * replaces variables ${something} with ext values
+ * @param content
+ * @return
+ */
+def preprocessContents(String content){
+
+    Properties p = new Properties();
+    p.load(new FileInputStream(rootDir.absolutePath + "/gradle.properties"));
+    def iterator = p.entrySet().iterator();
+    while (iterator.hasNext()){
+        def next = iterator.next();
+        content=content.replace('${' + next.getKey() + '}', StringEscapeUtils.escapeHtml4(next.getValue()));
+    }
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+    content=content.replace('${currentYYYYMMDD}', sdf.format(new Date(project.ext.siteTimestamp)));
+
+    sdf = new SimpleDateFormat("yyyy-MM-dd");
+    content=content.replace('${currentYYYY-MM-DD}', sdf.format(new Date(project.ext.siteTimestamp)));
+
+
+    return content;
+}
+static String readFile(String path, Charset encoding)
+        throws IOException
+{
+    byte[] encoded = Files.readAllBytes(Paths.get(path));
+    return new String(encoded, encoding);
+}
+
+def generateNavMenu(){
+
+    StringBuilder sb = new StringBuilder();
+    File[] srcs =new File(ext.webSrcDir).listFiles(new FilenameFilter() {
+        @Override
+        boolean accept(File file, String name) {
+            if (name.toLowerCase().endsWith(".html") ||
+                    name.toLowerCase().endsWith(".md") ||
+                    name.toLowerCase().endsWith(".asciidoc") ||
+                    name.toLowerCase().endsWith(".pdf"))
+                return true;
+            return false;
+        }
+    });
+    if (srcs!=null){
+        for (int i=0; i < srcs.length; i++){
+            String file = srcs[i].getName();
+            if (file.equalsIgnoreCase("template.html"))
+                continue;
+            if (file.equalsIgnoreCase("index.md"))
+                continue;
+            //trim off the extension
+            file = file.substring(0,file.lastIndexOf("."));
+            String name = file;
+            name = name.replace("-", " ");
+            name = org.apache.commons.lang3.StringUtils.join(
+                    org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(name),' ');
+            name = org.apache.commons.lang3.StringUtils.capitalize(name);
+            sb.append(" <li>\n" +
+                    "\n" +
+                    "                                <a href=\"" + file + ".html\" title=\"" + StringEscapeUtils.escapeHtml4(name) + "\">\n" +
+                    "                                    <span class=\"none\"></span>\n" +
+                    "                                    " + StringEscapeUtils.escapeHtml4(name) + "</a>\n" +
+                    "                            </li>" );
+        }
+    }
+    project.ext.siteMenu = sb.toString();
+
+}
+
+
+def generateTeamList(){
+    PrintWriter out;
+    String rootdir = ext.buildWebsiteDir;
+
+    //team-list
+    StringBuilder team = new StringBuilder();
+
+    team.append('## The Team\n A successful project requires many people to play many roles. Some members write code or documentation, while others are valuable as testers, submitting patches and suggestions.\n' +
+            '\n' +
+            'The team is comprised of Members and Contributors. Members have direct access to the source of a project and actively evolve the code-base. Contributors improve the project through submission of patches and suggestions to the Members. The number of Contributors to the project is unbounded. Get involved today. All contributions to the project are greatly appreciated.\n\n');
+
+    team.append("## Members\n\n" +
+            "The following is a list of developers with commit privileges that have directly contributed to the project in one way or another.\n\n");
+
+
+    if (hasProperty("pom.developers.developer.0.id")) {
+        team.append("| Id | Name | Email | Organization | Roles \n");
+        team.append("| --- | --- | --- | --- | --- |\n")
+
+        // parse the roles of each developer
+        for (def i = 0; hasProperty("pom.developers.developer.${i}.id"); ++i) {
+
+            team.append("| ").append(StringEscapeUtils.escapeHtml4(project.property("pom.developers.developer.${i}.id")));
+            team.append("| ");
+            if (hasProperty("pom.developers.developer.${i}.name"))
+                team.append(StringEscapeUtils.escapeHtml4(project.property("pom.developers.developer.${i}.name")));
+            team.append("| ");
+            if (hasProperty("pom.developers.developer.${i}.email"))
+                team.append(StringEscapeUtils.escapeHtml4(project.property("pom.developers.developer.${i}.email")));
+            team.append("| ");
+            if (hasProperty("pom.developers.developer.${i}.organization"))
+                team.append(StringEscapeUtils.escapeHtml4(project.property("pom.developers.developer.${i}.organization")));
+            team.append("| ");
+
+            if (hasProperty("pom.developers.developer.${i}.role.0")) {
+
+                for (def j = 0; hasProperty("pom.developers.developer.${i}.role.${j}"); ++j) {
+
+                    team.append(StringEscapeUtils.escapeHtml4(project.property("pom.developers.developer.${i}.role.${j}"))).append("<br>");
+
+                }
+            }
+            team.append("\n");
+
+
+        }
+
+    }
+    else team.append("No one was listed, check gradle.properties");
+
+    team.append("\n\n");
+    out = new PrintWriter(rootdir + "/team-list.md");
+    out.println(team.toString());
+    out.close()
+}
+
+
+def generateJavadocContent(List<File> javadocs){
+
+    PrintWriter out;
+    String rootdir = ext.buildWebsiteDir;
+    //java docs
+    StringBuilder javadocMarkdown = new StringBuilder();
+
+    javadocMarkdown.append('## Javadoc\n Here\'s all the Javadocs generate for the project ${site.name}\n\n');
+    javadocMarkdown.append("| Module \t| Javadocs \t|\n");
+    javadocMarkdown.append("| ------ \t| -------- \t|\n")
+    //String rootdir = ext.buildWebsiteDir;
+    for (int i = 0; i < javadocs.size(); i++) {
+        File f = javadocs.get(i);
+        if (new File(f.getAbsolutePath() + "/index.html").exists()) {
+            String subpath = f.getAbsolutePath().replace(rootdir, "");
+            javadocMarkdown.append("| ").append(f.getName()).append(" \t| [Javadocs](").append(subpath + "/index.html").append(") \t|\n");
+        } else {
+            //we have variants to deal with
+            File[] variants = f.listFiles();
+            if (variants != null) {
+                for (int k = 0; k < variants.length; k++) {
+                    File variant = variants[k];
+                    if (new File(variant.getAbsolutePath() + "/index.html").exists()) {
+                        String subpath = variant.getAbsolutePath().replace(rootdir, "");
+                        javadocMarkdown.append("| ").append(f.getName()).append(" \t| [").append(variant.getName()).append("](").append(subpath+ "/index.html").append(") \t |\n");
+                    }
+                }
+            }
+        }
+    }
+    javadocMarkdown.append("\n\n");
+    out = new PrintWriter(rootdir + "/javadoc.md");
+    out.println(javadocMarkdown.toString());
+    out.close()
+}
+
+
+def generateReportList(List<File> reports){
+    PrintWriter out;
+    String rootdir = ext.buildWebsiteDir;
+
+    StringBuilder reportsMarkdown = new StringBuilder();
+
+    reportsMarkdown.append('## Project Reports\n Here\'s all the Reports that were generated during the build for the project [${site.name}](${pom.url})\n\n');
+    reportsMarkdown.append("| Module \t | Report Type\t| Link \t|\n");
+    reportsMarkdown.append("| ------ \t | ------     \t| ---- \t|\n")
+
+    List<ReportsContainer> rpts = scanReports(reports);
+    for (int i=0; i < rpts.size(); i++){
+
+        ReportsContainer r = rpts.get(i);
+        reportsMarkdown.
+                append("| ").
+                append(r.module).
+                append(" | ").
+                append(org.apache.commons.lang3.StringUtils.capitalize(r.reportType)).
+                append(" \t| ");
+        for (int k=0; k < r.links.size(); k++){
+            reportsMarkdown.
+                    append("<a href=\"javascript:showReport('" + r.links.get(k).url + "');\">").
+                    append(org.apache.commons.lang3.StringUtils.capitalize(r.links.get(k).text)).
+                    append("</a> ");
+                    //append(r.links.get(k).url).
+                    //append(") ");
+        }
+        reportsMarkdown.append("| \n");
+
+    }
+
+    reportsMarkdown.append("\n\n");
+    out = new PrintWriter(rootdir + "/reports.md");
+    out.println(reportsMarkdown.toString());
+    out.close()
+}
+
+
+class ReportsContainer{
+    String module;
+    String reportType;
+    List<Link> links = new ArrayList<>();
+
+
+    static ReportsContainer containsModuleReport(String module, String reportType, List<ReportsContainer> items){
+        for (int i=0; i < items.size(); i++){
+            if (items.get(i).module.equalsIgnoreCase(module) &&
+                    items.get(i).reportType.equalsIgnoreCase(reportType))
+                return items.get(i);
+
+        }
+        return null;
+    }
+
+}
+
+class Link{
+    String text;
+    String url;
+    public String toString(){
+        return "Link: " + text + " " + url;
+    }
+    public static boolean containsLink(List<Link> links,  Link newlink){
+        if (links==null || newlink==null)
+            return false;
+        for (int i=0; i < links.size(); i++){
+            if (links.get(i).text.equalsIgnoreCase(newlink.text) &&
+                links.get(i).url.equalsIgnoreCase(newlink.url))
+                return true;
+        }
+        return false;
+    }
+}
+
+/**
+ * this atrocious bit of code is necessary because gradle has 0 governance for storing reports
+ *
+ * to be honest, it's kind of brittle and because THERE'S NO GOVERNANCE!!! it's kind of hard to
+ * guess and whatever the hell report task xyz produces.
+ *
+ * TODO special handling for findbugs and/or jacoco?
+ * @param reports
+ * @return
+ */
+List<ReportsContainer> scanReports(List<String> reports){
+    List<ReportsContainer> ret = new ArrayList<>();
+    String rootdir = ext.buildWebsiteDir;
+    for (int i = 0; i < reports.size(); i++) {
+        File f = reports.get(i);
+        //f is the module name
+
+        File[] report = f.listFiles();
+        if (report != null) {
+            for (int k = 0; k < report.length; k++) {
+                File test = report[k];
+                //i hate that i need to do special handling for everything. f gradle
+                if (test.getName().equalsIgnoreCase("findbugs") || test.getName().equalsIgnoreCase("checkstyle")){
+                    //get all .html files within the folder 'test' and add to the findbugs reports
+
+                    File[] buggers = test.listFiles(new FilenameFilter() {
+                        @Override
+                        boolean accept(File file, String s) {
+                            return (s.toLowerCase().endsWith(".html"))
+                        }
+                    });
+                    if (buggers!=null){
+                        for (int bb=0;bb < buggers.length; bb++){
+                            String subpath = buggers[bb].getAbsolutePath().replace(rootdir, "");
+                            ReportsContainer r =null;
+
+                            r = ReportsContainer.containsModuleReport(f.getName(), test.getName(), ret);
+
+                            if (r==null){
+                                r = new ReportsContainer();
+                                r.module = f.getName();
+                                r.reportType = test.getName();
+
+                                Link l = new Link();
+                                l.text = buggers[bb].getName().substring(0, buggers[bb].getName().lastIndexOf("."));
+                                l.url =subpath;
+                                r.links.add(l);
+                                ret.add(r);
+                            } else {
+                                //report already exists, just add a new link
+                                Link l = new Link();
+                                l.text =  buggers[bb].getName().substring(0, buggers[bb].getName().lastIndexOf("."));
+                                l.url =subpath;
+                                if (!Link.containsLink(r.links,l))
+                                    r.links.add(l);
+                            }
+                        }
+                    }
+
+                } else if (test.getName().equalsIgnoreCase("jacoco")){
+                    //get all .html files within the folder 'test' and add to the findbugs reports
+                    File rpt = new File(test.absolutePath + "/test/html/index.html");
+                    if (rpt.exists()) {
+                        String subpath = rpt.getAbsolutePath().replace(rootdir, "");
+                        ReportsContainer r = null;
+
+                        r = ReportsContainer.containsModuleReport(f.getName(), test.getName(), ret);
+
+                        if (r == null) {
+                            r = new ReportsContainer();
+                            r.module = f.getName();
+                            r.reportType = test.getName();
+
+                            Link l = new Link();
+                            l.text = test.getName()
+                            l.url = subpath;
+                            r.links.add(l);
+                            ret.add(r);
+                        } else {
+                            //report already exists, just add a new link
+                            Link l = new Link();
+                            l.text = test.getName()
+                            l.url = subpath;
+                            if (!Link.containsLink(r.links, l))
+                                r.links.add(l);
+                        }
+                    }
+
+                } else if (test.getName().endsWith(".html")){
+
+                    String subpath = test.getAbsolutePath().replace(rootdir, "");
+                    //these are typically
+                    //apk lint reports or any report that just dumps itself in the build/repeorts file, how rude
+                    ReportsContainer r =null;
+                    if (test.getName().contains("lint-")) {
+                        r = ReportsContainer.containsModuleReport(f.getName(), "Lint", ret);
+                    } else {
+                        r = ReportsContainer.containsModuleReport(f.getName(), test.getName(), ret);
+                    }
+                    if (r==null){
+                        r = new ReportsContainer();
+                        r.module = f.getName();
+                        if (test.getName().contains("lint-")) {
+                            r.reportType = "Lint";
+                        } else {
+                            r.reportType = test.getName();
+                        }
+                        Link l = new Link();
+                        l.text = test.getName().replace(".html","");
+                        l.url =subpath;
+                        r.links.add(l);
+                        ret.add(r);
+                    } else {
+                        //report already exists, just add a new link
+                        Link l = new Link();
+                        l.text = test.getName().replace(".html","");
+                        l.url =subpath;
+                        if (!Link.containsLink(r.links,l))
+                            r.links.add(l);
+                    }
+
+                } else if (test.isDirectory() && new File(test.getAbsolutePath() + "/index.html").exists()) {
+                    String subpath = test.getAbsolutePath().replace(rootdir, "");
+                    //these are typically jar projects, test results
+                    ReportsContainer r =null;
+
+                    r = ReportsContainer.containsModuleReport(f.getName(), test.getName(), ret);
+
+                    if (r==null){
+                        r = new ReportsContainer();
+                        r.module = f.getName();
+                        r.reportType = test.getName();
+
+                        Link l = new Link();
+                        l.text = test.getName();
+                        l.url =subpath+ "/index.html";
+                        r.links.add(l);
+                        ret.add(r);
+                    } else {
+                        //report already exists, just add a new link
+                        Link l = new Link();
+                        l.text = test.getName();
+                        l.url =subpath+ "/index.html";
+                        if (!Link.containsLink(r.links,l))
+                            r.links.add(l);
+                    }
+
+                } else if (test.isDirectory()) {
+                    //these are typically
+                    //apks with variants test reports
+                    File[] variants = test.listFiles();
+                    if (variants!=null){
+                        for (int j=0; j < variants.length; j++){
+                            File index=new File(variants[j].getAbsolutePath() + "/index.html");
+                            if (index.exists()){
+                                String subpath = index.getAbsolutePath().replace(rootdir, "");
+
+                                ReportsContainer r =null;
+
+                                r = ReportsContainer.containsModuleReport(f.getName(), test.getName(), ret);
+
+                                if (r==null){
+                                    r = new ReportsContainer();
+                                    r.module = f.getName();
+                                    r.reportType = test.getName();
+
+                                    Link l = new Link();
+                                    l.text = variants[j].getName()
+                                    l.url =subpath;
+                                    r.links.add(l);
+                                    ret.add(r);
+                                } else {
+                                    //report already exists, just add a new link
+
+                                    Link l = new Link();
+                                    l.text = variants[j].getName()
+                                    l.url =subpath;
+                                    if (!Link.containsLink(r.links,l))
+                                        r.links.add(l);
+
+                                }
+
+                            } else if (variants[j].name.equalsIgnoreCase("connected")){
+                                //android connected tests. shit. seriously why?
+                                //this is for the "all" bit
+                                //all/index.html
+                                File testrpt = new File(variants[j].absolutePath + "/all/index.html");
+                                if (testrpt.exists()){
+                                    String subpath = testrpt.getAbsolutePath().replace(rootdir, "");
+                                    ReportsContainer r =null;
+
+                                    r = ReportsContainer.containsModuleReport(f.getName(), "AndroidTests", ret);
+
+                                    if (r==null){
+                                        r = new ReportsContainer();
+                                        r.module = f.getName();
+                                        r.reportType = "AndroidTests"
+
+                                        Link l = new Link();
+                                        l.text = "All"
+                                        l.url =subpath;
+                                        r.links.add(l);
+                                        ret.add(r);
+                                    } else {
+                                        //report already exists, just add a new link
+
+                                        Link l = new Link();
+                                        l.text = "All"
+                                        l.url =subpath;
+                                        if (!Link.containsLink(r.links,l))
+                                            r.links.add(l);
+
+                                    }
+                                }
+
+                                //this is for the "product flavors" bit
+                                //flavors/{name}/index.html
+                                File xxx = new File(variants[j].absolutePath + "/flavors/");
+                                if (xxx.exists()) {
+                                    File[] vars = xxx.listFiles(new FilenameFilter() {
+                                        @Override
+                                        boolean accept(File file, String s) {
+                                            if (file.isDirectory() && !s.equalsIgnoreCase("all"))
+                                                return true;
+                                            return false;
+                                        }
+                                    });
+                                    if (vars != null) {
+                                        for (int x = 0; x < vars.length; x++) {
+                                            File idx = new File(vars[x].absolutePath + "/index.html");
+                                            if (idx.exists()) {
+
+                                                String subpath = idx.getAbsolutePath().replace(rootdir, "");
+                                                ReportsContainer r = null;
+
+                                                r = ReportsContainer.containsModuleReport(f.getName(), "AndroidTests", ret);
+
+                                                if (r == null) {
+                                                    r = new ReportsContainer();
+                                                    r.module = f.getName();
+                                                    r.reportType = "AndroidTests"
+
+                                                    Link l = new Link();
+                                                    l.text = vars[x].name
+                                                    l.url = subpath;
+                                                    r.links.add(l);
+                                                    ret.add(r);
+                                                } else {
+                                                    //report already exists, just add a new link
+
+                                                    Link l = new Link();
+                                                    l.text = vars[x].name
+                                                    l.url = subpath;
+                                                    if (!Link.containsLink(r.links, l))
+                                                        r.links.add(l);
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else
+                                logger.debug(variants[j].getAbsolutePath() + " skipped");
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+    return ret;
+}
+
+def generateProjectInfo(){
+
+    PrintWriter out;
+    String rootdir = ext.buildWebsiteDir;
+
+
+    //reportsMarkdown docs
+    StringBuilder reportsMarkdown = new StringBuilder();
+
+    reportsMarkdown.append('## Project Information\n This document provides an overview of the various documents and links that are part of this project\'s general information. All of this content is automatically generated by [Gradle-Fury](https://github.com/chrisdoyle/gradle-fury) on behalf of the project.\n' +
+            '\n\n# Modules\n\n');
+    reportsMarkdown.append("| Group | Artifact |  Version | Description | Type | Variants |\n");
+    reportsMarkdown.append("| --- | --- | --- | --- | --- | --- |\n")
+    subprojects.each { p ->
+        //note path has a : prefix
+
+
+        boolean java=p.plugins.hasPlugin('java');
+        boolean distro = p.plugins.hasPlugin('distribution') || p.plugins.hasPlugin('application');
+        boolean war = p.plugins.hasPlugin('war');
+        boolean aar = p.plugins.hasPlugin('com.android.library')
+        boolean apk = p.plugins.hasPlugin('com.android.application')
+
+        String type = "";
+        if (war) {
+            type += " war ";
+        }
+        if (aar) {
+            type += " aar ";
+        }
+        if (apk) {
+            type += " apk ";
+        }
+        if (java) {
+            type += " jar "
+        }
+        if (distro){
+            type+=" zip "
+        }
+        String path = p.path;
+        path = path.substring(path.lastIndexOf(":")+1);
+
+        reportsMarkdown.append("| " +  StringEscapeUtils.escapeHtml4(p.group) + " | ");
+
+        reportsMarkdown.append("<a href=\"javascript:showModal('" + p.group + "','" + path + "','" + p.version + "','" + type + "','');\">");
+        reportsMarkdown.append( StringEscapeUtils.escapeHtml4(path) + "</a> | " + StringEscapeUtils.escapeHtml4(p.version)  );
+
+        reportsMarkdown.append(" | ").append(StringEscapeUtils.escapeHtml4(p.description)).append(" | ").append(type).append(" | ");
+        //variants
+        if (apk || aar){
+            def variants
+
+            if (p.android.hasProperty('applicationVariants')) {
+                variants = p.android.applicationVariants;
+            } else if (p.android.hasProperty('libraryVariants')) {
+                variants = p.android.libraryVariants;
+            }
+            variants.all { variant ->
+
+                reportsMarkdown.append(variant.name).append("<br>");
+            }
+        }
+        reportsMarkdown.append("\n");
+    }
+
+    reportsMarkdown.append("\n\n");
+    out = new PrintWriter(rootdir + "/project-info.md");
+    out.println(reportsMarkdown.toString());
+    out.close()
+}
+
+
+def reflect(object) {
+    Method[] bits = object.class.methods
+    for (int k =0; k < bits.length; k++){
+        System.out.println(bits[k].name);
+        for (int x= 0; x < bits[k].parameterTypes.length; x++) {
+            System.out.println("\t" + bits[k].parameterTypes[x].name);
+        }
+    }
+}
+
+
+def generateRepositories(){
+
+    //dependency-repos
+
+    PrintWriter out;
+    String rootdir = ext.buildWebsiteDir;
+
+
+    //reportsMarkdown docs
+    StringBuilder reportsMarkdown = new StringBuilder();
+
+    reportsMarkdown.append('## Dependency Repositories\n This document provides a listing of repositories this project uses for resolving dependencies. It may be useful to you if you use any of this project\'s dependencies within your own project.\n');
+    reportsMarkdown.append('\n\n## Repositories\n\n');
+    reportsMarkdown.append("| id | Name \t |  Url |\n");
+    reportsMarkdown.append("| ------ \t | ------ \t| ---- \t| \n")
+    project.repositories.each {
+        if (!it.url.toString().startsWith("file:/")) {
+            reportsMarkdown.append(it.name).append(" | ");
+            reportsMarkdown.append( it.name).append(" | ");
+            reportsMarkdown.append(it.url).append(" \n");
+        }
+
+    }
+
+
+
+
+    reportsMarkdown.append("\n\n");
+    out = new PrintWriter(rootdir + "/dependency-repos.md");
+    out.println(reportsMarkdown.toString());
+    out.close()
+}
+
+
+
+def generateCannedContent(List<File> javadocs, List<File> reports) {
+    /*
+    done modules list
+    TODO repositories
+    done artifact list?
+    done  issue tracking
+    done licenses
+    done team
+    done source repo
+    done  ci/integration
+    done reports, might be better to tie these to specific modules?
+
+     */
+
+
+    generateProjectInfo();
+    generateTeamList();
+    generateJavadocContent(javadocs);
+    generateReportList(reports);
+    generateLicenses();
+    generateRepositories();
+
+
+
+
+}
+
+def generateLicenses(){
+    //pom.licenses.license.0.name
+    PrintWriter out;
+    String rootdir = ext.buildWebsiteDir;
+
+    //team-list
+    StringBuilder team = new StringBuilder();
+
+    team.append('## Overview\n Typically the licenses listed for the project are that of the project itself, and not of dependencies.\n' +
+            '\n## Project Licenses\n\n');
+
+
+    if (hasProperty("pom.licenses.license.0.name")) {
+        team.append("| License | Link \t |  Distribution |\n");
+        team.append("| ------ \t | ------ \t| ---- |\n")
+        for (def i = 0; hasProperty("pom.licenses.license.${i}.name"); ++i) {
+
+            team.append(project.property("pom.licenses.license.${i}.name")).append(" | ");
+
+            if (hasProperty("pom.licenses.license.${i}.url"))
+            team.append("[").append(project.property("pom.licenses.license.${i}.url")).append("](").append(project.property("pom.licenses.license.${i}.url")).append(")");
+            team.append(" | ");
+            team.append((hasProperty("pom.licenses.license.${i}.distribution")
+                    ? project.property("pom.licenses.license.${i}.distribution") : ""));
+            team.append("\n");
+        }
+    }
+    else team.append("No license was listed, check gradle.properties");
+
+    team.append("\n\n");
+    out = new PrintWriter(rootdir + "/project-license.md");
+    out.println(team.toString());
+    out.close()
+}
+
+
+def copyUserSiteSrc(){
+    copy {
+
+        from new File(ext.webSrcDir).absolutePath
+        into ext.buildWebsiteDir
+    }
+}
+
+/**
+ * find and replace for all supported variables
+ */
+def preprocessUserSiteContent(){
+    //TODO
+}
+
+List<File> copyJavadocPages(File currentDir, boolean firstRun) {
+
+    List<File> ret = new ArrayList<>();
+    File[] files = currentDir.listFiles();
+    if (files != null) {
+        for (int i = 0; i < files.length; i++) {
+            if (firstRun && files[i].getAbsolutePath().endsWith("build"))
+                continue;
+            if (files[i].getAbsolutePath().endsWith("build/docs/javadoc")) {
+
+                String[] s2 = files[i].getAbsolutePath().split("/");
+                String module = s2[s2.length-4];
+                copy {
+                    from files[i].absolutePath
+                    into ext.buildWebsiteDir + "/javadocs/" + module
+                }
+                ret.add(new File(ext.buildWebsiteDir + "/javadocs/" + module));
+            } else if ( files[i].getAbsolutePath().contains("build/javadoc")){
+
+                String[] s2 = files[i].getAbsolutePath().split("/");
+                String module = s2[s2.length-3];
+                copy {
+                    from files[i].absolutePath
+                    into buildWebsiteDir + "/javadocs/" + module
+                }
+                ret.add(new File(buildWebsiteDir + "/javadocs/" + module));
+            }
+            else if (files[i].isDirectory() &&
+                    !files[i].isHidden()) {
+                        ret.addAll(copyJavadocPages(files[i],false));
+            }
+        }
+    }
+    return ret;
+    //search for build/docs/javadoc folders
+    //search for build/javadoc/flavorDebug/Release folders
+    //search for build/javadoc/debug/release folders
+}
+
+
+//search for build/docs/javadoc folders
+//search for build/javadoc/flavorDebug/Release folders
+//search for build/javadoc/debug/release folders
+List<File> copyReports(File currentDir, boolean firstRun) {
+
+    List<File> ret = new ArrayList<>();
+    File[] files = currentDir.listFiles();
+    if (files != null) {
+        for (int i = 0; i < files.length; i++) {
+            if (firstRun && files[i].getAbsolutePath().endsWith("build"))
+                continue;
+                if (files[i].getAbsolutePath().endsWith("build/reports")) {
+
+                String[] s2 = files[i].getAbsolutePath().split("/");
+                String module = s2[s2.length-3];
+                copy {
+                    from files[i].absolutePath
+                    into ext.buildWebsiteDir + "/reports/" + module
+                }
+                ret.add(new File(ext.buildWebsiteDir + "/reports/" + module));
+            } else if (files[i].getAbsolutePath().contains("build/outputs")) {
+                String[] s2 = files[i].getAbsolutePath().split("/");
+                String module = s2[s2.length-3];
+                copy {
+                    from files[i].absolutePath
+                    into ext.buildWebsiteDir + "/reports/" + module
+                    include '*.html'
+                    include 'lint*/**'
+                }
+                    ret.add(new File(ext.buildWebsiteDir + "/reports/" + module));
+
+
+            }
+            else if (files[i].isDirectory() &&
+                    !files[i].isHidden()) {
+                        ret.addAll(copyReports(files[i],false));
+                    }
+        }
+    }
+    return ret;
+}
+
+
+def getForkMe(){
+    Properties p = new Properties();
+    p.load(new FileInputStream(rootDir.absolutePath + "/gradle.properties"));
+
+
+    if (p.containsKey("site.forkMe.enable") &&
+        p.getProperty("site.forkMe.enable").equalsIgnoreCase("true") &&
+        p.containsKey("pom.scm.url") &&
+        p.getProperty("pom.scm.url").contains("https://github.com")){
+        return "<a href=\"" + p.getProperty("pom.scm.url") + "\">\n" +
+                "    <img style=\"position: absolute; top: 0; right: 0; border: 0; z-index: 10000;\"\n" +
+                "    src=\"./img/forkme_right_gray_6d6d6d.png\"\n" +
+                "    alt=\"Fork me on GitHub\">\n" +
+                "    </a>";
+    }
+    return "";
+}
+
+
+
+
+class DependencyReport{
+    List<Dependency> deps= new ArrayList<>();
+
+    public Dependency get(String group, String artifact){
+        for (int i=0; i < deps.size(); i++){
+            if (deps.get(i).artifactId.equals(artifact) &&
+                    deps.get(i).groupId.equals(group))
+                    return deps.get(i);
+        }
+        Dependency r = new Dependency();
+        r.groupId=group;
+        r.artifactId = artifact;
+        //r.type.add(type);
+        deps.add(r);
+        return r;
+    }
+}
+
+class Dependency{
+    Set<String> project = new HashSet<>();//that using this dependency
+    String groupId;
+    String artifactId;
+    Set<String> version = new HashSet<>()
+    Set<String>  type= new HashSet<>()
+
+}
+
+
+task dependencyReportMd(description: 'Generates a Maven parsable dependency list for the project', group: 'Reporting') << {
+    DependencyReport rpt = new DependencyReport();
+    int modules=1;
+
+
+
+    project.configurations.each { configuration ->
+        configuration.allDependencies.each { dependency ->
+            if (dependency.group != null && dependency.name != null) {
+                Set<String> t =resolveType(this.project, dependency.name, dependency.version)
+                Dependency d= rpt.get(dependency.group,dependency.name);
+                d.type.addAll(t);
+                d.project.add("root")
+
+                d.version.add(dependency.getVersion());
+            }
+        }
+    }
+
+    buildscript.configurations.all.each { configuration ->
+        configuration.allDependencies.each { dependency ->
+            if (dependency.group != null && dependency.name != null) {
+                if (dependency.group != null && dependency.name != null) {
+                    Set<String> t =resolveType(this.project, dependency.name, dependency.version)
+                    Dependency d= rpt.get(dependency.group,dependency.name);
+                    d.type.addAll(t);
+                    d.project.add("root buildscript")
+                    d.version.add(dependency.getVersion());
+
+                }
+            }
+        }
+    }
+
+    subprojects.findAll{
+        modules++;
+        it.each {
+            it.configurations.each { configuration ->
+                configuration.allDependencies.each { dependency ->
+                    if (dependency.group != null && dependency.name != null) {
+                        Set<String> t =resolveType(it, dependency.name, dependency.version)
+                        Dependency d= rpt.get(dependency.group,dependency.name);
+                        d.type.addAll(t);
+                        d.project.add(it.name)
+                        d.version.add(dependency.getVersion());
+                    }
+                }
+            }
+        }
+    }
+
+    subprojects.findAll{
+        it.each {
+            it.buildscript.configurations.all.each { configuration ->
+                configuration.allDependencies.each { dependency ->
+                    if (dependency.group != null && dependency.name != null) {
+                        if (dependency.group != null && dependency.name != null) {
+                            Set<String> t =resolveType(it, dependency.name, dependency.version)
+                            Dependency d= rpt.get(dependency.group,dependency.name);
+                            d.type.addAll(t);
+                            d.project.add(it.name + " buildscript")
+                            d.version.add(dependency.getVersion());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    //data collected...
+
+    String rootdir2 = project.ext.buildWebsiteDir;
+    new File(rootdir2).mkdirs();
+    //produce the report
+    File outfile = new File(rootdir2 + "/dependencyReport.md");
+    StringBuilder sb = new StringBuilder();
+    sb.append("# Dependency Report (Gradle Style) \n\n" +
+            "This report is useful to analyze your project's dependencies. If you are familiar with Maven's site plugin, this should look familiar " +
+            "(Dependency Convergence Report). In addition, " +
+            "if you want to quickly grab all of this projects dependencies and force them to load and cache for use " +
+            "offline use, you should be able to copy and paste the stuff below into an empty gradle.buid file or for a pom.xml.\n\n");
+    sb.append("## Dependency Convergence\n\n");
+
+    sb.append("Statistics\n\n");
+    int NOC=0;
+    int NOD=0;
+    int NOA=0;
+    int NOS=0;
+    int NOWC=0;
+    for (int i=0; i <rpt.deps.size(); i++){
+        NOD++;
+        def iterator = rpt.deps.get(i).version.iterator();
+        if (rpt.deps.get(i).version.size() > 1)
+            NOC+=rpt.deps.get(i).version.size();
+        while (iterator.hasNext()){
+
+            if (rpt.deps.get(i).type.isEmpty()){
+                NOA++;
+            }
+            else {
+                def iterator2 = rpt.deps.get(i).type.iterator();
+                while (iterator2.hasNext()) {
+                    iterator2.next();
+                    NOA++;  //requires the type classifier
+                }
+            }
+
+            String version = iterator.next();
+            if (version.toLowerCase().contains("-snapshot"))
+                NOS++;
+            if (version.contains("+"))
+                NOWC++;
+        }
+    }
+
+    int NODNOA = 100;
+    if (NOA > 0)
+        NODNOA = (int)((NOD/NOA) *100);
+    sb.append("|  | |\n")
+    sb.append("| --- | --- |\n")
+
+    sb.append("Modules: | " + modules + "\n");
+    sb.append("Number of dependencies (NOD): | " + NOD + "\n");
+    sb.append("Number of unique artifacts (NOA): | " + NOA + "\n");
+    sb.append("Number of version-conflicting artifacts (NOC): | " + NOC + "\n");
+    sb.append("Number of SNAPSHOT artifacts (NOS): | " + NOS + "\n");
+    sb.append("Number of Wildcard artifacts (NOWC): | " + NOWC + "\n");
+    sb.append("Convergence (NOD/NOA):| " + NODNOA + "%\n");
+    String readyState= "";
+    if (NOS > 0)
+        readyState = "You have SNAPSHOT dependencies.<br>";
+    if (NODNOA < 100){
+        readyState += "You do not have 100 % convergence.";
+    }
+    sb.append("Ready for release (100 % convergence and no SNAPSHOTS):| ");
+    if (readyState.length() > 0)
+        sb.append("**Error**<br>").append(readyState);
+    else sb.append("Ready");
+    sb.append("\n\n");
+    if (NOC>0)
+        logger.warn("WARN - You have " + NOC + " version conflicting artifacts");
+    if (NODNOA<100)
+        logger.warn("WARN - You have " + NODNOA + "% dependency convergence.");
+    if (NOWC>0)
+        logger.warn("WARN - You have " + NOWC + " dependencies with wildcard versions, this will effect the stability of the build.");
+
+       sb.append("## Gradle Dependencies, composite\n\n" +
+               "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is type qualifieres.\n\n````\n\ndependencies {\n");
+
+       for (int i=0; i <rpt.deps.size(); i++){
+
+           def iterator = rpt.deps.get(i).version.iterator();
+           if (rpt.deps.get(i).version.size() > 1)
+               sb.append("\n\n//WARN dependency converage flag! Currently used by the modules: " + rpt.deps.get(i).project + "\n");
+           while (iterator.hasNext()){
+                if (rpt.deps.get(i).type.isEmpty()){
+
+                    sb.append('\tcompile: \'');
+                    sb.append(rpt.deps.get(i).groupId + ":");
+                    sb.append(rpt.deps.get(i).artifactId + ":");
+                    sb.append(iterator.next());
+                    sb.append("\'\n");
+                } else {
+                    def iterator2 = rpt.deps.get(i).type.iterator();
+                    while (iterator2.hasNext()) {
+
+                        sb.append('\tcompile: \'');
+                        sb.append(rpt.deps.get(i).groupId + ":");
+                        sb.append(rpt.deps.get(i).artifactId + ":");
+                        sb.append(iterator.next());
+                        sb.append("@" + iterator2.next());
+                        sb.append("\'\n");
+                    }
+                }
+           }
+           if (rpt.deps.get(i).version.size() > 1)
+               sb.append("//END WARN dependency converage flag!\n\n    ")
+       }
+       sb.append('}\n````\n');
+
+          sb.append("## Maven Dependencies, composite\n\n" +
+                  "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is type qualifieres.\n\n````\n\n<dependencies>\n");
+
+          for (int i=0; i <rpt.deps.size(); i++){
+
+              def iterator = rpt.deps.get(i).version.iterator();
+              if (rpt.deps.get(i).version.size() > 1)
+                  sb.append("\n\n<!--WARN dependency converage flag! Currently used by the modules: " + rpt.deps.get(i).project + "-->\n");
+              while (iterator.hasNext()){
+                  if ( rpt.deps.get(i).type.isEmpty()){
+                      sb.append('\t<dependency>\n');
+                      sb.append('\t\t<groupId>' + rpt.deps.get(i).groupId + "</groupId>\n");
+                      sb.append('\t\t<artifactId>' + rpt.deps.get(i).artifactId + "</artifactId>\n");
+                      String version = iterator.next();
+                      //a gradle wildcard
+                      if ("+".equals(version)) {
+                          version = "LATEST"
+                      } else if (version.endsWith(".+")) {
+                          //the version is something.+
+                          version = "[" + version.replace(".+", ",)");
+                      } else if (version.endsWith("+")) {
+                          version = "[" + version.replace("+", ",)");
+                      }
+                      sb.append('\t\t<version>' + version + '</version>\n');
+                      sb.append("\t</dependency>\n");
+                  }else {
+                      def iterator2 = rpt.deps.get(i).type.iterator();
+                      while (iterator2.hasNext()) {
+                          sb.append('\t<dependency>\n');
+                          sb.append('\t\t<groupId>' + rpt.deps.get(i).groupId + "</groupId>\n");
+                          sb.append('\t\t<artifactId>' + rpt.deps.get(i).artifactId + "</artifactId>\n");
+                          String version = iterator.next();
+                          //a gradle wildcard
+                          if ("+".equals(version)) {
+                              version = "LATEST"
+                          } else if (version.endsWith(".+")) {
+                              //the version is something.+
+                              version = "[" + version.replace(".+", ",)");
+                          } else if (version.endsWith("+")) {
+                              version = "[" + version.replace("+", ",)");
+                          }
+                          sb.append('\t\t<version>' + version + '</version>\n');
+                          sb.append("\t\t<type>" + iterator2.next()).append("</type>\n");
+                          sb.append("\t</dependency>\n");
+                      }
+
+                  }
+              }
+              if (rpt.deps.get(i).version.size() > 1)
+                  sb.append("<!--END WARN dependency converage flag!-->\n\n    ")
+
+          }
+    sb.append('</dependencies>\n````\n');
+    FileOutputStream fos = new FileOutputStream(outfile);
+    fos.write((sb.toString()).getBytes());
+    fos.close();
+
+}
+
+Set<String> resolveType(Project it, String artificat, String version){
+    Set<String> ret = new HashSet<>();
+        String searcher = artificat + "-" + version;
+        it.configurations.findAll { set ->
+            set.each { config ->
+                // Note to future self
+                // this apparently dumps all every jar/aar/war/etc file name of the dependency
+                //useful for #21 and getting the type. This was initially written to get a list
+                //of all configurationNames since they vary from android/jar/war projects
+                if (config.name.startsWith(searcher)) {
+                    ret.add(config.name.substring(config.name.lastIndexOf(".")+1));
+                }
+
+            }
+    }
+    return ret;
+}
+
+site.dependsOn dependencyReportMd

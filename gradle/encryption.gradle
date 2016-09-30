@@ -20,7 +20,7 @@ import groovy.swing.SwingBuilder;
 
 // Issue 67 support password encryption,decryption
 
-task generateMasterKey << {
+task generateMasterKey(description: "Generates an encryption key", group:"Gradle Fury Crypto") << {
 
     String users_home = System.getProperty("user.home");
     users_home = users_home.replace("\\", "/"); // to support all platforms.
@@ -39,7 +39,7 @@ task generateMasterKey << {
         properties.load(new FileInputStream(keys));
     }
     if (properties.containsKey("FURY_MASTER_PASSWORD")){
-        throw new Exception("Master key already exists! If you overwrite it, all previously encrypted passwords will not be usable")
+        throw new Exception("Master key already exists! Aborting...If you remove or overwrite it, all previously encrypted passwords will not be usable")
     }
 
     int keysize=256;
@@ -52,10 +52,15 @@ task generateMasterKey << {
         SecretKey skey = kgen.generateKey();
         byte[] raw = skey.getEncoded();
         masterKey = asHex(raw);
-        System.out.println("Master Key (AES256) generated\n" +
-                "FURY_MASTER_PASSWORD=" + masterKey);
-        success=true;
+        String t = encrypt("TEST",masterKey);
+        String a = decrypt(t,masterKey);
+        if ("TEST".equalsIgnoreCase(a)) {
+            System.out.println("Master Key (AES256) generated\n" +
+                    "FURY_MASTER_PASSWORD=" + masterKey);
+            success = true;
+        }
     }catch (Exception ex){
+        System.out.println("I couldn't do AES256, you probably need to install the Java JCE, falling back to 128bit");
         logger.info("Error generating 256bit key", ex);
     }
     if (!success) {
@@ -66,9 +71,13 @@ task generateMasterKey << {
             SecretKey skey = kgen.generateKey();
             byte[] raw = skey.getEncoded();
             masterKey = asHex(raw);
-            System.out.println("Master Key (AES128) generated\n" +
-                    "FURY_MASTER_PASSWORD=" + masterKey);
-            System.out.println("I couldn't do AES256, you probably need to install the Java JCE, good luck!");
+            String t = encrypt("TEST",masterKey);
+            String a = decrypt(t,masterKey);
+            if ("TEST".equalsIgnoreCase(a)) {
+                System.out.println("Master Key (AES128) generated\n" +
+                        "FURY_MASTER_PASSWORD=" + masterKey);
+                success = true;
+            }
         } catch (Exception ex) {
             logger.warn("Error generating 128bit key", ex);
         }
@@ -84,7 +93,7 @@ task generateMasterKey << {
 /**
  * mvn --encrypt-password
  */
-task encryptPassword << {
+task encryptPassword(description: "Encrypts a password", group:"Gradle Fury Crypto") << {
 
     System.out.println("== Gradle Fury: ProTip: add '-PstoreField=xyz' to automatically write the cipher text to 'local.properties' as" +
             " xyz={cipher text}");
@@ -208,4 +217,14 @@ def  hexToBytes(char[] hex) {
         raw[i] = (byte) value;
     }
     return raw;
+}
+
+
+def decrypt(String ciphertext, String key){
+    byte[] raw = hexToBytes(key); //
+    SecretKeySpec skeySpec = new SecretKeySpec(raw, "AES");
+    Cipher cipher = Cipher.getInstance("AES");
+    cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+    byte[] original = cipher.doFinal(hexToBytes(ciphertext));
+    return new String(original);
 }
