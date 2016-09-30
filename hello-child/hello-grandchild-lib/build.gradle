@@ -1,0 +1,18 @@
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Grandchild Java Library (JAR)'
+
+apply plugin: 'java'
+
+compileJava {
+    sourceCompatibility = "${project.property('compileJava.sourceCompatibility')}"
+    targetCompatibility = "${project.property('compileJava.targetCompatibility')}"
+}
+
+dependencies {
+    compile "org.apache.commons:commons-lang3:${project.property('commons-lang3.version')}"
+
+    //since gradle 2.12, similar to maven "provided"
+    compileOnly "commons-io:commons-io:${project.property('commons-io.version')}"
+
+
+    testCompile "junit:junit:${project.property('junit.version')}"
+}

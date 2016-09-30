@@ -154,6 +154,11 @@ public class Main {
             "./gradle-fury-validation/build/publications/javaArtifacts/pom-default.xml" ,
 
 
+            "./hello-child/hello-grandchild-lib/build/libs/hello-grandchild-lib-$version.jar" ,
+            "./hello-child/hello-grandchild-lib/build/libs/hello-grandchild-lib-$version-javadoc.jar" ,
+            "./hello-child/hello-grandchild-lib/build/libs/hello-grandchild-lib-$version-sources.jar" ,
+            "./hello-child/hello-grandchild-lib/build/publications/javaArtifacts/pom-default.xml" ,
+
 
             "./hello-universe-lib/build/libs/hello-universe-lib-$version.jar" ,
             "./hello-universe-lib/build/libs/hello-universe-lib-$version-javadoc.jar" ,
@@ -177,6 +182,12 @@ public class Main {
             "~/.m2/repository/com/chrisdoyle/hello-world-aar/$version/hello-world-aar-$version.pom",
 
             //gradhell is also published locally, but shouldn't be, ignoring for now
+
+            "~/.m2/repository/com/chrisdoyle/hello-grandchild-lib/$version/hello-grandchild-lib-$version.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-grandchild-lib/$version/hello-grandchild-lib-$version-sources.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-grandchild-lib/$version/hello-grandchild-lib-$version-javadoc.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-grandchild-lib/$version/hello-grandchild-lib-$version.pom",
+
 
             "~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version.jar",
             "~/.m2/repository/com/chrisdoyle/hello-world-lib/$version/hello-world-lib-$version-sources.jar",
@@ -237,6 +248,7 @@ public class Main {
             //broken with local publishing
             // "~/.m2/repository/com/chrisdoyle/hello-world-dist/$version/hello-world-dist-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-universe-lib/$version/hello-universe-lib-$version.pom",
+            "~/.m2/repository/com/chrisdoyle/hello-grandchild-lib/$version/hello-grandchild-lib-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version.pom",

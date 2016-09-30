@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="5.9">
+<file name="./hello-world-apk-overrides/src/main/java/com/chrisdoyle/helloworld/app/HelloWorldActivity.java">
+<error line="5" column="8" severity="warning" message="Unused import - android.support.design.widget.Snackbar." source="com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck"/>
+</file>
+</checkstyle>
+

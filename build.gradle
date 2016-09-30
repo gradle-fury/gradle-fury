@@ -40,6 +40,39 @@ allprojects  {
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
     }
+
+    /*
+        developer commentary:
+        in search ensuring that commonly ran 'check' plugin's output reports are visible after running
+        the site plugin, I ran into a boat load of issues just getting the basics plugins working with
+        both JAR/WAR and Android based projects.
+
+        "This highway leads to the shadowy tip of reality: you're on a through route to the land of
+        the different, the bizarre, the unexplainable...Go as far as you like on this road. Its
+        limits are only those of mind itself. Ladies and Gentlemen, you're entering the wondrous
+        dimension of imagination. . . Next stop The Gradle Zone." ― Rod Serling
+
+        Submitted for your approval is a gradle script that fixes the bullshit and get its running
+        during when running 'gradle build'
+        of a functioning solution for running findbugs, pmd, and checkstyle
+     */
+
+
+
+    /*******************************************************/
+    /*******************************************************/
+    // quality plugin
+    /*******************************************************/
+    /*******************************************************/
+    if (project.hasProperty('profile') && project.profile.split(',').contains("ci")) {
+        apply from: "${rootDir}/gradle/quality.gradle"
+        //apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
+    }
+    /*******************************************************/
+    /*******************************************************/
+    // END quality plugin
+    /*******************************************************/
+    /*******************************************************/
 }
 
 subprojects {
@@ -48,7 +81,62 @@ subprojects {
     task allDeps(type: DependencyReportTask) {}
 }
 
+
+
+/*******************************************************/
+/*******************************************************/
+// crypto plugin
+/*******************************************************/
+/*******************************************************/
+
 //this gives us the generateMasterKey and encryptPassword tasks
 //see https://github.com/chrisdoyle/gradle-fury/issues/67
 //apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle'
 apply from: "${rootDir}/gradle/encryption.gradle"
+
+/*******************************************************/
+/*******************************************************/
+// END crypto plugin
+/*******************************************************/
+/*******************************************************/
+
+
+
+
+
+
+
+/*******************************************************/
+/*******************************************************/
+// site plugin
+/*******************************************************/
+/*******************************************************/
+
+//this is the gradle-fury site plugin, very similar to the maven site plugin
+//apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/site.gradle'
+apply from: "${rootDir}/gradle/site.gradle"
+
+
+//this task is a gradle-fury specific thing, since we want to reuse the project readme as the homepage
+task copyReadme() << {
+    copy{
+        from rootDir.absolutePath + "/README.md"
+        into rootDir.absolutePath + "/src/site/"
+        rename ("README.md", "index.md")
+    }
+}
+site.dependsOn copyReadme
+
+//tip, you can override the output directory of the site by uncommenting the following
+ext.buildWebsiteDir = rootDir.absolutePath + "/docs/"
+
+//note that gradlew siteWar will always go to the build/site.war file
+
+/*******************************************************/
+/*******************************************************/
+// end site plugin
+/*******************************************************/
+/*******************************************************/
+
+
+

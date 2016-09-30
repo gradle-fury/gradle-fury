@@ -2092,24 +2092,31 @@ dependencies {
 }
 
 def isGraphvizDotAvailable() {
+
+    if (rootProject.hasProperty('isGraphvizDotAvailable')) {
+        return rootProject.ext.isGraphvizDotAvailable;
+    }
     //if os is mac, return false becasue the DOT build for mac os isn't so great and will cause
     //javadoc failures
     String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
     if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
-        logger.warn("Graphviz/DOT has some issues with MacOS and may cause javadoc generation to fail. Just a heads up");
+        logger.warn("WARN - Graphviz/DOT has some issues with MacOS and may cause javadoc generation to fail. Just a heads up");
     }
 
     //if opt-in is not set or is false, return false
     if (!project.hasProperty("fury.javadocs.umlgraph.enabled")) {
         logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
         return false;
     }
     if (project.property("fury.javadocs.umlgraph.enabled")==null) {
         logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
         return false;
     }
     if (!"true".equalsIgnoreCase(project.property("fury.javadocs.umlgraph.enabled"))){
         logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
         return false;
     }
     try {
@@ -2119,6 +2126,7 @@ def isGraphvizDotAvailable() {
 
         if (exitVal == 0) {
             logger.info("DOT is available");
+            rootProject.ext.isGraphvizDotAvailable=true;
             return true;
         }
     }catch (Exception ex){
@@ -2126,6 +2134,7 @@ def isGraphvizDotAvailable() {
     }
 
     logger.info("DOT is NOT available");
+    rootProject.ext.isGraphvizDotAvailable=false;
     return false;
 }
 
