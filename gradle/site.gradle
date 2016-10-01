@@ -56,6 +56,7 @@ buildscript{
         classpath 'org.apache.commons:commons-lang3:3.4'
 
         //no go classpath 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
+        classpath "org.jsoup:jsoup:1.9.2"
 
 
 
@@ -71,8 +72,13 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
-import java.text.SimpleDateFormat;
+import java.text.SimpleDateFormat
+import java.util.regex.Matcher
+import java.util.regex.Pattern;
 
 if (!hasProperty("buildWebsiteDir")){
     ext.buildWebsiteDir = "${rootDir}/build/site/"
@@ -305,6 +311,7 @@ def preprocessContents(String content){
 
     return content;
 }
+
 static String readFile(String path, Charset encoding)
         throws IOException
 {
@@ -454,28 +461,31 @@ def generateReportList(List<File> reports){
     StringBuilder reportsMarkdown = new StringBuilder();
 
     reportsMarkdown.append('## Project Reports\n Here\'s all the Reports that were generated during the build for the project [${site.name}](${pom.url})\n\n');
-    reportsMarkdown.append("| Module \t | Report Type\t| Link \t|\n");
-    reportsMarkdown.append("| ------ \t | ------     \t| ---- \t|\n")
+    reportsMarkdown.append("| Module \t | Report Type\t| Link | Errors | Warnings \t|\n");
+    reportsMarkdown.append("| ------ \t | ------     \t| ---- | --- | --- \t|\n")
 
     List<ReportsContainer> rpts = scanReports(reports);
     for (int i=0; i < rpts.size(); i++){
 
         ReportsContainer r = rpts.get(i);
-        reportsMarkdown.
-                append("| ").
-                append(r.module).
-                append(" | ").
-                append(org.apache.commons.lang3.StringUtils.capitalize(r.reportType)).
-                append(" \t| ");
+
         for (int k=0; k < r.links.size(); k++){
+            reportsMarkdown.
+                    append("| ").
+                    append(r.module).
+                    append(" | ").
+                    append(org.apache.commons.lang3.StringUtils.capitalize(r.reportType)).
+                    append(" \t| ");
+
             reportsMarkdown.
                     append("<a href=\"javascript:showReport('" + r.links.get(k).url + "');\">").
                     append(org.apache.commons.lang3.StringUtils.capitalize(r.links.get(k).text)).
                     append("</a> ");
-                    //append(r.links.get(k).url).
-                    //append(") ");
+            reportsMarkdown.append(" | " + r.links.get(k).errors);
+            reportsMarkdown.append(" | " + r.links.get(k).warnings);
+            reportsMarkdown.append(" | \n");
         }
-        reportsMarkdown.append("| \n");
+
 
     }
 
@@ -491,7 +501,14 @@ class ReportsContainer{
     String reportType;
     List<Link> links = new ArrayList<>();
 
-
+    /**
+     *  scans through the list looking for the module and report type, returns if found.
+     *  writte primarily to prevent duplicates
+     * @param module
+     * @param reportType
+     * @param items
+     * @return an instance of ReportsContainer or null
+     */
     static ReportsContainer containsModuleReport(String module, String reportType, List<ReportsContainer> items){
         for (int i=0; i < items.size(); i++){
             if (items.get(i).module.equalsIgnoreCase(module) &&
@@ -502,11 +519,134 @@ class ReportsContainer{
         return null;
     }
 
+    static String readFile(String path, Charset encoding)
+            throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
+    }
+
+    public void analyzeReport(String file, Link link){
+        System.out.println("Analyzing report [" + module + "][" + reportType + "][" + link.text + "][" + file + "]" );
+        if ("checkstyle".equalsIgnoreCase(reportType)){
+            processCheckStyle(file, link);
+        } else if ("findbugs".equalsIgnoreCase(reportType)){
+            processFindbugs(file, link);
+        } else if ("tests".equalsIgnoreCase(reportType)){
+            processGradleTestResult(file, link);
+        } else if ("lint".equalsIgnoreCase(reportType)){
+            processAndroidLint(file, link);
+        } else if ("androidtests".equalsIgnoreCase(reportType)){
+            processGradleTestResult(file, link);
+        }
+
+    }
+
+
+    private void processAndroidLint(String file, Link link){
+        String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
+        Document doc = Jsoup.parse(contents);
+        Pattern p= Pattern.compile("[0-9]+ errors and [0-9]+ warnings found");
+        Matcher m = p.matcher(doc.text());
+        if (m.find()){
+
+            String item =m.group(0);
+            String[] bits=item.split(" ");
+            int errors = Integer.parseInt(bits[0]);
+            int warns = Integer.parseInt(bits[3]);
+            link.errors+=errors;
+            link.warnings+=warns;
+            System.out.println("Error count: " + errors + " warnings: " + warns);
+        } else {
+            System.out.println("WARN couldn't analyze lint results, regex patter not found");
+        }
+    }
+
+    private void processGradleTestResult(String file, Link link){
+        String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
+        Document doc = Jsoup.parse(contents);
+        //find the Summary h3, next (2nd in doc) table, second row, second column is errors
+
+        for (Element table : doc.select("#failures .counter")) {
+            String errors = table.text();
+            System.out.println("Error count: " + errors);
+            link.errors += Integer.parseInt(errors.trim());
+            break;
+        }
+
+    }
+
+    private void processFindbugs(String file, Link link){
+        String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
+        Document doc = Jsoup.parse(contents);
+        //find the Summary h3, next (2nd in doc) table, second row, second column is errors
+
+        for (Element table : doc.select("table")) {
+            int count2=0;
+            for (Element tr : table.select("tr")){
+                count2++;
+                if (count2==2 || count2==3){     //high priority items
+                    int count3=0;
+                    for (Element td : tr.select("td")){
+                        count3++;
+                        if (count3==2){
+                            String errors = td.text();
+                            if (errors==null || errors.trim().length()==0)
+                                continue;
+                            if (count2==2) {
+                                System.out.println("Error count: " + errors);
+                                link.errors += Integer.parseInt(errors.trim());
+                            } else if (count2==3) {
+                                System.out.println("Warnings count: " + errors);
+                                link.warnings += Integer.parseInt(errors.trim());
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+        }
+
+    }
+
+    private void processCheckStyle(String file, Link link){
+        String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
+        Document doc = Jsoup.parse(contents);
+        //find the Summary h3, next (2nd in doc) table, second row, second column is errors
+        int count=0;
+        for (Element table : doc.select("table")) {
+            count++;
+            if (count==2){
+                int count2=0;
+                for (Element tr : table.select("tr")){
+                    count2++;
+                    if (count2==2){
+                        int count3=0;
+                        for (Element td : tr.select("td")){
+                            count3++;
+                            if (count3==2){
+                                String errors = td.text();
+                                System.out.println("Error count: " + errors);
+                                link.errors+= Integer.parseInt(errors.trim());
+                                return;
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
 }
 
 class Link{
     String text;
     String url;
+    int warnings=0;
+    int errors=0;
+
     public String toString(){
         return "Link: " + text + " " + url;
     }
@@ -565,18 +705,22 @@ List<ReportsContainer> scanReports(List<String> reports){
                                 r.module = f.getName();
                                 r.reportType = test.getName();
 
+
                                 Link l = new Link();
                                 l.text = buggers[bb].getName().substring(0, buggers[bb].getName().lastIndexOf("."));
                                 l.url =subpath;
                                 r.links.add(l);
+                                r.analyzeReport(buggers[bb].getAbsolutePath(),l);
                                 ret.add(r);
                             } else {
                                 //report already exists, just add a new link
                                 Link l = new Link();
                                 l.text =  buggers[bb].getName().substring(0, buggers[bb].getName().lastIndexOf("."));
                                 l.url =subpath;
-                                if (!Link.containsLink(r.links,l))
+                                if (!Link.containsLink(r.links,l)) {
                                     r.links.add(l);
+                                    r.analyzeReport(buggers[bb].getAbsolutePath(),l);
+                                }
                             }
                         }
                     }
@@ -595,18 +739,23 @@ List<ReportsContainer> scanReports(List<String> reports){
                             r.module = f.getName();
                             r.reportType = test.getName();
 
+
                             Link l = new Link();
                             l.text = test.getName()
                             l.url = subpath;
                             r.links.add(l);
+                            r.analyzeReport(rpt.getAbsolutePath(),l);
                             ret.add(r);
                         } else {
                             //report already exists, just add a new link
+
                             Link l = new Link();
                             l.text = test.getName()
                             l.url = subpath;
-                            if (!Link.containsLink(r.links, l))
+                            if (!Link.containsLink(r.links, l)) {
                                 r.links.add(l);
+                                r.analyzeReport(rpt.getAbsolutePath(),l);
+                            }
                         }
                     }
 
@@ -633,14 +782,17 @@ List<ReportsContainer> scanReports(List<String> reports){
                         l.text = test.getName().replace(".html","");
                         l.url =subpath;
                         r.links.add(l);
+                        r.analyzeReport(test.getAbsolutePath(),l);
                         ret.add(r);
                     } else {
                         //report already exists, just add a new link
                         Link l = new Link();
                         l.text = test.getName().replace(".html","");
                         l.url =subpath;
-                        if (!Link.containsLink(r.links,l))
+                        if (!Link.containsLink(r.links,l)) {
                             r.links.add(l);
+                            r.analyzeReport(test.getAbsolutePath(),l);
+                        }
                     }
 
                 } else if (test.isDirectory() && new File(test.getAbsolutePath() + "/index.html").exists()) {
@@ -659,14 +811,17 @@ List<ReportsContainer> scanReports(List<String> reports){
                         l.text = test.getName();
                         l.url =subpath+ "/index.html";
                         r.links.add(l);
+                        r.analyzeReport(test.getAbsolutePath()+"/index.html",l);
                         ret.add(r);
                     } else {
                         //report already exists, just add a new link
                         Link l = new Link();
                         l.text = test.getName();
                         l.url =subpath+ "/index.html";
-                        if (!Link.containsLink(r.links,l))
+                        if (!Link.containsLink(r.links,l)) {
                             r.links.add(l);
+                            r.analyzeReport(test.getAbsolutePath()+"/index.html",l);
+                        }
                     }
 
                 } else if (test.isDirectory()) {
@@ -692,6 +847,7 @@ List<ReportsContainer> scanReports(List<String> reports){
                                     l.text = variants[j].getName()
                                     l.url =subpath;
                                     r.links.add(l);
+                                    r.analyzeReport(index.getAbsolutePath(),l);
                                     ret.add(r);
                                 } else {
                                     //report already exists, just add a new link
@@ -699,8 +855,10 @@ List<ReportsContainer> scanReports(List<String> reports){
                                     Link l = new Link();
                                     l.text = variants[j].getName()
                                     l.url =subpath;
-                                    if (!Link.containsLink(r.links,l))
+                                    if (!Link.containsLink(r.links,l)) {
                                         r.links.add(l);
+                                        r.analyzeReport(index.getAbsolutePath(),l);
+                                    }
 
                                 }
 
@@ -724,15 +882,17 @@ List<ReportsContainer> scanReports(List<String> reports){
                                         l.text = "All"
                                         l.url =subpath;
                                         r.links.add(l);
+                                        r.analyzeReport(testrpt.getAbsolutePath(),l);
                                         ret.add(r);
                                     } else {
                                         //report already exists, just add a new link
-
                                         Link l = new Link();
                                         l.text = "All"
                                         l.url =subpath;
-                                        if (!Link.containsLink(r.links,l))
+                                        if (!Link.containsLink(r.links,l)) {
                                             r.links.add(l);
+                                            r.analyzeReport(testrpt.getAbsolutePath(),l);
+                                        }
 
                                     }
                                 }
@@ -764,19 +924,22 @@ List<ReportsContainer> scanReports(List<String> reports){
                                                     r.module = f.getName();
                                                     r.reportType = "AndroidTests"
 
-                                                    Link l = new Link();
-                                                    l.text = vars[x].name
-                                                    l.url = subpath;
-                                                    r.links.add(l);
-                                                    ret.add(r);
-                                                } else {
-                                                    //report already exists, just add a new link
 
                                                     Link l = new Link();
                                                     l.text = vars[x].name
                                                     l.url = subpath;
-                                                    if (!Link.containsLink(r.links, l))
+                                                    r.links.add(l);
+                                                    r.analyzeReport(idx.getAbsolutePath(),l);
+                                                    ret.add(r);
+                                                } else {
+                                                    //report already exists, just add a new link
+                                                    Link l = new Link();
+                                                    l.text = vars[x].name
+                                                    l.url = subpath;
+                                                    if (!Link.containsLink(r.links, l)) {
                                                         r.links.add(l);
+                                                        r.analyzeReport(idx.getAbsolutePath(),l);
+                                                    }
 
                                                 }
                                             }
@@ -1060,7 +1223,7 @@ List<File> copyReports(File currentDir, boolean firstRun) {
         for (int i = 0; i < files.length; i++) {
             if (firstRun && files[i].getAbsolutePath().endsWith("build"))
                 continue;
-                if (files[i].getAbsolutePath().endsWith("build/reports")) {
+            if (files[i].getAbsolutePath().endsWith("build/reports")) {
 
                 String[] s2 = files[i].getAbsolutePath().split("/");
                 String module = s2[s2.length-3];
@@ -1070,6 +1233,7 @@ List<File> copyReports(File currentDir, boolean firstRun) {
                 }
                 ret.add(new File(ext.buildWebsiteDir + "/reports/" + module));
             } else if (files[i].getAbsolutePath().contains("build/outputs")) {
+                    //this part is primarily for apk and aar lint reports
                 String[] s2 = files[i].getAbsolutePath().split("/");
                 String module = s2[s2.length-3];
                 copy {
@@ -1084,8 +1248,9 @@ List<File> copyReports(File currentDir, boolean firstRun) {
             }
             else if (files[i].isDirectory() &&
                     !files[i].isHidden()) {
+                //this is for subprojects, grandchildren, etc
                         ret.addAll(copyReports(files[i],false));
-                    }
+            }
         }
     }
     return ret;
@@ -1220,10 +1385,10 @@ task dependencyReportMd(description: 'Generates a Maven parsable dependency list
             "This report is useful to analyze your project's dependencies. If you are familiar with Maven's site plugin, this should look familiar " +
             "(Dependency Convergence Report). In addition, " +
             "if you want to quickly grab all of this projects dependencies and force them to load and cache for use " +
-            "offline use, you should be able to copy and paste the stuff below into an empty gradle.buid file or for a pom.xml.\n\n");
+            "offline, you should be able to copy and paste the stuff below into an empty gradle.buid file or for a pom.xml.\n\n");
     sb.append("## Dependency Convergence\n\n");
 
-    sb.append("Statistics\n\n");
+    sb.append("Dependency Statistics\n\n");
     int NOC=0;
     int NOD=0;
     int NOA=0;
@@ -1287,7 +1452,8 @@ task dependencyReportMd(description: 'Generates a Maven parsable dependency list
         logger.warn("WARN - You have " + NOWC + " dependencies with wildcard versions, this will effect the stability of the build.");
 
        sb.append("## Gradle Dependencies, composite\n\n" +
-               "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is type qualifieres.\n\n````\n\ndependencies {\n");
+               "This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. " +
+               "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.\n\n````\n\ndependencies {\n");
 
        for (int i=0; i <rpt.deps.size(); i++){
 
@@ -1321,7 +1487,8 @@ task dependencyReportMd(description: 'Generates a Maven parsable dependency list
        sb.append('}\n````\n');
 
           sb.append("## Maven Dependencies, composite\n\n" +
-                  "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is type qualifieres.\n\n````\n\n<dependencies>\n");
+                  "This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. "+
+                  "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.\n\n````\n\n<dependencies>\n");
 
           for (int i=0; i <rpt.deps.size(); i++){
 

@@ -119,6 +119,7 @@ public class TestPostPublication {
             System.out.println(file.attr("href"));
             if (!file.attr("href").equalsIgnoreCase("../"))
                 ret.add(file.attr("href"));
+
         }
 
         return ret;

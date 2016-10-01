@@ -65,7 +65,7 @@ dependencies {
     compile group: 'commons-codec', name: 'commons-codec', version: '1+'
 
     //just to have an AAR that's in mavenCentral
-    compile 'org.osmdroid:osmdroid-android:5.2@aar'
+    compile 'org.osmdroid:osmdroid-android:5.4.1:release@aar'
     compile "junit:junit:+"
 
 

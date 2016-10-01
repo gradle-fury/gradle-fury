@@ -515,7 +515,18 @@ afterEvaluate { project ->
                 }
             }
 
-            task javadocJar(type: Jar, dependsOn: javadoc) {
+            task javadocJarPrep(dependsOn: javadoc) {
+                File f = new File(project.buildDir.absolutePath + "/../src/main/java");
+                if (f.exists()){
+                    copy {
+                        from f.absolutePath
+                        into "$project.buildDir/docs/javadoc/"
+                        include "**/doc-files/*"
+                    }
+                }
+            }
+
+            task javadocJar(type: Jar, dependsOn: [javadoc,javadocJarPrep]) {
                 classifier = 'javadoc'
                 from javadoc.destinationDir
             }
@@ -626,8 +637,32 @@ afterEvaluate { project ->
                     exclude '**/R.java'
                 }
 
-                project.task("generate${variant.name.capitalize()}JavadocJar", type: Jar,
+                project.task("generate${variant.name.capitalize()}JavadocJarCopy",
                         dependsOn: "${variant.name}Javadoc") {
+                    description = 'Copies from src/doc-files for inclusion within javadocs, if it exists'
+
+                    File f = new File(project.buildDir.absolutePath + "/../src/main/java");
+                    if (f.exists()){
+                        copy {
+                            from f.absolutePath
+                            into "$project.buildDir/javadoc/$variant.name/"
+                            include "**/doc-files/*"
+                        }
+                    }
+                    //and the variants
+                    f = new File(project.buildDir.absolutePath + "/../src/$variant.name/java");
+                    if (f.exists()){
+                        copy {
+                            from f.absolutePath
+                            into "$project.buildDir/javadoc/$variant.name/"
+                            include "**/doc-files/*"
+                        }
+                    }
+
+                }
+
+                project.task("generate${variant.name.capitalize()}JavadocJar", type: Jar,
+                        dependsOn: ["${variant.name}Javadoc","generate${variant.name.capitalize()}JavadocJarCopy"]) {
 
                     classifier "${variant.name}-javadoc"
 

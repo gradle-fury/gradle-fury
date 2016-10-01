@@ -68,7 +68,7 @@
                 2016-10-01
             </li>
             <li id="projectVersion" class="pull-right">
-                1.0.12
+                1.0.13-SNAPSHOT
             </li>
 
         </ul>
@@ -234,9 +234,9 @@
         <div id="bodyColumn" class="span10">
             <a name="topOfPage"></a>
             <h1>Dependency Report (Gradle Style)</h1>
-<p>This report is useful to analyze your project's dependencies. If you are familiar with Maven's site plugin, this should look familiar (Dependency Convergence Report). In addition, if you want to quickly grab all of this projects dependencies and force them to load and cache for use offline use, you should be able to copy and paste the stuff below into an empty gradle.buid file or for a pom.xml.</p>
+<p>This report is useful to analyze your project's dependencies. If you are familiar with Maven's site plugin, this should look familiar (Dependency Convergence Report). In addition, if you want to quickly grab all of this projects dependencies and force them to load and cache for use offline, you should be able to copy and paste the stuff below into an empty gradle.buid file or for a pom.xml.</p>
 <h2>Dependency Convergence</h2>
-<p>Statistics</p>
+<p>Dependency Statistics</p>
 <table>
 <thead>
 <tr><th></th><th></th></tr>
@@ -246,14 +246,14 @@
 <tr><td>Number of dependencies (NOD):</td><td>33</td></tr>
 <tr><td>Number of unique artifacts (NOA):</td><td>36</td></tr>
 <tr><td>Number of version-conflicting artifacts (NOC):</td><td>6</td></tr>
-<tr><td>Number of SNAPSHOT artifacts (NOS):</td><td>0</td></tr>
+<tr><td>Number of SNAPSHOT artifacts (NOS):</td><td>3</td></tr>
 <tr><td>Number of Wildcard artifacts (NOWC):</td><td>10</td></tr>
 <tr><td>Convergence (NOD/NOA):</td><td>91%</td></tr>
-<tr><td>Ready for release (100 % convergence and no SNAPSHOTS):</td><td><strong>Error</strong><br>You do not have 100 % convergence.</td></tr>
+<tr><td>Ready for release (100 % convergence and no SNAPSHOTS):</td><td><strong>Error</strong><br>You have SNAPSHOT dependencies.<br>You do not have 100 % convergence.</td></tr>
 </tbody>
 </table>
 <h2>Gradle Dependencies, composite</h2>
-<p>Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is type qualifieres.</p>
+<p>This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.</p>
 <pre><code>
 dependencies {
 	compile: 'org.umlgraph:umlgraph:5.6.6@jar'
@@ -262,10 +262,10 @@ dependencies {
 	compile: 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.7.0'
 	compile: 'com.atlassian.commonmark:commonmark-ext-autolink:0.7.0'
 	compile: 'org.apache.commons:commons-lang3:3.4@jar'
+	compile: 'org.jsoup:jsoup:1.9.2@jar'
 	compile: 'org.asciidoctor:asciidoctorj:1.5.4'
 	compile: 'commons-io:commons-io:2.5@jar'
 	compile: 'commons-cli:commons-cli:1.3@jar'
-	compile: 'org.jsoup:jsoup:1.9.2@jar'
 
 
 //WARN dependency converage flag! Currently used by the modules: [hello-grandchild-lib, hello-world-lib, hello-world-apk, gradle-fury-validation, hello-world-war, hello-universe-lib, hello-gradhell, hello-world-aar, hello-world-apk-overrides]
@@ -273,14 +273,15 @@ dependencies {
 	compile: 'junit:junit:4.12@jar'
 //END WARN dependency converage flag!
 
-    	compile: 'com.chrisdoyle:hello-world-lib:1.0.12@jar'
+    	compile: 'com.chrisdoyle:hello-world-lib:1.0.13-SNAPSHOT@jar'
 	compile: 'com.android.support:support-annotations:23.3.0@jar'
 	compile: 'org.jacoco:org.jacoco.agent:0.7.4.201502262128@jar'
 	compile: 'org.jacoco:org.jacoco.ant:0.7.4.201502262128@jar'
 	compile: 'com.android.support.test:runner:0.4.+'
 	compile: 'com.android.support.test:rules:0.4.+'
+	compile: 'com.squareup.leakcanary:leakcanary-android:1.4-beta2@aar'
 	compile: 'ch.acra:acra:4.7.0@aar'
-	compile: 'com.chrisdoyle:hello-world-aar:1.0.12@aar'
+	compile: 'com.chrisdoyle:hello-world-aar:1.0.13-SNAPSHOT@aar'
 
 
 //WARN dependency converage flag! Currently used by the modules: [hello-world-apk, hello-world-gmaps, hello-world-apk-overrides]
@@ -301,16 +302,15 @@ dependencies {
     	compile: 'org.apache.commons:commons-io:1.3.+'
 	compile: 'org.apache.commons:commons-math3:3.+'
 	compile: 'commons-codec:commons-codec:1+'
-	compile: 'org.osmdroid:osmdroid-android:5.2@aar'
-	compile: 'com.squareup.leakcanary:leakcanary-android:1.4-beta2@aar'
-	compile: 'com.chrisdoyle:hello-universe-lib:1.0.12@jar'
+	compile: 'org.osmdroid:osmdroid-android:5.4.1@aar'
+	compile: 'com.chrisdoyle:hello-universe-lib:1.0.13-SNAPSHOT@jar'
 	compile: 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2@aar'
 	compile: 'com.google.android.gms:play-services:8.+'
 	compile: 'com.google.android.gms:play-services-maps:8.+'
 }
 </code></pre>
 <h2>Maven Dependencies, composite</h2>
-<p>Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is type qualifieres.</p>
+<p>This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.</p>
 <pre><code>
 &lt;dependencies&gt;
 	&lt;dependency&gt;
@@ -346,6 +346,12 @@ dependencies {
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
+		&lt;groupId&gt;org.jsoup&lt;/groupId&gt;
+		&lt;artifactId&gt;jsoup&lt;/artifactId&gt;
+		&lt;version&gt;1.9.2&lt;/version&gt;
+		&lt;type&gt;jar&lt;/type&gt;
+	&lt;/dependency&gt;
+	&lt;dependency&gt;
 		&lt;groupId&gt;org.asciidoctor&lt;/groupId&gt;
 		&lt;artifactId&gt;asciidoctorj&lt;/artifactId&gt;
 		&lt;version&gt;1.5.4&lt;/version&gt;
@@ -360,12 +366,6 @@ dependencies {
 		&lt;groupId&gt;commons-cli&lt;/groupId&gt;
 		&lt;artifactId&gt;commons-cli&lt;/artifactId&gt;
 		&lt;version&gt;1.3&lt;/version&gt;
-		&lt;type&gt;jar&lt;/type&gt;
-	&lt;/dependency&gt;
-	&lt;dependency&gt;
-		&lt;groupId&gt;org.jsoup&lt;/groupId&gt;
-		&lt;artifactId&gt;jsoup&lt;/artifactId&gt;
-		&lt;version&gt;1.9.2&lt;/version&gt;
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 
@@ -388,7 +388,7 @@ dependencies {
     	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-world-lib&lt;/artifactId&gt;
-		&lt;version&gt;1.0.12&lt;/version&gt;
+		&lt;version&gt;1.0.13-SNAPSHOT&lt;/version&gt;
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
@@ -420,6 +420,12 @@ dependencies {
 		&lt;version&gt;[0.4,)&lt;/version&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
+		&lt;groupId&gt;com.squareup.leakcanary&lt;/groupId&gt;
+		&lt;artifactId&gt;leakcanary-android&lt;/artifactId&gt;
+		&lt;version&gt;1.4-beta2&lt;/version&gt;
+		&lt;type&gt;aar&lt;/type&gt;
+	&lt;/dependency&gt;
+	&lt;dependency&gt;
 		&lt;groupId&gt;ch.acra&lt;/groupId&gt;
 		&lt;artifactId&gt;acra&lt;/artifactId&gt;
 		&lt;version&gt;4.7.0&lt;/version&gt;
@@ -428,7 +434,7 @@ dependencies {
 	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-world-aar&lt;/artifactId&gt;
-		&lt;version&gt;1.0.12&lt;/version&gt;
+		&lt;version&gt;1.0.13-SNAPSHOT&lt;/version&gt;
 		&lt;type&gt;aar&lt;/type&gt;
 	&lt;/dependency&gt;
 
@@ -501,19 +507,13 @@ dependencies {
 	&lt;dependency&gt;
 		&lt;groupId&gt;org.osmdroid&lt;/groupId&gt;
 		&lt;artifactId&gt;osmdroid-android&lt;/artifactId&gt;
-		&lt;version&gt;5.2&lt;/version&gt;
-		&lt;type&gt;aar&lt;/type&gt;
-	&lt;/dependency&gt;
-	&lt;dependency&gt;
-		&lt;groupId&gt;com.squareup.leakcanary&lt;/groupId&gt;
-		&lt;artifactId&gt;leakcanary-android&lt;/artifactId&gt;
-		&lt;version&gt;1.4-beta2&lt;/version&gt;
+		&lt;version&gt;5.4.1&lt;/version&gt;
 		&lt;type&gt;aar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-universe-lib&lt;/artifactId&gt;
-		&lt;version&gt;1.0.12&lt;/version&gt;
+		&lt;version&gt;1.0.13-SNAPSHOT&lt;/version&gt;
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
