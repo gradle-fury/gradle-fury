@@ -63,7 +63,7 @@
                 2016-09-30
             </li>
             <li id="projectVersion" class="pull-right">
-                1.0.10
+                1.0.11-SNAPSHOT
             </li>
 
         </ul>
@@ -312,62 +312,98 @@ function showReport(url){
 
 /**
 * shows our maven/gradle helper modal
+type is the file extension
 */
 function showModal(group, artifact, version,type, classifier){
-    if ("" !== type){
+
+/**
+if classifier and types
+    foreach classifier
+        foreach types
+else if classifier
+    foreach classifier
+else if type
+    foreah type
+else
+    just output it
+*/
+    //string outputs
+    var maventxt ="";
+    var gradle="";
+
+    var hasClassifiers = classifier !== "" && classifier !== undefined;
+    var hasTypes = type !== "" && type !== undefined;
+
+    if (hasClassifiers && hasTypes){
         type = type.trim();
         var types = type.split(" ");
-        var maventxt ="";
-        var gradle="";
+        classifier = classifier.trim();
+        var classifiers = classifier.split(" ");
+        for (var i = 0; i < types.length; i++) {
+            if (types[i].trim().length==0)
+                continue;
+            for (var k = 0; k < classifiers.length; k++) {
+                if (classifiers[k].trim().length==0)
+                    continue;
+                maventxt+= "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
+                    "</artifactId>\n\t";
+                maventxt += "<type>" + types[i].trim() + "</type>\n\t";
+                maventxt += "<classifier>" + classifiers[k].trim() + "</classifier>\n\t";
+                maventxt +="<version>" + version + "</version>\n</dependency>\n";
+
+                gradle += "compile '" + group + ":" + artifact + ":" + version;
+                gradle += ":" + classifiers[k].trim();
+                gradle += "@" + types[i];
+                gradle += "'\n";
+            }
+
+        }
 
 
+    } else if (hasClassifiers) {
+        classifier = classifier.trim();
+        var types = classifier.split(" ");
+        for (var i = 0; i < types.length; i++) {
+            if (types[i].trim().length==0)
+                continue;
+            maventxt+= "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
+                "</artifactId>\n\t";
+            maventxt += "<classifier>" + types[i].trim() + "</classifier>\n\t";
+            maventxt +="<version>" + version + "</version>\n</dependency>\n";
+
+            gradle += "compile '" + group + ":" + artifact + ":" + version;
+            gradle += ":" + types[i];
+            gradle += "'\n";
+
+        }
+    } else if (hasTypes) {
+        type = type.trim();
+        var types = type.split(" ");
         for (var i = 0; i < types.length; i++) {
             if (types[i].trim().length==0)
                 continue;
             maventxt+= "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
                 "</artifactId>\n\t";
             maventxt += "<type>" + types[i].trim() + "</type>\n\t";
-            if (classifier !== "" && classifier !== undefined){
-                maventxt += "<classifier>" + classifier + "</classifier>\n\t";
-            }
             maventxt +="<version>" + version + "</version>\n</dependency>\n";
 
-
             gradle += "compile '" + group + ":" + artifact + ":" + version;
-            if (classifier !== "" && classifier !== undefined){
-                    gradle += ":" + classifier;
-                }
             gradle += "@" + types[i];
-
             gradle += "'\n";
 
         }
-        $("#mavenDep").text(maventxt);
-        $("#gradleDep").text(gradle);
-
-
     } else {
-        var maventxt = "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
-            "</artifactId>\n\t";
-            if (type !== "" && type !== undefined){
-                maventxt += "<type>" + type + "</type>\n\t";
-            }
-            if (classifier !== "" && classifier !== undefined){
-                maventxt += "<classifier>" + classifier + "</classifier>\n\t";
-            }
-            maventxt +="<version>" + version + "</version>\n</dependency>";
-         $("#mavenDep").text(maventxt);
+            //no type or classifiers
+         maventxt+= "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
+                "</artifactId>\n\t";
+         maventxt +="<version>" + version + "</version>\n</dependency>\n";
+         gradle += "compile '" + group + ":" + artifact + ":" + version;
+         gradle += "'\n";
 
-        var gradle = "compile '" + group + ":" + artifact + ":" + version;
-        if (classifier !== "" && classifier !== undefined){
-                gradle += ":" + classifier;
-            }
-        if (type !== "" && type !== undefined){
-                gradle += "@" + type;
-            }
-            gradle += "'";
-        $("#gradleDep").text(gradle);
     }
+
+    $("#mavenDep").text(maventxt);
+    $("#gradleDep").text(gradle);
     $('#modal1').modal()
 
 }

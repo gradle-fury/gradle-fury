@@ -63,7 +63,7 @@
                 2016-09-30
             </li>
             <li id="projectVersion" class="pull-right">
-                1.0.10
+                1.0.11-SNAPSHOT
             </li>
 
         </ul>
@@ -241,10 +241,10 @@
 <tr><td>Number of dependencies (NOD):</td><td>33</td></tr>
 <tr><td>Number of unique artifacts (NOA):</td><td>36</td></tr>
 <tr><td>Number of version-conflicting artifacts (NOC):</td><td>6</td></tr>
-<tr><td>Number of SNAPSHOT artifacts (NOS):</td><td>0</td></tr>
+<tr><td>Number of SNAPSHOT artifacts (NOS):</td><td>3</td></tr>
 <tr><td>Number of Wildcard artifacts (NOWC):</td><td>10</td></tr>
 <tr><td>Convergence (NOD/NOA):</td><td>91%</td></tr>
-<tr><td>Ready for release (100 % convergence and no SNAPSHOTS):</td><td><strong>Error</strong><br>You do not have 100 % convergence.</td></tr>
+<tr><td>Ready for release (100 % convergence and no SNAPSHOTS):</td><td><strong>Error</strong><br>You have SNAPSHOT dependencies.<br>You do not have 100 % convergence.</td></tr>
 </tbody>
 </table>
 <h2>Gradle Dependencies, composite</h2>
@@ -268,14 +268,14 @@ dependencies {
 	compile: 'junit:junit:4.12@jar'
 //END WARN dependency converage flag!
 
-    	compile: 'com.chrisdoyle:hello-world-lib:1.0.10@jar'
+    	compile: 'com.chrisdoyle:hello-world-lib:1.0.11-SNAPSHOT@jar'
 	compile: 'com.android.support:support-annotations:23.3.0@jar'
 	compile: 'org.jacoco:org.jacoco.agent:0.7.4.201502262128@jar'
 	compile: 'org.jacoco:org.jacoco.ant:0.7.4.201502262128@jar'
 	compile: 'com.android.support.test:runner:0.4.+'
 	compile: 'com.android.support.test:rules:0.4.+'
 	compile: 'ch.acra:acra:4.7.0@aar'
-	compile: 'com.chrisdoyle:hello-world-aar:1.0.10@aar'
+	compile: 'com.chrisdoyle:hello-world-aar:1.0.11-SNAPSHOT@aar'
 
 
 //WARN dependency converage flag! Currently used by the modules: [hello-world-apk, hello-world-gmaps, hello-world-apk-overrides]
@@ -298,7 +298,7 @@ dependencies {
 	compile: 'commons-codec:commons-codec:1+'
 	compile: 'org.osmdroid:osmdroid-android:5.2@aar'
 	compile: 'com.squareup.leakcanary:leakcanary-android:1.4-beta2@aar'
-	compile: 'com.chrisdoyle:hello-universe-lib:1.0.10@jar'
+	compile: 'com.chrisdoyle:hello-universe-lib:1.0.11-SNAPSHOT@jar'
 	compile: 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2@aar'
 	compile: 'com.google.android.gms:play-services:8.+'
 	compile: 'com.google.android.gms:play-services-maps:8.+'
@@ -383,7 +383,7 @@ dependencies {
     	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-world-lib&lt;/artifactId&gt;
-		&lt;version&gt;1.0.10&lt;/version&gt;
+		&lt;version&gt;1.0.11-SNAPSHOT&lt;/version&gt;
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
@@ -423,7 +423,7 @@ dependencies {
 	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-world-aar&lt;/artifactId&gt;
-		&lt;version&gt;1.0.10&lt;/version&gt;
+		&lt;version&gt;1.0.11-SNAPSHOT&lt;/version&gt;
 		&lt;type&gt;aar&lt;/type&gt;
 	&lt;/dependency&gt;
 
@@ -508,7 +508,7 @@ dependencies {
 	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-universe-lib&lt;/artifactId&gt;
-		&lt;version&gt;1.0.10&lt;/version&gt;
+		&lt;version&gt;1.0.11-SNAPSHOT&lt;/version&gt;
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
@@ -601,62 +601,98 @@ function showReport(url){
 
 /**
 * shows our maven/gradle helper modal
+type is the file extension
 */
 function showModal(group, artifact, version,type, classifier){
-    if ("" !== type){
+
+/**
+if classifier and types
+    foreach classifier
+        foreach types
+else if classifier
+    foreach classifier
+else if type
+    foreah type
+else
+    just output it
+*/
+    //string outputs
+    var maventxt ="";
+    var gradle="";
+
+    var hasClassifiers = classifier !== "" && classifier !== undefined;
+    var hasTypes = type !== "" && type !== undefined;
+
+    if (hasClassifiers && hasTypes){
         type = type.trim();
         var types = type.split(" ");
-        var maventxt ="";
-        var gradle="";
+        classifier = classifier.trim();
+        var classifiers = classifier.split(" ");
+        for (var i = 0; i < types.length; i++) {
+            if (types[i].trim().length==0)
+                continue;
+            for (var k = 0; k < classifiers.length; k++) {
+                if (classifiers[k].trim().length==0)
+                    continue;
+                maventxt+= "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
+                    "</artifactId>\n\t";
+                maventxt += "<type>" + types[i].trim() + "</type>\n\t";
+                maventxt += "<classifier>" + classifiers[k].trim() + "</classifier>\n\t";
+                maventxt +="<version>" + version + "</version>\n</dependency>\n";
+
+                gradle += "compile '" + group + ":" + artifact + ":" + version;
+                gradle += ":" + classifiers[k].trim();
+                gradle += "@" + types[i];
+                gradle += "'\n";
+            }
+
+        }
 
 
+    } else if (hasClassifiers) {
+        classifier = classifier.trim();
+        var types = classifier.split(" ");
+        for (var i = 0; i < types.length; i++) {
+            if (types[i].trim().length==0)
+                continue;
+            maventxt+= "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
+                "</artifactId>\n\t";
+            maventxt += "<classifier>" + types[i].trim() + "</classifier>\n\t";
+            maventxt +="<version>" + version + "</version>\n</dependency>\n";
+
+            gradle += "compile '" + group + ":" + artifact + ":" + version;
+            gradle += ":" + types[i];
+            gradle += "'\n";
+
+        }
+    } else if (hasTypes) {
+        type = type.trim();
+        var types = type.split(" ");
         for (var i = 0; i < types.length; i++) {
             if (types[i].trim().length==0)
                 continue;
             maventxt+= "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
                 "</artifactId>\n\t";
             maventxt += "<type>" + types[i].trim() + "</type>\n\t";
-            if (classifier !== "" && classifier !== undefined){
-                maventxt += "<classifier>" + classifier + "</classifier>\n\t";
-            }
             maventxt +="<version>" + version + "</version>\n</dependency>\n";
 
-
             gradle += "compile '" + group + ":" + artifact + ":" + version;
-            if (classifier !== "" && classifier !== undefined){
-                    gradle += ":" + classifier;
-                }
             gradle += "@" + types[i];
-
             gradle += "'\n";
 
         }
-        $("#mavenDep").text(maventxt);
-        $("#gradleDep").text(gradle);
-
-
     } else {
-        var maventxt = "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
-            "</artifactId>\n\t";
-            if (type !== "" && type !== undefined){
-                maventxt += "<type>" + type + "</type>\n\t";
-            }
-            if (classifier !== "" && classifier !== undefined){
-                maventxt += "<classifier>" + classifier + "</classifier>\n\t";
-            }
-            maventxt +="<version>" + version + "</version>\n</dependency>";
-         $("#mavenDep").text(maventxt);
+            //no type or classifiers
+         maventxt+= "<dependency>\n\t<groupId>" + group + "</groupId>\n\t<artifactId>" + artifact+
+                "</artifactId>\n\t";
+         maventxt +="<version>" + version + "</version>\n</dependency>\n";
+         gradle += "compile '" + group + ":" + artifact + ":" + version;
+         gradle += "'\n";
 
-        var gradle = "compile '" + group + ":" + artifact + ":" + version;
-        if (classifier !== "" && classifier !== undefined){
-                gradle += ":" + classifier;
-            }
-        if (type !== "" && type !== undefined){
-                gradle += "@" + type;
-            }
-            gradle += "'";
-        $("#gradleDep").text(gradle);
     }
+
+    $("#mavenDep").text(maventxt);
+    $("#gradleDep").text(gradle);
     $('#modal1').modal()
 
 }

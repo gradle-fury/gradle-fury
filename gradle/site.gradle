@@ -840,10 +840,27 @@ def generateProjectInfo(){
 
         reportsMarkdown.append("| " +  StringEscapeUtils.escapeHtml4(p.group) + " | ");
 
-        reportsMarkdown.append("<a href=\"javascript:showModal('" + p.group + "','" + path + "','" + p.version + "','" + type + "','');\">");
+        StringBuilder sb = new StringBuilder();
+        //variants
+        if (apk || aar){
+            def variants
+
+            if (p.android.hasProperty('applicationVariants')) {
+                variants = p.android.applicationVariants;
+            } else if (p.android.hasProperty('libraryVariants')) {
+                variants = p.android.libraryVariants;
+            }
+            variants.all { variant ->
+                sb.append(variant.name).append(" ");
+            }
+        }
+
+
+        reportsMarkdown.append("<a href=\"javascript:showModal('" + p.group + "','" + path + "','" + p.version + "','" + type + "','" + sb.toString() + "');\">");
         reportsMarkdown.append( StringEscapeUtils.escapeHtml4(path) + "</a> | " + StringEscapeUtils.escapeHtml4(p.version)  );
 
         reportsMarkdown.append(" | ").append(StringEscapeUtils.escapeHtml4(p.description)).append(" | ").append(type).append(" | ");
+
         //variants
         if (apk || aar){
             def variants
