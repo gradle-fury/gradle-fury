@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="5.2.3" timestamp="2016-09-30T17:41:40.704">
+<pmd version="5.2.3" timestamp="2016-10-01T08:00:43.199">
 <file name="./gradle-fury-validation/src/main/java/com/chrisdoyle/validation/Main.java">
 <violation beginline="26" endline="468" begincolumn="8" endcolumn="1" rule="ShortClassName" ruleset="Naming" package="com.chrisdoyle.validation" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/naming.html#ShortClassName" priority="4">
 Avoid short class names like Main
@@ -114,7 +114,4 @@ The String literal &quot; not found in &quot; appears 4 times in this file; the 
 </violation>
 </file>
 </pmd>
-
-
-
 

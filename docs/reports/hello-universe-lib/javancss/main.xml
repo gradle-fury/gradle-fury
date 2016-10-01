@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <javancss>
-  <date>2016-09-30</date>
-  <time>17:41:49</time>
+  <date>2016-10-01</date>
+  <time>08:00:52</time>
   <packages>
     <package>
       <name>com.chrisdoyle.helloworld</name>
@@ -105,7 +105,4 @@
     <ncss>24.00</ncss>
   </functions>
 </javancss>
-
-
-
 

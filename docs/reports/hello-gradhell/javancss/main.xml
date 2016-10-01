@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <javancss>
-  <date>2016-09-30</date>
-  <time>17:41:45</time>
+  <date>2016-10-01</date>
+  <time>08:00:47</time>
   <packages>
     <package>
       <name>com.chrisdoyle.gradhell</name>
@@ -63,7 +63,4 @@
     <ncss>2.00</ncss>
   </functions>
 </javancss>
-
-
-
 

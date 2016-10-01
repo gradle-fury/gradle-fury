@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <javancss>
-  <date>2016-09-30</date>
-  <time>17:41:40</time>
+  <date>2016-10-01</date>
+  <time>08:00:42</time>
   <packages>
     <package>
       <name>com.chrisdoyle.validation</name>
@@ -351,7 +351,4 @@
     <ncss>430.00</ncss>
   </functions>
 </javancss>
-
-
-
 
