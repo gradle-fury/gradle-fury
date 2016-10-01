@@ -70,8 +70,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.commonmark.node.*;
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.html.HtmlRenderer
+import org.commonmark.parser.*;
+import org.commonmark.renderer.html.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -237,7 +237,28 @@ boolean processFile(File file){
             extensions.add(org.commonmark.ext.gfm.tables.TablesExtension.create());
             extensions.add(org.commonmark.ext.gfm.strikethrough.StrikethroughExtension.create());
             extensions.add(org.commonmark.ext.autolink.AutolinkExtension.create());
-            Parser parser = Parser.builder().extensions(extensions).build();
+            Parser parser = Parser.builder().extensions(extensions).postProcessor(new PostProcessor() {
+                @Override
+                public Node process(Node arg0) {
+                    Node n = arg0;
+                    while (n != null) {
+                        if (arg0 instanceof Link) {
+                            Link link = (Link) arg0;
+                            String dest = link.getDestination();
+                            if (!"".equals(dest) && !dest.startsWith("http://") && !dest.startsWith("https://")) {
+                                dest = dest + ".html";
+                                link.setDestination(dest);
+                            }
+                        }
+                        process(n.getFirstChild());
+                        n= n.getNext();
+
+
+                    }
+                    return arg0;
+                }
+
+            }).build();
 
             //TODO replace [[ with [, the next | with ]( and ]] with .html)
 
