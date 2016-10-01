@@ -8,11 +8,11 @@
 
         <Package name="com.chrisdoyle.helloworld">
             <Stats>
-                <TotalClasses>3</TotalClasses>
-                <ConcreteClasses>3</ConcreteClasses>
+                <TotalClasses>2</TotalClasses>
+                <ConcreteClasses>2</ConcreteClasses>
                 <AbstractClasses>0</AbstractClasses>
                 <Ca>0</Ca>
-                <Ce>3</Ce>
+                <Ce>2</Ce>
                 <A>0</A>
                 <I>1</I>
                 <D>0</D>
@@ -26,9 +26,6 @@
                 <Class sourceFile="BogusUtil.java">
                     com.chrisdoyle.helloworld.BogusUtil
                 </Class>
-                <Class sourceFile="BogusUtilTest.java">
-                    com.chrisdoyle.helloworld.BogusUtilTest
-                </Class>
                 <Class sourceFile="BuildConfig.java">
                     com.chrisdoyle.helloworld.BuildConfig
                 </Class>
@@ -37,7 +34,36 @@
             <DependsUpon>
                 <Package>android.widget</Package>
                 <Package>java.lang</Package>
-                <Package>org.junit</Package>
+            </DependsUpon>
+
+            <UsedBy>
+            </UsedBy>
+        </Package>
+
+        <Package name="com.chrisdoyle.helloworld.test">
+            <Stats>
+                <TotalClasses>1</TotalClasses>
+                <ConcreteClasses>1</ConcreteClasses>
+                <AbstractClasses>0</AbstractClasses>
+                <Ca>0</Ca>
+                <Ce>1</Ce>
+                <A>0</A>
+                <I>1</I>
+                <D>0</D>
+                <V>1</V>
+            </Stats>
+
+            <AbstractClasses>
+            </AbstractClasses>
+
+            <ConcreteClasses>
+                <Class sourceFile="BuildConfig.java">
+                    com.chrisdoyle.helloworld.test.BuildConfig
+                </Class>
+            </ConcreteClasses>
+
+            <DependsUpon>
+                <Package>java.lang</Package>
             </DependsUpon>
 
             <UsedBy>
@@ -45,10 +71,6 @@
         </Package>
 
         <Package name="java.lang">
-            <error>No stats available: package referenced, but not analyzed.</error>
-        </Package>
-
-        <Package name="org.junit">
             <error>No stats available: package referenced, but not analyzed.</error>
         </Package>
     </Packages>
