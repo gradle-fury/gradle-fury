@@ -50,8 +50,13 @@ ${forkMeOnGitHub}
         <ul class="breadcrumb">
 
             <li class="">
-                <a href="${pom.organization.url}" class="externalLink" title="Apache">
+                <a href="${pom.organization.url}" class="externalLink" title="${pom.organization.name}">
                     ${pom.organization.name}</a>
+                <span class="divider">/</span>
+            </li>
+            <li class="">
+                <a href="${pom.url}" class="externalLink" title="${site.name}">
+                    ${site.name}</a>
 
             </li>
 
