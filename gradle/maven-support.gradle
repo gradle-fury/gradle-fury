@@ -960,63 +960,71 @@ def modifyGeneratedPom(pom) {
                 //https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
                 //maven only supports the following scope identifiers
                 //test, compile, provided, runtime, system,
+
                 configurationNames.each { configurationName ->
-                    configurations[configurationName].allDependencies.each { dependency ->
-                        if (dependency.group != null && dependency.name != null) {
+                    try {
+                        configurations[configurationName].allDependencies.each { dependency ->
+                            if (dependency.group != null && dependency.name != null) {
 
-                            addedDependencies++;
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', dependency.group)
-                            dependencyNode.appendNode('artifactId', dependency.name)
-                            if ("default".equalsIgnoreCase(configurationName) ||
-                                    "compile".equalsIgnoreCase(configurationName) ||
-                                    "releaseCompile".equalsIgnoreCase(configurationName))
-                                dependencyNode.appendNode('scope', "compile");
-                            else if ("testCompile".equalsIgnoreCase(configurationName) ||
-                                    "androidTestCompile".equalsIgnoreCase(configurationName))
-                                dependencyNode.appendNode('scope', "test");
-                            else if ("compileOnly".equalsIgnoreCase(configurationName) ||
-                                    "provided".equalsIgnoreCase(configurationName))
-                                dependencyNode.appendNode('scope', "provided");
-                            else if ("runtime".equalsIgnoreCase(configurationName))
-                                dependencyNode.appendNode('scope', "runtime");
+                                addedDependencies++;
+                                def dependencyNode = dependenciesNode.appendNode('dependency')
+                                dependencyNode.appendNode('groupId', dependency.group)
+                                dependencyNode.appendNode('artifactId', dependency.name)
+                                if ("default".equalsIgnoreCase(configurationName) ||
+                                        "compile".equalsIgnoreCase(configurationName) ||
+                                        "releaseCompile".equalsIgnoreCase(configurationName))
+                                    dependencyNode.appendNode('scope', "compile");
+                                else if ("testCompile".equalsIgnoreCase(configurationName) ||
+                                        "androidTestCompile".equalsIgnoreCase(configurationName))
+                                    dependencyNode.appendNode('scope', "test");
+                                else if ("compileOnly".equalsIgnoreCase(configurationName) ||
+                                        "provided".equalsIgnoreCase(configurationName))
+                                    dependencyNode.appendNode('scope', "provided");
+                                else if ("runtime".equalsIgnoreCase(configurationName))
+                                    dependencyNode.appendNode('scope', "runtime");
 
-                            if (dependency.version.endsWith("+")) {
-                                //a gradle wildcard
-                                if ("+".equals(dependency.version)) {
-                                    dependencyNode.appendNode('version', "LATEST")
-                                } else if (dependency.version.endsWith(".+")) {
-                                    //the version is something.+
-                                    dependencyNode.appendNode('version', "[" + dependency.version.replace(".+", ",)"))
-                                } else if (dependency.version.endsWith("+")) {
-                                    dependencyNode.appendNode('version', "[" + dependency.version.replace("+", ",)"))
+                                if (dependency.version.endsWith("+")) {
+                                    //a gradle wildcard
+                                    if ("+".equals(dependency.version)) {
+                                        dependencyNode.appendNode('version', "LATEST")
+                                    } else if (dependency.version.endsWith(".+")) {
+                                        //the version is something.+
+                                        dependencyNode.appendNode('version', "[" + dependency.version.replace(".+", ",)"))
+                                    } else if (dependency.version.endsWith("+")) {
+                                        dependencyNode.appendNode('version', "[" + dependency.version.replace("+", ",)"))
+                                    } else {
+                                        logger.warn("WARN - unhandled case for dependency version mediation for " +
+                                                dependency.group + ":" + dependency.name + ":" + dependency.version);
+                                    }
+                                    //TODO there may be other cases here
+
                                 } else {
-                                    logger.warn("WARN - unhandled case for dependency version mediation for " +
-                                            dependency.group + ":" + dependency.name + ":" + dependency.version);
+                                    dependencyNode.appendNode('version', dependency.version)
                                 }
-                                //TODO there may be other cases here
-
-                            } else {
-                                dependencyNode.appendNode('version', dependency.version)
-                            }
 
 // FIXME :: Issue #21: POM dependency generation shall support type and scope
 //                        dependencyNode.appendNode('type', ???)
 //                        dependencyNode.appendNode('scope', configurationName) // ???
 
-                            // if there are any exclusions in dependency
-                            if (dependency.excludeRules.size() > 0) {
-                                def exclusionsNode = dependencyNode.appendNode('exclusions')
-                                dependency.excludeRules.each { rule ->
-                                    def exclusionNode = exclusionsNode.appendNode('exclusion')
-                                    exclusionNode.appendNode('groupId', rule.group)
-                                    exclusionNode.appendNode('artifactId', rule.module)
+                                // if there are any exclusions in dependency
+                                if (dependency.excludeRules.size() > 0) {
+                                    def exclusionsNode = dependencyNode.appendNode('exclusions')
+                                    dependency.excludeRules.each { rule ->
+                                        def exclusionNode = exclusionsNode.appendNode('exclusion')
+                                        exclusionNode.appendNode('groupId', rule.group)
+                                        exclusionNode.appendNode('artifactId', rule.module)
+                                    }
                                 }
                             }
                         }
+                    }catch (Exception ex){
+                        logger.debug("Isseu 119, swallowed exception requesting the config name " + configurationName, ex);
+                        //fix for issue 119
+                        //always possible that the requested configuration does not exist on this project,
+                        //no skip it
                     }
                 }
-                //System.out.println("added " + addedDependencies + " dependencies")
+                logger.info("added " + addedDependencies + " dependencies")
             }
             //reflect(pom);
         }
