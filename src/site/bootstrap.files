@@ -1,0 +1,20 @@
+# this file is used by the gradle-fury site init script, you don't need it in your project
+# but we do need it on the gradle-fury site
+#
+# starts with a # means comment
+#
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/template.html
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/js/apache-maven-fluido-1.4.min.js
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/js/bootstrap-sortable.js
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/js/jquery-1.12.4.min.js
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/img/glyphicons-halflings.png
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/img/glyphicons-halflings-white.png
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/img/forkme_right_gray_6d6d6d.png
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/img/logo.png
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/images/internet-web-browser.png
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/css/apache-maven-fluido-1.4.min.css
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/css/bootstrap-sortable.css
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/css/print.css
+https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/css/site.css
+
+
