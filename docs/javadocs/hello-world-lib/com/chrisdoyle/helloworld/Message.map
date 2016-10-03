@@ -1,8 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node1_0" href="./Message.html" title="com.chrisdoyle.helloworld.Message" alt="" coords="109,120,184,147"/>
-<area shape="rect" id="node1" href="./Message.html" title="&lt;TABLE&gt;" alt="" coords="99,109,195,157"/>
-<area shape="rect" id="node2_1" href="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/Comparable.html" title="java.lang.Comparable" alt="" coords="15,11,131,55"/>
-<area shape="rect" id="node2" href="http://java.sun.com/j2se/1.4.2/docs/api/java/lang/Comparable.html" title="&lt;TABLE&gt;" alt="" coords="5,6,142,61"/>
-<area shape="rect" id="node3_2" href="http://java.sun.com/j2se/1.4.2/docs/api/java/io/Serializable.html" title="java.io.Serializable" alt="" coords="177,11,266,55"/>
-<area shape="rect" id="node3" href="http://java.sun.com/j2se/1.4.2/docs/api/java/io/Serializable.html" title="&lt;TABLE&gt;" alt="" coords="166,6,277,61"/>
-</map>
