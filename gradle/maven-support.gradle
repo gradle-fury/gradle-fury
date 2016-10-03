@@ -29,10 +29,14 @@ import org.w3c.dom.DOMException;
 
 import java.io.*;
 
+rootProject.ext.gradleFuryVersion = "1.0.14"
+
+
 /**=================================================================================================
  * Common Gradle script configuration for Maven tasks.
  *
  * @author Chris Doyle
+ * @author Alex O'Ree
  =================================================================================================*/
 buildscript {
     repositories {
@@ -215,6 +219,48 @@ if (hasProperty("android.signingConfigs.release.keyPassword")){
 }
 
 
+
+void printMOTD(){
+    if (!rootProject.hasProperty('fury')) {
+        rootProject.ext.fury = true;
+
+        println "\n   ----.--.     #####                                        #######                     \n" +
+                "--/ _  |___)  #     #  #####    ##   #####  #      ######    #       #    # #####  #   # \n" +
+                "     \\_|____) #        #    #  #  #  #    # #      #         #       #    # #    #  # #  \n" +
+                "       |____) #  ####  #    # #    # #    # #      #####     #####   #    # #    #   #   \n" +
+                "---\\___(__)   #     #  #####  ###### #    # #      #         #       #    # #####    #   \n" +
+                "               #    #  #   #  #    # #    # #      #         #       #    # #   #    #   \n" +
+                "                #####  #    # #    # #####  ###### ######    #        ####  #    #   #   \n";
+        println "                                         v" + rootProject.ext.gradleFuryVersion;
+        println "== Gradle Fury, bringing maven sensibility to gradle. It's NOT an incubating feature.";
+        String[] MOTD = [
+                "== Gradle Fury: ProTip: Use 'gradle.properties' to set all your version and pom related information.",
+                "== Gradle Fury: ProTip: Use 'gradle install' to publish to mavenLocal, works with AARs and APKs, even with variants",
+                "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=javadoc' to generate javadocs (android included, even with variants",
+                "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=sources' to generate source jars (android included, even with variants",
+                "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=javadoc,sources' to generate javadocs and source jars (android included, even with variants",
+                "== Gradle Fury: ProTip: For Android projects, apply gradle fury BEFORE the android{} block in your gradle.build file.",
+                "== Gradle Fury: ProTip: Use 'gradle publishArtifacts' to publish to a nexus repository, works with AARs and APKs, even with variants",
+                "== Gradle Fury: ProTip: Use 'gradle publishArtifacts -Pprofile=javadoc,source' to publish to a nexus repository with javadocs and sources",
+                "== Gradle Fury: ProTip: Use 'gradle generateMasterKey' to make an encryption key",
+                "== Gradle Fury: ProTip: Use 'gradle encryptPassword -PstoreField=NEXUS_PASSWORD' to encrypt your nexus password",
+                "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=ci' to build with all the code quality and analysis plugins",
+                "== Gradle Fury: ProTip: Use 'gradle site' to build a maven style set that wraps up all your stuff with one bow",
+                "== Gradle Fury: ProTip: Use 'gradle siteWar' to build a maven style set as a WAR file",
+        ]
+
+
+        Random r = new Random();
+        int index = r.nextInt(MOTD.length);
+        println MOTD[index];
+
+        println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues, also see the wiki for more info"
+    }
+}
+
+
+
+
 // Maven POM Properties ----------------------------------------------------------------------------
 
 // The following property definitions are consumed by the maven-publish plugin to drive automatic
@@ -363,6 +409,8 @@ uploadArchives {
 }
 
 afterEvaluate { project ->
+
+    printMOTD();
 
 
     project.ext.isJavaProject = project.plugins.hasPlugin('java');
@@ -960,63 +1008,71 @@ def modifyGeneratedPom(pom) {
                 //https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
                 //maven only supports the following scope identifiers
                 //test, compile, provided, runtime, system,
+
                 configurationNames.each { configurationName ->
-                    configurations[configurationName].allDependencies.each { dependency ->
-                        if (dependency.group != null && dependency.name != null) {
+                    try {
+                        configurations[configurationName].allDependencies.each { dependency ->
+                            if (dependency.group != null && dependency.name != null) {
 
-                            addedDependencies++;
-                            def dependencyNode = dependenciesNode.appendNode('dependency')
-                            dependencyNode.appendNode('groupId', dependency.group)
-                            dependencyNode.appendNode('artifactId', dependency.name)
-                            if ("default".equalsIgnoreCase(configurationName) ||
-                                    "compile".equalsIgnoreCase(configurationName) ||
-                                    "releaseCompile".equalsIgnoreCase(configurationName))
-                                dependencyNode.appendNode('scope', "compile");
-                            else if ("testCompile".equalsIgnoreCase(configurationName) ||
-                                    "androidTestCompile".equalsIgnoreCase(configurationName))
-                                dependencyNode.appendNode('scope', "test");
-                            else if ("compileOnly".equalsIgnoreCase(configurationName) ||
-                                    "provided".equalsIgnoreCase(configurationName))
-                                dependencyNode.appendNode('scope', "provided");
-                            else if ("runtime".equalsIgnoreCase(configurationName))
-                                dependencyNode.appendNode('scope', "runtime");
+                                addedDependencies++;
+                                def dependencyNode = dependenciesNode.appendNode('dependency')
+                                dependencyNode.appendNode('groupId', dependency.group)
+                                dependencyNode.appendNode('artifactId', dependency.name)
+                                if ("default".equalsIgnoreCase(configurationName) ||
+                                        "compile".equalsIgnoreCase(configurationName) ||
+                                        "releaseCompile".equalsIgnoreCase(configurationName))
+                                    dependencyNode.appendNode('scope', "compile");
+                                else if ("testCompile".equalsIgnoreCase(configurationName) ||
+                                        "androidTestCompile".equalsIgnoreCase(configurationName))
+                                    dependencyNode.appendNode('scope', "test");
+                                else if ("compileOnly".equalsIgnoreCase(configurationName) ||
+                                        "provided".equalsIgnoreCase(configurationName))
+                                    dependencyNode.appendNode('scope', "provided");
+                                else if ("runtime".equalsIgnoreCase(configurationName))
+                                    dependencyNode.appendNode('scope', "runtime");
 
-                            if (dependency.version.endsWith("+")) {
-                                //a gradle wildcard
-                                if ("+".equals(dependency.version)) {
-                                    dependencyNode.appendNode('version', "LATEST")
-                                } else if (dependency.version.endsWith(".+")) {
-                                    //the version is something.+
-                                    dependencyNode.appendNode('version', "[" + dependency.version.replace(".+", ",)"))
-                                } else if (dependency.version.endsWith("+")) {
-                                    dependencyNode.appendNode('version', "[" + dependency.version.replace("+", ",)"))
+                                if (dependency.version.endsWith("+")) {
+                                    //a gradle wildcard
+                                    if ("+".equals(dependency.version)) {
+                                        dependencyNode.appendNode('version', "LATEST")
+                                    } else if (dependency.version.endsWith(".+")) {
+                                        //the version is something.+
+                                        dependencyNode.appendNode('version', "[" + dependency.version.replace(".+", ",)"))
+                                    } else if (dependency.version.endsWith("+")) {
+                                        dependencyNode.appendNode('version', "[" + dependency.version.replace("+", ",)"))
+                                    } else {
+                                        logger.warn("WARN - unhandled case for dependency version mediation for " +
+                                                dependency.group + ":" + dependency.name + ":" + dependency.version);
+                                    }
+                                    //TODO there may be other cases here
+
                                 } else {
-                                    logger.warn("WARN - unhandled case for dependency version mediation for " +
-                                            dependency.group + ":" + dependency.name + ":" + dependency.version);
+                                    dependencyNode.appendNode('version', dependency.version)
                                 }
-                                //TODO there may be other cases here
-
-                            } else {
-                                dependencyNode.appendNode('version', dependency.version)
-                            }
 
 // FIXME :: Issue #21: POM dependency generation shall support type and scope
 //                        dependencyNode.appendNode('type', ???)
 //                        dependencyNode.appendNode('scope', configurationName) // ???
 
-                            // if there are any exclusions in dependency
-                            if (dependency.excludeRules.size() > 0) {
-                                def exclusionsNode = dependencyNode.appendNode('exclusions')
-                                dependency.excludeRules.each { rule ->
-                                    def exclusionNode = exclusionsNode.appendNode('exclusion')
-                                    exclusionNode.appendNode('groupId', rule.group)
-                                    exclusionNode.appendNode('artifactId', rule.module)
+                                // if there are any exclusions in dependency
+                                if (dependency.excludeRules.size() > 0) {
+                                    def exclusionsNode = dependencyNode.appendNode('exclusions')
+                                    dependency.excludeRules.each { rule ->
+                                        def exclusionNode = exclusionsNode.appendNode('exclusion')
+                                        exclusionNode.appendNode('groupId', rule.group)
+                                        exclusionNode.appendNode('artifactId', rule.module)
+                                    }
                                 }
                             }
                         }
+                    }catch (Exception ex){
+                        logger.debug("Isseu 119, swallowed exception requesting the config name " + configurationName, ex);
+                        //fix for issue 119
+                        //always possible that the requested configuration does not exist on this project,
+                        //no skip it
                     }
                 }
-                //System.out.println("added " + addedDependencies + " dependencies")
+                logger.info("added " + addedDependencies + " dependencies")
             }
             //reflect(pom);
         }

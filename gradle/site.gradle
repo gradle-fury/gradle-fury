@@ -37,6 +37,7 @@
  'gradlew siteWar'
  to produce a deployable war file
 
+ @author Alex O'Ree
  */
 
 
@@ -54,6 +55,7 @@ buildscript{
         classpath 'com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.7.0'
         classpath 'com.atlassian.commonmark:commonmark-ext-autolink:0.7.0'
         classpath 'org.apache.commons:commons-lang3:3.4'
+        classpath 'commons-io:commons-io:2.5'
 
         //no go classpath 'org.commonjava.googlecode.markdown4j:markdown4j:2.2-cj-1.1'
         classpath "org.jsoup:jsoup:1.9.2"
@@ -91,8 +93,72 @@ ext.reports = new ArrayList<>();
 if (!hasProperty("site.name"))
     ext.setProperty("site.name", rootDir.getName());
 
+/**
+ * bootstraps the site, only ran during the first AND /src/site/template.html doesn't exist
+ */
+task siteInit(group: "Gradle Fury Site Generation",
+        description: 'Initializes the site content structure, if needed.' )  << {
+    File site = new File (rootDir.absolutePath + "/src/site/");
+    boolean doWork=false;
+    if (!site.exists()) {
+        logger.info(site.absolutePath + " does not exist");
+        //ok work to do
+        site.mkdirs();
+        doWork=true;
+    }
+    //other tasks may have created the dirs already
+    if (!(new File(site.absolutePath + "/template.html").exists())) {
+        logger.info(site.absolutePath + "/template.html" + " does not exist");
+        doWork = true;
+    }
+    if (doWork) {
+        //download the latest and greatest from the gradle-fury templates
+        logger.warn("Gradle Fury Site Plugin is bootstraping...");
+        String file= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/bootstrap.files".toURL().getText();
+        //split the file on the "#" symbol to get lines
+        String[] lines = file.split("\n");
+        for (int i=0; i < lines.length; i++){
+            if (!lines[i].startsWith("#") && lines[i].trim().length()>0) {
+
+                String outputRelativeFile = lines[i].trim().replace("https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/", "");
+                File outfile = new File(site.absolutePath + "/" + outputRelativeFile);
+                if (!outfile.exists()) {
+                    logger.warn("Downloading " + lines[i].trim());
+                    URL u = new URL(lines[i].trim());
+                    URLConnection connection = u.openConnection()
+                    InputStream input = connection.getInputStream();
+                    byte[] buffer = new byte[4096];
+                    int n = -1;
+                    String path = (site.absolutePath + "/" + outputRelativeFile);
+                    path = path.substring(0, path.lastIndexOf("/"));
+                    new File(path).mkdirs();
+                    OutputStream output = new FileOutputStream(site.absolutePath + "/" + outputRelativeFile);
+                    while ((n = input.read(buffer)) != -1) {
+                        output.write(buffer, 0, n);
+                    }
+                    output.close();
+                    input.close();
+                }
+            }
+
+        }
+        if (!(new File(site.absolutePath + "/index.md" ).exists())) {
+            String index = '# Welcome to ${site.name}\n\nThis is the home page. Maybe someone will put some useful information here';
+            FileOutputStream fos = new FileOutputStream(site.absolutePath + "/index.md");
+            fos.write(index.getBytes(Charset.defaultCharset()));
+            fos.close()
+        }
+
+    } else {
+        logger.info("Skipping bootstrap");
+    }
+}
+
+/**
+ * builds the site
+ */
 task site(group: "Gradle Fury Site Generation",
-        description: 'Builds the web-site contents.' )  << {
+        description: 'Builds the web-site contents.', dependsOn: siteInit )  << {
     List<File> javadocs = copyJavadocPages(rootDir,true);
 
     List<File> reportsDocs = copyReports(rootDir,true);
@@ -138,7 +204,9 @@ void createWebXml() {
     out.close()
 }
 
-
+/**
+ * builds the site as a war
+ */
 task siteWar(group: "Gradle Fury Site Generation",
         description: 'Builds the web-site as a war file.',
         dependsOn:[site])  << {
@@ -171,10 +239,6 @@ def prepareTemplate(){
     header = header.replace('${generatedMenu}', project.ext.siteMenu);
 
     project.ext.siteTemplate = header;
-
-
-
-
 
 }
 
@@ -222,7 +286,7 @@ boolean processFile(File file){
     }
 
 
-    if (file.getName().endsWith(".md") || file.getName().endsWith(".asciidoc") ) {
+    if (file.getName().endsWith(".md") || file.getName().endsWith(".asciidoc")) {
         //read all contents
         //process
         long start = System.currentTimeMillis();

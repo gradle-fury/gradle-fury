@@ -1,0 +1,11 @@
+Gradle Fury Asciidoc Example Page
+=================================
+:doctype: book
+:docinfo:
+
+Why is this here?
+-----------------
+This is a sample asciidoc file that is transformed into the site template for Gradle Fury site plugin.
+
+Important, do not use :backend: docbook5 or else this page will not render to html!
+

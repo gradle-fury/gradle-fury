@@ -1,3 +1,7 @@
+import java.nio.charset.Charset
+import java.nio.file.Files
+import java.nio.file.Paths
+
 /**
  *
  * The Quality plugin - runs findbugs, checkstyle, and pmd on all your projects (android and java)
@@ -29,7 +33,7 @@
  *  then execute with `gradelw build -Pprofile=ci`
  *
  *  @since 1.0.10
- *  @author Alex
+ *  @author Alex O'Ree
  *
  *
  *  addendum
@@ -44,6 +48,56 @@ apply plugin: 'checkstyle'
 apply plugin: 'findbugs'
 apply plugin: 'pmd'
 apply plugin: 'jdepend'
+
+
+
+
+buildscript{
+    repositories {
+        jcenter()
+        mavenCentral()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'org.apache.commons:commons-lang3:3.4'
+        classpath 'commons-io:commons-io:2.5'
+    }
+}
+
+
+//produce a dependency report
+import org.apache.commons.lang3.StringEscapeUtils;
+task dependencyReportGradlePre() << {
+    new File("${buildDir}/reports/dependencies/").mkdirs();
+}
+task dependencyReportGradle(type: DependencyReportTask, dependsOn: dependencyReportGradlePre)  {
+    projects = [project]
+    outputFile = new File("${buildDir}/reports/dependencies/index.txt");
+}
+
+task dependencyReportTransform(dependsOn: dependencyReportGradle) << {
+    //strip out an absolute paths
+    String contents = readFile("${buildDir}/reports/dependencies/index.txt",Charset.defaultCharset());
+    contents = contents.replace(rootDir.absolutePath, ".");
+
+    //inject into template
+    String template = '<html><body>${body}</body></html>';
+    contents = template.replace('${body}', "<pre>" + StringEscapeUtils.escapeHtml4(contents) + "</pre>");
+
+    //save it
+    String targetFileName = "${buildDir}/reports/dependencies/index.html"
+    PrintWriter out = new PrintWriter(targetFileName);
+    out.println(contents);
+    out.close()
+}
+check.dependsOn dependencyReportTransform
+
+static String readFile(String path, Charset encoding)
+        throws IOException
+{
+    byte[] encoded = Files.readAllBytes(Paths.get(path));
+    return new String(encoded, encoding);
+}
 
 
 // setup for java ncss
