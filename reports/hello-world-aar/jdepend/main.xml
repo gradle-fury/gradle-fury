@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<JDepend>
+    <Packages>
+
+        <Package name="android.widget">
+            <error>No stats available: package referenced, but not analyzed.</error>
+        </Package>
+
+        <Package name="com.chrisdoyle.helloworld">
+            <Stats>
+                <TotalClasses>3</TotalClasses>
+                <ConcreteClasses>3</ConcreteClasses>
+                <AbstractClasses>0</AbstractClasses>
+                <Ca>0</Ca>
+                <Ce>3</Ce>
+                <A>0</A>
+                <I>1</I>
+                <D>0</D>
+                <V>1</V>
+            </Stats>
+
+            <AbstractClasses>
+            </AbstractClasses>
+
+            <ConcreteClasses>
+                <Class sourceFile="BogusUtil.java">
+                    com.chrisdoyle.helloworld.BogusUtil
+                </Class>
+                <Class sourceFile="BogusUtilTest.java">
+                    com.chrisdoyle.helloworld.BogusUtilTest
+                </Class>
+                <Class sourceFile="BuildConfig.java">
+                    com.chrisdoyle.helloworld.BuildConfig
+                </Class>
+            </ConcreteClasses>
+
+            <DependsUpon>
+                <Package>android.widget</Package>
+                <Package>java.lang</Package>
+                <Package>org.junit</Package>
+            </DependsUpon>
+
+            <UsedBy>
+            </UsedBy>
+        </Package>
+
+        <Package name="java.lang">
+            <error>No stats available: package referenced, but not analyzed.</error>
+        </Package>
+
+        <Package name="org.junit">
+            <error>No stats available: package referenced, but not analyzed.</error>
+        </Package>
+    </Packages>
+
+    <Cycles>
+    </Cycles>
+</JDepend>
+

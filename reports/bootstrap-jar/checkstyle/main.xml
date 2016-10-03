@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="5.9">
+<file name="./it/GradleBootstrap/bootstrap-jar/src/main/java/com/chrisdoyle/it/bootstrap/MyClass.java">
+</file>
+</checkstyle>
+

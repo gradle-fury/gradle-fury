@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="5.9">
+<file name="./it/GradleBootstrap/app/src/androidTest/java/com/chrisdoyle/it/gradlecaching/ApplicationTest.java">
+</file>
+<file name="./it/GradleBootstrap/app/src/main/java/com/chrisdoyle/it/gradlecaching/MainActivity.java">
+</file>
+</checkstyle>
+

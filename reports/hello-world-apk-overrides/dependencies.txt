@@ -1,0 +1,957 @@
+
+------------------------------------------------------------
+Project :hello-world-apk-overrides - [ c h r i s d o y l e ] :: Gradle Fury :: Hello World Android Application (APK)
+------------------------------------------------------------
+
+_barDebugAndroidTestApk - ## Internal use, do not manually configure ##
+No dependencies
+
+_barDebugAndroidTestCompile - ## Internal use, do not manually configure ##
+No dependencies
+
+_barDebugApk - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_barDebugCompile - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_barDebugUnitTestApk - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_barDebugUnitTestCompile - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_barReleaseApk - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_barReleaseCompile - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_barReleaseUnitTestApk - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_barReleaseUnitTestCompile - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_bazDebugAndroidTestApk - ## Internal use, do not manually configure ##
+No dependencies
+
+_bazDebugAndroidTestCompile - ## Internal use, do not manually configure ##
+No dependencies
+
+_bazDebugApk - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_bazDebugCompile - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_bazDebugUnitTestApk - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_bazDebugUnitTestCompile - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_bazReleaseApk - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_bazReleaseCompile - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_bazReleaseUnitTestApk - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_bazReleaseUnitTestCompile - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_fooDebugAndroidTestApk - ## Internal use, do not manually configure ##
+No dependencies
+
+_fooDebugAndroidTestCompile - ## Internal use, do not manually configure ##
+No dependencies
+
+_fooDebugApk - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_fooDebugCompile - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_fooDebugUnitTestApk - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_fooDebugUnitTestCompile - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_fooReleaseApk - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_fooReleaseCompile - ## Internal use, do not manually configure ##
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+_fooReleaseUnitTestApk - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+_fooReleaseUnitTestCompile - ## Internal use, do not manually configure ##
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+androidJacocoAgent - The Jacoco agent to use to get coverage data.
+\--- org.jacoco:org.jacoco.agent:0.7.4.201502262128
+
+androidJacocoAnt - The Jacoco ant tasks to use to get execute Gradle tasks.
+\--- org.jacoco:org.jacoco.ant:0.7.4.201502262128
+     +--- org.jacoco:org.jacoco.core:0.7.4.201502262128
+     |    \--- org.ow2.asm:asm-debug-all:5.0.1
+     +--- org.jacoco:org.jacoco.report:0.7.4.201502262128
+     |    +--- org.jacoco:org.jacoco.core:0.7.4.201502262128 (*)
+     |    \--- org.ow2.asm:asm-debug-all:5.0.1
+     \--- org.jacoco:org.jacoco.agent:0.7.4.201502262128
+
+androidTestApk - Classpath packaged with the compiled 'androidTest' classes.
+No dependencies
+
+androidTestBarApk - Classpath packaged with the compiled 'androidTestBar' classes.
+No dependencies
+
+androidTestBarCompile - Classpath for compiling the androidTestBar sources.
+No dependencies
+
+androidTestBarProvided - Classpath for only compiling the androidTestBar sources.
+No dependencies
+
+androidTestBarWearApp - Link to a wear app to embed for object 'androidTestBar'.
+No dependencies
+
+androidTestBazApk - Classpath packaged with the compiled 'androidTestBaz' classes.
+No dependencies
+
+androidTestBazCompile - Classpath for compiling the androidTestBaz sources.
+No dependencies
+
+androidTestBazProvided - Classpath for only compiling the androidTestBaz sources.
+No dependencies
+
+androidTestBazWearApp - Link to a wear app to embed for object 'androidTestBaz'.
+No dependencies
+
+androidTestCompile - Classpath for compiling the androidTest sources.
+No dependencies
+
+androidTestFooApk - Classpath packaged with the compiled 'androidTestFoo' classes.
+No dependencies
+
+androidTestFooCompile - Classpath for compiling the androidTestFoo sources.
+No dependencies
+
+androidTestFooProvided - Classpath for only compiling the androidTestFoo sources.
+No dependencies
+
+androidTestFooWearApp - Link to a wear app to embed for object 'androidTestFoo'.
+No dependencies
+
+androidTestProvided - Classpath for only compiling the androidTest sources.
+No dependencies
+
+androidTestWearApp - Link to a wear app to embed for object 'androidTest'.
+No dependencies
+
+apk - Classpath packaged with the compiled 'main' classes.
+No dependencies
+
+archives - Configuration for archive artifacts.
+No dependencies
+
+barApk - Classpath packaged with the compiled 'bar' classes.
+No dependencies
+
+barCompile - Classpath for compiling the bar sources.
+No dependencies
+
+barDebug - Published Configuration for Variant barDebug
+No dependencies
+
+barDebug-classes - Published classes configuration for Variant barDebug
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+barDebug-mapping - Published mapping configuration for Variant barDebug
+No dependencies
+
+barDebug-metadata - Published APKs metadata for Variant barDebug
+No dependencies
+
+barDebugApk - Classpath packaged with the compiled 'barDebug' classes.
+No dependencies
+
+barDebugCompile - Classpath for compiling the barDebug sources.
+No dependencies
+
+barDebugProvided - Classpath for only compiling the barDebug sources.
+No dependencies
+
+barDebugWearApp - Link to a wear app to embed for object 'barDebug'.
+No dependencies
+
+barProvided - Classpath for only compiling the bar sources.
+No dependencies
+
+barRelease - Published Configuration for Variant barRelease
+No dependencies
+
+barRelease-classes - Published classes configuration for Variant barRelease
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+barRelease-mapping - Published mapping configuration for Variant barRelease
+No dependencies
+
+barRelease-metadata - Published APKs metadata for Variant barRelease
+No dependencies
+
+barReleaseApk - Classpath packaged with the compiled 'barRelease' classes.
+No dependencies
+
+barReleaseCompile - Classpath for compiling the barRelease sources.
+No dependencies
+
+barReleaseProvided - Classpath for only compiling the barRelease sources.
+No dependencies
+
+barReleaseWearApp - Link to a wear app to embed for object 'barRelease'.
+No dependencies
+
+barWearApp - Link to a wear app to embed for object 'bar'.
+No dependencies
+
+bazApk - Classpath packaged with the compiled 'baz' classes.
+No dependencies
+
+bazCompile - Classpath for compiling the baz sources.
+No dependencies
+
+bazDebug - Published Configuration for Variant bazDebug
+No dependencies
+
+bazDebug-classes - Published classes configuration for Variant bazDebug
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+bazDebug-mapping - Published mapping configuration for Variant bazDebug
+No dependencies
+
+bazDebug-metadata - Published APKs metadata for Variant bazDebug
+No dependencies
+
+bazDebugApk - Classpath packaged with the compiled 'bazDebug' classes.
+No dependencies
+
+bazDebugCompile - Classpath for compiling the bazDebug sources.
+No dependencies
+
+bazDebugProvided - Classpath for only compiling the bazDebug sources.
+No dependencies
+
+bazDebugWearApp - Link to a wear app to embed for object 'bazDebug'.
+No dependencies
+
+bazProvided - Classpath for only compiling the baz sources.
+No dependencies
+
+bazRelease - Published Configuration for Variant bazRelease
+No dependencies
+
+bazRelease-classes - Published classes configuration for Variant bazRelease
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+bazRelease-mapping - Published mapping configuration for Variant bazRelease
+No dependencies
+
+bazRelease-metadata - Published APKs metadata for Variant bazRelease
+No dependencies
+
+bazReleaseApk - Classpath packaged with the compiled 'bazRelease' classes.
+No dependencies
+
+bazReleaseCompile - Classpath for compiling the bazRelease sources.
+No dependencies
+
+bazReleaseProvided - Classpath for only compiling the bazRelease sources.
+No dependencies
+
+bazReleaseWearApp - Link to a wear app to embed for object 'bazRelease'.
+No dependencies
+
+bazWearApp - Link to a wear app to embed for object 'baz'.
+No dependencies
+
+checkstyle - The Checkstyle libraries to be used for this project.
+\--- com.puppycrawl.tools:checkstyle:5.9
+     +--- antlr:antlr:2.7.7
+     +--- commons-beanutils:commons-beanutils-core:1.8.3
+     +--- commons-cli:commons-cli:1.2
+     \--- com.google.guava:guava-jdk5:14.0.1
+
+compile - Classpath for compiling the main sources.
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+debugApk - Classpath packaged with the compiled 'debug' classes.
+No dependencies
+
+debugCompile - Classpath for compiling the debug sources.
+No dependencies
+
+debugProvided - Classpath for only compiling the debug sources.
+No dependencies
+
+debugWearApp - Link to a wear app to embed for object 'debug'.
+No dependencies
+
+default - Configuration for default artifacts.
+No dependencies
+
+default-mapping - Configuration for default mapping artifacts.
+No dependencies
+
+default-metadata - Metadata for the produced APKs.
+No dependencies
+
+findbugs - The FindBugs libraries to be used for this project.
+\--- com.google.code.findbugs:findbugs:3.0.1
+     +--- net.jcip:jcip-annotations:1.0
+     +--- com.google.code.findbugs:jsr305:2.0.1
+     +--- com.google.code.findbugs:bcel-findbugs:6.0
+     +--- com.google.code.findbugs:jFormatString:2.0.1
+     +--- dom4j:dom4j:1.6.1
+     |    \--- xml-apis:xml-apis:1.0.b2
+     +--- org.ow2.asm:asm-debug-all:5.0.2
+     +--- org.ow2.asm:asm-commons:5.0.2
+     |    \--- org.ow2.asm:asm-tree:5.0.2
+     |         \--- org.ow2.asm:asm:5.0.2
+     +--- commons-lang:commons-lang:2.6
+     +--- com.apple:AppleJavaExtensions:1.4
+     \--- jaxen:jaxen:1.1.6
+
+findbugsPlugins - The FindBugs plugins to be used for this project.
+No dependencies
+
+fooApk - Classpath packaged with the compiled 'foo' classes.
+No dependencies
+
+fooCompile - Classpath for compiling the foo sources.
+No dependencies
+
+fooDebug - Published Configuration for Variant fooDebug
+No dependencies
+
+fooDebug-classes - Published classes configuration for Variant fooDebug
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+fooDebug-mapping - Published mapping configuration for Variant fooDebug
+No dependencies
+
+fooDebug-metadata - Published APKs metadata for Variant fooDebug
+No dependencies
+
+fooDebugApk - Classpath packaged with the compiled 'fooDebug' classes.
+No dependencies
+
+fooDebugCompile - Classpath for compiling the fooDebug sources.
+No dependencies
+
+fooDebugProvided - Classpath for only compiling the fooDebug sources.
+No dependencies
+
+fooDebugWearApp - Link to a wear app to embed for object 'fooDebug'.
+No dependencies
+
+fooProvided - Classpath for only compiling the foo sources.
+No dependencies
+
+fooRelease - Published Configuration for Variant fooRelease
+No dependencies
+
+fooRelease-classes - Published classes configuration for Variant fooRelease
++--- project :hello-world-aar
+|    +--- project :hello-world-lib
+|    |    \--- org.apache.commons:commons-lang3:3.4
+|    \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:appcompat-v7:23.3.0
+|    +--- com.android.support:support-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-v4:23.3.0
+|    |         \--- com.android.support:support-annotations:23.3.0
+|    +--- com.android.support:animated-vector-drawable:23.3.0
+|    |    \--- com.android.support:support-vector-drawable:23.3.0 (*)
+|    \--- com.android.support:support-v4:23.3.0 (*)
++--- com.android.support:cardview-v7:23.3.0
++--- com.android.support:design:23.3.0
+|    +--- com.android.support:appcompat-v7:23.3.0 (*)
+|    +--- com.android.support:support-v4:23.3.0 (*)
+|    \--- com.android.support:recyclerview-v7:23.3.0
+|         +--- com.android.support:support-v4:23.3.0 (*)
+|         \--- com.android.support:support-annotations:23.3.0
++--- com.android.support:recyclerview-v7:23.3.0 (*)
+\--- com.android.support:support-v4:23.3.0 (*)
+
+fooRelease-mapping - Published mapping configuration for Variant fooRelease
+No dependencies
+
+fooRelease-metadata - Published APKs metadata for Variant fooRelease
+No dependencies
+
+fooReleaseApk - Classpath packaged with the compiled 'fooRelease' classes.
+No dependencies
+
+fooReleaseCompile - Classpath for compiling the fooRelease sources.
+No dependencies
+
+fooReleaseProvided - Classpath for only compiling the fooRelease sources.
+No dependencies
+
+fooReleaseWearApp - Link to a wear app to embed for object 'fooRelease'.
+No dependencies
+
+fooWearApp - Link to a wear app to embed for object 'foo'.
+No dependencies
+
+javancss
+\--- org.codehaus.javancss:javancss:33.54
+     +--- javancss:ccl:29.50
+     \--- javancss:jhbasic:29.50
+
+jdepend - The JDepend libraries to be used for this project.
++--- jdepend:jdepend:2.9.1
+\--- org.apache.ant:ant-jdepend:1.9.6
+     \--- jdepend:jdepend:2.7 -> 2.9.1
+
+pmd - The PMD libraries to be used for this project.
+\--- net.sourceforge.pmd:pmd-java:5.2.3
+     +--- jaxen:jaxen:1.1.4
+     +--- net.java.dev.javacc:javacc:5.0
+     +--- net.sourceforge.pmd:pmd-core:5.2.3
+     |    +--- com.beust:jcommander:1.35
+     |    +--- commons-io:commons-io:2.4
+     |    +--- jaxen:jaxen:1.1.4
+     |    +--- net.java.dev.javacc:javacc:5.0
+     |    +--- net.sourceforge.saxon:saxon:9.1.0.8
+     |    +--- org.apache.commons:commons-lang3:3.3.2
+     |    \--- org.ow2.asm:asm:5.0.3
+     +--- net.sourceforge.saxon:saxon:9.1.0.8
+     +--- org.ow2.asm:asm:5.0.3
+     \--- xerces:xercesImpl:2.11.0
+          \--- xml-apis:xml-apis:1.4.01
+
+provided - Classpath for only compiling the main sources.
+No dependencies
+
+releaseApk - Classpath packaged with the compiled 'release' classes.
+No dependencies
+
+releaseCompile - Classpath for compiling the release sources.
+No dependencies
+
+releaseProvided - Classpath for only compiling the release sources.
+No dependencies
+
+releaseWearApp - Link to a wear app to embed for object 'release'.
+No dependencies
+
+testApk - Classpath packaged with the compiled 'test' classes.
+No dependencies
+
+testBarApk - Classpath packaged with the compiled 'testBar' classes.
+No dependencies
+
+testBarCompile - Classpath for compiling the testBar sources.
+No dependencies
+
+testBarDebugApk - Classpath packaged with the compiled 'testBarDebug' classes.
+No dependencies
+
+testBarDebugCompile - Classpath for compiling the testBarDebug sources.
+No dependencies
+
+testBarDebugProvided - Classpath for only compiling the testBarDebug sources.
+No dependencies
+
+testBarDebugWearApp - Link to a wear app to embed for object 'testBarDebug'.
+No dependencies
+
+testBarProvided - Classpath for only compiling the testBar sources.
+No dependencies
+
+testBarReleaseApk - Classpath packaged with the compiled 'testBarRelease' classes.
+No dependencies
+
+testBarReleaseCompile - Classpath for compiling the testBarRelease sources.
+No dependencies
+
+testBarReleaseProvided - Classpath for only compiling the testBarRelease sources.
+No dependencies
+
+testBarReleaseWearApp - Link to a wear app to embed for object 'testBarRelease'.
+No dependencies
+
+testBarWearApp - Link to a wear app to embed for object 'testBar'.
+No dependencies
+
+testBazApk - Classpath packaged with the compiled 'testBaz' classes.
+No dependencies
+
+testBazCompile - Classpath for compiling the testBaz sources.
+No dependencies
+
+testBazDebugApk - Classpath packaged with the compiled 'testBazDebug' classes.
+No dependencies
+
+testBazDebugCompile - Classpath for compiling the testBazDebug sources.
+No dependencies
+
+testBazDebugProvided - Classpath for only compiling the testBazDebug sources.
+No dependencies
+
+testBazDebugWearApp - Link to a wear app to embed for object 'testBazDebug'.
+No dependencies
+
+testBazProvided - Classpath for only compiling the testBaz sources.
+No dependencies
+
+testBazReleaseApk - Classpath packaged with the compiled 'testBazRelease' classes.
+No dependencies
+
+testBazReleaseCompile - Classpath for compiling the testBazRelease sources.
+No dependencies
+
+testBazReleaseProvided - Classpath for only compiling the testBazRelease sources.
+No dependencies
+
+testBazReleaseWearApp - Link to a wear app to embed for object 'testBazRelease'.
+No dependencies
+
+testBazWearApp - Link to a wear app to embed for object 'testBaz'.
+No dependencies
+
+testCompile - Classpath for compiling the test sources.
+\--- junit:junit:4.12
+     \--- org.hamcrest:hamcrest-core:1.3
+
+testDebugApk - Classpath packaged with the compiled 'testDebug' classes.
+No dependencies
+
+testDebugCompile - Classpath for compiling the testDebug sources.
+No dependencies
+
+testDebugProvided - Classpath for only compiling the testDebug sources.
+No dependencies
+
+testDebugWearApp - Link to a wear app to embed for object 'testDebug'.
+No dependencies
+
+testFooApk - Classpath packaged with the compiled 'testFoo' classes.
+No dependencies
+
+testFooCompile - Classpath for compiling the testFoo sources.
+No dependencies
+
+testFooDebugApk - Classpath packaged with the compiled 'testFooDebug' classes.
+No dependencies
+
+testFooDebugCompile - Classpath for compiling the testFooDebug sources.
+No dependencies
+
+testFooDebugProvided - Classpath for only compiling the testFooDebug sources.
+No dependencies
+
+testFooDebugWearApp - Link to a wear app to embed for object 'testFooDebug'.
+No dependencies
+
+testFooProvided - Classpath for only compiling the testFoo sources.
+No dependencies
+
+testFooReleaseApk - Classpath packaged with the compiled 'testFooRelease' classes.
+No dependencies
+
+testFooReleaseCompile - Classpath for compiling the testFooRelease sources.
+No dependencies
+
+testFooReleaseProvided - Classpath for only compiling the testFooRelease sources.
+No dependencies
+
+testFooReleaseWearApp - Link to a wear app to embed for object 'testFooRelease'.
+No dependencies
+
+testFooWearApp - Link to a wear app to embed for object 'testFoo'.
+No dependencies
+
+testProvided - Classpath for only compiling the test sources.
+No dependencies
+
+testReleaseApk - Classpath packaged with the compiled 'testRelease' classes.
+No dependencies
+
+testReleaseCompile - Classpath for compiling the testRelease sources.
+No dependencies
+
+testReleaseProvided - Classpath for only compiling the testRelease sources.
+No dependencies
+
+testReleaseWearApp - Link to a wear app to embed for object 'testRelease'.
+No dependencies
+
+testWearApp - Link to a wear app to embed for object 'test'.
+No dependencies
+
+umljavadoc
+\--- org.umlgraph:umlgraph:5.6.6
+
+wearApp - Link to a wear app to embed for object 'main'.
+No dependencies
+

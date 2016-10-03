@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="5.9">
+<file name="./hello-world-gmaps/src/main/java/com/chrisdoyle/helloworld/gmaps/MainActivity.java">
+</file>
+</checkstyle>
+
