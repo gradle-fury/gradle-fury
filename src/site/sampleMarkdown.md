@@ -1,4 +1,6 @@
-# How Gradle-Fury does encryption
+# Sample Markdown File
+
+This is a sample markdown file that is transformed into the site template for Gradle Fury site plugin.
 
 1. Create a master key. it's stored in your user profile/.gradle/fury.properties. It's an AES key that's used to encrypt all your stuff. Never check this in
 2. Encrypt your password. It's project specific and stored in projectRoot/local.properties. Don't check this is, but if you do, it's not a big deal since it's encrypted.
