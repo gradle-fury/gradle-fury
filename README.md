@@ -33,6 +33,8 @@ We're currently working through some build issues. Right now, the following conf
 | Gradle                | 2.14
 | Gradle Android Plugin | 2.1.0
 
+This notice will be removed/updated once the remaining versions are fixed
+
 Build Status
 ------------
 
