@@ -24,6 +24,15 @@ something is wrong) what stands gradle-fury apart?
 Check out [the wiki](https://github.com/chrisdoyle/gradle-fury/wiki) for the most update to date set
 of features. It's always growing and it's easier to update the wiki.
 
+NOTICE
+------
+
+We're currently working through some build issues. Right now, the following configuration works:
+| Item                  | Version |
+| ---                   | ---     |
+| Gradle                | 2.14
+| Gradle Android Plugin | 2.1.0
+
 Build Status
 ------------
 
