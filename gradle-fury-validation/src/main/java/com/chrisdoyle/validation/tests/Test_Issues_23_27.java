@@ -76,7 +76,7 @@ public class Test_Issues_23_27 {
         } ;
         String[] libDeps = new String[]{
                 "commons-lang3",
-                "commons-io"
+                "commons-logging"
         };
         for (int i=0; i < Main.allPoms.length; i++){
             if (Main.allPoms[i].contains("hello-world-aar")) {

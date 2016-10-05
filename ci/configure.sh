@@ -21,3 +21,8 @@ mv gradle2.properties gradle.properties
 sed "s/SNAPSHOT_REPOSITORY_URL\=/SNAPSHOT_REPOSITORY_URL=http:\/\/localhost:8081\/nexus\/content\/repositories\/snapshots\//g" gradle.properties >  gradle2.properties
 rm gradle.properties
 mv gradle2.properties gradle.properties
+
+
+#if [ "$JDK" = "8" ]; then
+#    jdk_switcher use oraclejdk8
+#fi
