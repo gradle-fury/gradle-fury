@@ -44,7 +44,7 @@ Requirements for using Gradle-Fury
 Tested configurations for gradle and the android gradle build tools. If you're not using android, then 
 
 | Gradle | Android Build Tools | JDK | Test Result 
-| ---    | ---                 | --- | ---
+| ------ | ------------------- | --- | -----------
 | 3.1    | 2.2.0               | 8   | OK 
 | 3.0    | 2.2.0               | 8   | OK 
 | 2.14.1 | 2.1.3               | 7,8 | OK 
