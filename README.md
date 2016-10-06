@@ -43,17 +43,17 @@ Requirements for using Gradle-Fury
 
 Tested configurations for gradle and the android gradle build tools. If you're not using android, then 
 
-| Gradle | Android Build Tools | JDK | Test Result |
-| ---    | ---                 | --- | --- |
-| 3.1    | 2.2.0               | JDK8 | OK |
-| 3.0    | 2.2.0               | JDK8 | OK |
-| 2.14.1 | 2.1.3               | JDK7/8 | OK |
-| 2.10   | 2.1.2               | JDK/78 | OK |
-| 2.14   | 2.1.0               | JDK7/8 | OK |
-| 2.14   | 2.0.0               | JDK7/8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus |
-| 2.2.1  | 1.5.0               | JDK7/8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus |
-| 2.2.1  | 1.3.1               | JDK7/8 | OK |
-| 2.2.1  | 1.3.0               | JDK7/8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus |
+| Gradle | Android Build Tools | JDK | Test Result 
+| ---    | ---                 | --- | ---
+| 3.1    | 2.2.0               | JDK8 | OK 
+| 3.0    | 2.2.0               | JDK8 | OK 
+| 2.14.1 | 2.1.3               | JDK7/8 | OK 
+| 2.10   | 2.1.2               | JDK/78 | OK 
+| 2.14   | 2.1.0               | JDK7/8 | OK 
+| 2.14   | 2.0.0               | JDK7/8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus 
+| 2.2.1  | 1.5.0               | JDK7/8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus 
+| 2.2.1  | 1.3.1               | JDK7/8 | OK 
+| 2.2.1  | 1.3.0               | JDK7/8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus 
 
 
 So as long as you're not using one of those 3 versions of the android plugin, you're good to go.
