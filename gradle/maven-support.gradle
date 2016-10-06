@@ -29,7 +29,7 @@ import org.w3c.dom.DOMException;
 
 import java.io.*;
 
-rootProject.ext.gradleFuryVersion = "1.0.15-SNAPSHOT"
+rootProject.ext.gradleFuryVersion = "1.0.15"
 
 
 /**=================================================================================================

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# THIS FILE IS NOT YET USED
+
+
 #this file verifies that the expected artifacts are published to maven local
 
 # only run this script from a unix like system with bash
