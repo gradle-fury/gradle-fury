@@ -41,7 +41,8 @@ Requirements for using Gradle-Fury
 * For Android support, gradle android plugin v1.3.0 or higher, we test using a variety of configurations. See the [Travis build matrix](https://github.com/chrisdoyle/gradle-fury/blob/develop/.travis.yml)
 * For digital signature support, GPG must be installed on your computer. We test with gnugpg.
 
-Tested configurations for gradle and the android gradle build tools. If you're not using android, then 
+Tested configurations for gradle and the android gradle build tools. 
+
 
 | Gradle | Android Build Tools | JDK | Test Result 
 | ------ | ------------------- | --- | -----------
