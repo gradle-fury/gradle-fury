@@ -86,9 +86,9 @@ if (!hasProperty("buildWebsiteDir")){
     ext.buildWebsiteDir = "${rootDir}/build/site/"
 }
 ext.webSrcDir = "${rootDir}/src/site/"
-//ext.buildWebsiteDir = "${rootDir}/build/site/"
 ext.javadocsModules = new ArrayList<>();
 ext.reports = new ArrayList<>();
+ext.webBootstrapUrl = "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/";
 
 if (!hasProperty("site.name"))
     ext.setProperty("site.name", rootDir.getName());
@@ -114,13 +114,13 @@ task siteInit(group: "Gradle Fury Site Generation",
     if (doWork) {
         //download the latest and greatest from the gradle-fury templates
         logger.warn("Gradle Fury Site Plugin is bootstraping...");
-        String file= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/bootstrap.files".toURL().getText();
+        String file= project.ext.webBootstrapUrl +"/bootstrap.files".toURL().getText();
         //split the file on the "#" symbol to get lines
         String[] lines = file.split("\n");
         for (int i=0; i < lines.length; i++){
             if (!lines[i].startsWith("#") && lines[i].trim().length()>0) {
 
-                String outputRelativeFile = lines[i].trim().replace("https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/src/site/", "");
+                String outputRelativeFile = lines[i].trim().replace(project.ext.webBootstrapUrl, "");
                 File outfile = new File(site.absolutePath + "/" + outputRelativeFile);
                 if (!outfile.exists()) {
                     logger.warn("Downloading " + lines[i].trim());
@@ -515,7 +515,7 @@ def generateJavadocContent(List<File> javadocs){
     //String rootdir = ext.buildWebsiteDir;
     for (int i = 0; i < javadocs.size(); i++) {
         File f = javadocs.get(i);
-        if (new File(f.getAbsolutePath() + "/index.html").exists()) {
+        if (new File(f.getAbsolutePath() + File.separator + "index.html").exists()) {
             String subpath = f.getAbsolutePath().replace(rootdir, "");
             javadocMarkdown.append("| ").append(f.getName()).append(" \t| [Javadocs](").append(subpath + "/index.html").append(") \t|\n");
         } else {
@@ -524,16 +524,16 @@ def generateJavadocContent(List<File> javadocs){
             if (variants != null) {
                 for (int k = 0; k < variants.length; k++) {
                     File variant = variants[k];
-                    if (new File(variant.getAbsolutePath() + "/index.html").exists()) {
+                    if (new File(variant.getAbsolutePath() + File.separator+ "index.html").exists()) {
                         String subpath = variant.getAbsolutePath().replace(rootdir, "");
-                        javadocMarkdown.append("| ").append(f.getName()).append(" \t| [").append(variant.getName()).append("](").append(subpath+ "/index.html").append(") \t |\n");
+                        javadocMarkdown.append("| ").append(f.getName()).append(" \t| [").append(variant.getName()).append("](").append(subpath+ File.separator +"index.html").append(") \t |\n");
                     }
                 }
             }
         }
     }
     javadocMarkdown.append("\n\n");
-    out = new PrintWriter(rootdir + "/javadoc.md");
+    out = new PrintWriter(rootdir + File.separator +"javadoc.md");
     out.println(javadocMarkdown.toString());
     out.close()
 }
@@ -542,6 +542,7 @@ def generateJavadocContent(List<File> javadocs){
 def generateReportList(List<File> reports){
     PrintWriter out;
     String rootdir = ext.buildWebsiteDir;
+	String rootdir2 = rootdir.replace('\\',"/");
 
     StringBuilder reportsMarkdown = new StringBuilder();
 
@@ -563,7 +564,7 @@ def generateReportList(List<File> reports){
                     append(" \t| ");
 
             reportsMarkdown.
-                    append("<a href=\"javascript:showReport('" + r.links.get(k).url + "');\">").
+                    append("<a href=\"javascript:showReport('" + r.links.get(k).url.replace('\\',"/").replace(rootdir2,"./") + "');\">").
                     append(org.apache.commons.lang3.StringUtils.capitalize(r.links.get(k).text)).
                     append("</a> ");
             reportsMarkdown.append(" | " + r.links.get(k).errors);
@@ -760,6 +761,9 @@ class Link{
 List<ReportsContainer> scanReports(List<String> reports){
     List<ReportsContainer> ret = new ArrayList<>();
     String rootdir = ext.buildWebsiteDir;
+	System.out.println("scanning reports in " + rootdir);
+	if (File.separator != '/')
+		rootdir = rootdir.replace('\\',"/");
     for (int i = 0; i < reports.size(); i++) {
         File f = reports.get(i);
         //f is the module name
@@ -1265,24 +1269,29 @@ List<File> copyJavadocPages(File currentDir, boolean firstRun) {
         for (int i = 0; i < files.length; i++) {
             if (firstRun && files[i].getAbsolutePath().endsWith("build"))
                 continue;
-            if (files[i].getAbsolutePath().endsWith("build/docs/javadoc")) {
-
-                String[] s2 = files[i].getAbsolutePath().split("/");
+            if (files[i].getAbsolutePath().endsWith("build" + File.separator + "docs" + File.separator + "javadoc")) {
+				String[] s2 ;
+				if (File.separator == '/')
+					s2 = files[i].getAbsolutePath().split(File.separator);
+					else 
+					s2 = files[i].getAbsolutePath().split('\\\\');
                 String module = s2[s2.length-4];
                 copy {
                     from files[i].absolutePath
-                    into ext.buildWebsiteDir + "/javadocs/" + module
+                    into ext.buildWebsiteDir + File.separator+"javadocs" +File.separator+ module
                 }
-                ret.add(new File(ext.buildWebsiteDir + "/javadocs/" + module));
-            } else if ( files[i].getAbsolutePath().contains("build/javadoc")){
-
-                String[] s2 = files[i].getAbsolutePath().split("/");
+                ret.add(new File(ext.buildWebsiteDir + File.separator+ "javadocs" + File.separator + module));
+            } else if ( files[i].getAbsolutePath().contains("build" + File.separator +"javadoc")){
+				String[] s2;
+				if (File.separator == '/')
+					s2 = files[i].getAbsolutePath().split(File.separator);
+				else s2 = files[i].getAbsolutePath().split('\\\\');
                 String module = s2[s2.length-3];
                 copy {
                     from files[i].absolutePath
-                    into buildWebsiteDir + "/javadocs/" + module
+                    into buildWebsiteDir + File.separator + "javadocs" + File.separator + module
                 }
-                ret.add(new File(buildWebsiteDir + "/javadocs/" + module));
+                ret.add(new File(buildWebsiteDir + File.separator + "javadocs" + File.separator + module));
             }
             else if (files[i].isDirectory() &&
                     !files[i].isHidden()) {
@@ -1308,27 +1317,34 @@ List<File> copyReports(File currentDir, boolean firstRun) {
         for (int i = 0; i < files.length; i++) {
             if (firstRun && files[i].getAbsolutePath().endsWith("build"))
                 continue;
-            if (files[i].getAbsolutePath().endsWith("build/reports")) {
-
-                String[] s2 = files[i].getAbsolutePath().split("/");
+            if (files[i].getAbsolutePath().endsWith("build" + File.separator + "reports")) {
+                String[] s2;
+				if (File.separator == '/')
+					s2 = files[i].getAbsolutePath().split(File.separator );
+				else
+					s2 = files[i].getAbsolutePath().split('\\\\');
                 String module = s2[s2.length-3];
                 copy {
                     from files[i].absolutePath
-                    into ext.buildWebsiteDir + "/reports/" + module
+                    into ext.buildWebsiteDir + File.separator + "reports" + File.separator + module
                 }
-                ret.add(new File(ext.buildWebsiteDir + "/reports/" + module));
-            } else if (files[i].getAbsolutePath().contains("build/outputs")) {
+				System.out.println(files[i].getAbsolutePath() + " copied");
+                ret.add(new File(ext.buildWebsiteDir + File.separator + "reports" + File.separator + module));
+            } else if (files[i].getAbsolutePath().contains("build" + File.separator + "outputs")) {
                     //this part is primarily for apk and aar lint reports
-                String[] s2 = files[i].getAbsolutePath().split("/");
+                String[] s2;
+				if (File.separator == '/')
+					s2 = files[i].getAbsolutePath().split(File.separator);
+				else s2 = files[i].getAbsolutePath().split('\\\\');
                 String module = s2[s2.length-3];
                 copy {
                     from files[i].absolutePath
-                    into ext.buildWebsiteDir + "/reports/" + module
+                    into ext.buildWebsiteDir +File.separator + "reports" +  File.separator + module
                     include '*.html'
                     include 'lint*/**'
                 }
-                    ret.add(new File(ext.buildWebsiteDir + "/reports/" + module));
-
+                    ret.add(new File(ext.buildWebsiteDir + File.separator+ "reports" + File.separator + module));
+			System.out.println(files[i].getAbsolutePath() + " copied android");
 
             }
             else if (files[i].isDirectory() &&

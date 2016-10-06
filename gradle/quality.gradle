@@ -90,8 +90,11 @@ task dependencyReportTransform(dependsOn: dependencyReportGradle) << {
     out.println(contents);
     out.close()
 }
-check.dependsOn dependencyReportTransform
-
+try {
+    check.dependsOn dependencyReportTransform
+}catch (Throwable t){
+    logger.debug("failed to attach check on project" + project.name, t);
+}
 static String readFile(String path, Charset encoding)
         throws IOException
 {
@@ -125,7 +128,11 @@ task javancss << {
 }
 
 javancss.onlyIf { file('src').exists() }
+try{
 check.dependsOn javancss
+}catch (Throwable t){
+    logger.debug("failed to attach check on project" + project.name, t);
+}
 // END setup for java ncss
 
 
@@ -148,9 +155,12 @@ task jdependReport(group: 'verification', description: 'Generates a HTML report 
                 out: "$reporting.baseDir/jdepend/index.html")
     }
 }
-
+try{
 check {
     dependsOn += ['jdependReport']
+}
+}catch (Throwable t){
+    logger.debug("failed to attach check on project" + project.name, t);
 }
 
 

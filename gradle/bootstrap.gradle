@@ -24,8 +24,17 @@ import java.nio.file.StandardCopyOption
  * @author Alex O'Ree
  */
 
+import java.nio.charset.Charset;
 
-task hackTime() << {
+task hackTime(description: "Applies the basic config to this project (with backups)", group:"Gradle Fury Bootstrap") << {
+    applyGradleFury();
+}
+
+task bootstrap(description: "Applies the basic config to this project (with backups)", group:"Gradle Fury Bootstrap") << {
+    applyGradleFury();
+}
+
+void applyGradleFury() {
     description = "Applying the basic elements from gradle-fury to this project..."
     println "\n   ----.--.     #####                                        #######                     \n" +
             "--/ _  |___)  #     #  #####    ##   #####  #      ######    #       #    # #####  #   # \n" +
@@ -78,9 +87,69 @@ task hackTime() << {
         }
     }
 
-    //TODO in the future, we could pull store the build scripts locally and add a task for
-    //updating the build scripts and/or checking for updates, which implies we have a way to version
-    //everything reliably
+    //finally pull down the quality check files
+    pullDownConfig();
+}
+
+void pullDownConfig(){
+    System.out.println("Bootstraping the quality plugin...");
+    File file = new File (rootDir.absolutePath + "/config/checkstyle/");
+    if (!file.exists()) {
+        file.mkdirs();
+    }
+    file = new File (rootDir.absolutePath + "/config/findbugs/");
+    if (!file.exists()) {
+        file.mkdirs();
+    }
+    file = new File (rootDir.absolutePath + "/config/javancss/");
+    if (!file.exists()) {
+        file.mkdirs();
+    }
+    file = new File (rootDir.absolutePath + "/config/jdepend/");
+    if (!file.exists()) {
+        file.mkdirs();
+    }
+    file = new File (rootDir.absolutePath + "/config/pmd/");
+    if (!file.exists()) {
+        file.mkdirs();
+    }
+    file = new File (rootDir.absolutePath + "/config/checkstyle/checkstyle.xml");
+    if (!file.exists()){
+        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/checkstyle/checkstyle.xml".toURL().getText();
+        FileOutputStream fos = new FileOutputStream( file );
+        fos.write(content.getBytes(Charset.defaultCharset()));
+        fos.close()
+    }
+    file = new File (rootDir.absolutePath + "/config/findbugs/findbugs-filter.xml");
+    if (!file.exists()){
+        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/findbugs/findbugs-filter.xml".toURL().getText();
+        FileOutputStream fos = new FileOutputStream( file );
+        fos.write(content.getBytes(Charset.defaultCharset()));
+        fos.close()
+    }
+    file = new File (rootDir.absolutePath + "/config/javancss/javancss2html.xsl");
+    if (!file.exists()){
+        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/javancss/javancss2html.xsl".toURL().getText();
+        FileOutputStream fos = new FileOutputStream( file );
+        fos.write(content.getBytes(Charset.defaultCharset()));
+        fos.close()
+    }
+    file = new File (rootDir.absolutePath + "/config/jdepend/jdepend-report.xslt");
+    if (!file.exists()){
+        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/jdepend/jdepend-report.xslt".toURL().getText();
+        FileOutputStream fos = new FileOutputStream( file );
+        fos.write(content.getBytes(Charset.defaultCharset()));
+        fos.close()
+    }
+    file = new File (rootDir.absolutePath + "/config/pmd/pmd-ruleset.xml");
+    if (!file.exists()){
+        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/pmd/pmd-ruleset.xml".toURL().getText();
+        FileOutputStream fos = new FileOutputStream( file );
+        fos.write(content.getBytes(Charset.defaultCharset()));
+        fos.close()
+    }
+
+
 }
 
 def modifyBuildFileRecursive(File thisDir, File backupDir, String relativePath) {
@@ -147,8 +216,10 @@ def modifyRootBuildFile(File rootBuildFile) {
 
     boolean needsPomVersion = !contents.contains("project.version");
     boolean needsPomGroupId = !contents.contains("project.group");
-    boolean needsEncryption = !contents.contains("apply from: \"https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle\"")
+    boolean needsEncryption = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle'")
     boolean needsMaven = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'")
+    boolean needsSite = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/site.gradle'")
+    boolean needsQuality = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'")
     boolean needsCentral = !contents.contains("mavenCentral()");
 
     //do the mods
@@ -197,6 +268,13 @@ def modifyRootBuildFile(File rootBuildFile) {
                     bw.write("\tapply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'\n")
                     logger.info("apply from maven injected");
                 }
+                if (needsQuality) {
+                    bw.write("\t//Gradle Fury note: this gives us the checkstyle, pmd findbugs and more, run with gradlew install -Pprofile=ci\n");
+                    bw.write("\n\tif (project.hasProperty('profile') && project.profile.split(',').contains(\"ci\")) {\n")
+                    bw.write("\t\tapply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'\n")
+                    bw.write("\t}\n\n")
+                    logger.info("apply from quality injected");
+                }
             }
 
 
@@ -205,7 +283,13 @@ def modifyRootBuildFile(File rootBuildFile) {
             logger.info("apply from enc injected");
             //at the end, add the encryption bit
             bw.write("\n\n//Gradle Fury note: this gives us the generateMasterKey and encryptPassword tasks\n");
-            bw.write("apply from: \"https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle\"\n");
+            bw.write("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle'\n");
+        }
+        if (needsSite) {
+            logger.info("apply from site injected");
+            //at the end, add the encryption bit
+            bw.write("\n\n//Gradle Fury note: gradlew site\n");
+            bw.write("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/site.gradle'\n");
         }
     } catch (Exception e) {
         e.printStackTrace()
@@ -393,7 +477,7 @@ def getString(String description, String defaultValue) {
 
     //need to ask for it
     if (console) {
-        userinput = console.readPassword('> ' + description + '[' + defaultValue + ']: ')
+        userinput = console.readLine('> ' + description + '[' + defaultValue + ']: ')
     } else {
         new SwingBuilder().edt {
             dialog(modal: true, title: description, alwaysOnTop: true, resizable: false, locationRelativeTo: null, pack: true, show: true) {
@@ -410,6 +494,8 @@ def getString(String description, String defaultValue) {
             }
         }
     }
+    if (userinput==null || userinput.length()==0 || userinput.trim().length()==0)
+        userinput=defaultValue;
     System.out.println("DEBUG " + userinput)
     return userinput
 }

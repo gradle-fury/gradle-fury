@@ -2,7 +2,11 @@ description = '[ c h r i s d o y l e ] :: Gradle Fury :: Validation and Test Sui
 
 apply plugin: 'java'
 apply plugin: 'application'
-
+try {
+    apply plugin: 'distribution'    //needed to produce zip on gradle 2.2.1 and older
+}catch (Throwable t){
+    //catch for older versions of gradle barfing when both application and distribution are applied.
+}
 compileJava {
     sourceCompatibility = "${project.property('compileJava.sourceCompatibility')}"
     targetCompatibility = "${project.property('compileJava.targetCompatibility')}"

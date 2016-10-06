@@ -29,7 +29,7 @@ import org.w3c.dom.DOMException;
 
 import java.io.*;
 
-rootProject.ext.gradleFuryVersion = "1.0.14"
+rootProject.ext.gradleFuryVersion = "1.0.15"
 
 
 /**=================================================================================================
@@ -390,12 +390,13 @@ ext.pom = [
 //
 //     "How can I upload multiple flavors/artifacts with different POM-files using mavenDeployer?"
 //     https://discuss.gradle.org/t/how-can-i-upload-multiple-flavors-artifacts-with-different-pom-files-using-mavendeployer/5887
-
-build.mustRunAfter clean
-publish.dependsOn build
-
-uploadArchives.dependsOn publish
-
+try {
+    build.mustRunAfter clean
+    publish.dependsOn build
+    uploadArchives.dependsOn publish
+}catch (Throwable t){
+    logger.debug("failed to attach build and publish on project" + project.name, t);
+}
 uploadArchives {
     doFirst {
         //execution phase
