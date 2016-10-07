@@ -837,13 +837,12 @@ def modifyGeneratedPom(pom) {
 
             def repositoriesNode = node.appendNode("repositories")
             project.repositories.each {
-                if (!it.url.toString().startsWith("file:/")) {
+                if (it.hasProperty("url") && it.url!=null && !it.url.toString().startsWith("file:/")) {
                     def repoNode = repositoriesNode.appendNode("repository")
                     repoNode.appendNode("id", it.name);
                     repoNode.appendNode("name", it.name);
                     repoNode.appendNode("url", it.url);
                 }
-
             }
 
             def licenses = project.pom.licenses
