@@ -6,8 +6,15 @@ compileJava {
     sourceCompatibility = "${project.property('compileJava.sourceCompatibility')}"
     targetCompatibility = "${project.property('compileJava.targetCompatibility')}"
 }
-
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
 dependencies {
+
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
     compile "org.apache.commons:commons-lang3:${project.property('commons-lang3.version')}"
 
     //since gradle 2.12, similar to maven "provided"
