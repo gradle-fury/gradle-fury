@@ -14,18 +14,20 @@ checkstyle - The Checkstyle libraries to be used for this project.
      \--- com.google.guava:guava-jdk5:14.0.1
 
 compile - Dependencies for source set 'main'.
-\--- org.apache.commons:commons-lang3:3.4
++--- org.apache.commons:commons-lang3:3.4
+\--- commons-logging:commons-logging:1.2
 
 compileClasspath - Compile classpath for source set 'main'.
 +--- org.apache.commons:commons-lang3:3.4
-\--- commons-io:commons-io:2.5
+\--- commons-logging:commons-logging:1.2
 
 compileOnly - Compile dependencies for source set 'main'.
 +--- org.apache.commons:commons-lang3:3.4
-\--- commons-io:commons-io:2.5
+\--- commons-logging:commons-logging:1.2
 
 default - Configuration for default artifacts.
-\--- org.apache.commons:commons-lang3:3.4
++--- org.apache.commons:commons-lang3:3.4
+\--- commons-logging:commons-logging:1.2
 
 findbugs - The FindBugs libraries to be used for this project.
 \--- com.google.code.findbugs:findbugs:3.0.1
@@ -74,25 +76,30 @@ pmd - The PMD libraries to be used for this project.
           \--- xml-apis:xml-apis:1.4.01
 
 runtime - Runtime dependencies for source set 'main'.
-\--- org.apache.commons:commons-lang3:3.4
++--- org.apache.commons:commons-lang3:3.4
+\--- commons-logging:commons-logging:1.2
 
 testCompile - Dependencies for source set 'test'.
 +--- org.apache.commons:commons-lang3:3.4
++--- commons-logging:commons-logging:1.2
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
 
 testCompileClasspath - Compile classpath for source set 'test'.
 +--- org.apache.commons:commons-lang3:3.4
++--- commons-logging:commons-logging:1.2
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
 
 testCompileOnly - Compile dependencies for source set 'test'.
 +--- org.apache.commons:commons-lang3:3.4
++--- commons-logging:commons-logging:1.2
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
 
 testRuntime - Runtime dependencies for source set 'test'.
 +--- org.apache.commons:commons-lang3:3.4
++--- commons-logging:commons-logging:1.2
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
 

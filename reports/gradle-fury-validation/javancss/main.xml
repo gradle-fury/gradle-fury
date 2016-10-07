@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <javancss>
-  <date>2016-10-02</date>
-  <time>21:25:20</time>
+  <date>2016-10-07</date>
+  <time>19:06:14</time>
   <packages>
     <package>
       <name>com.chrisdoyle.validation</name>
@@ -17,27 +17,27 @@
       <name>com.chrisdoyle.validation.tests</name>
       <classes>14</classes>
       <functions>21</functions>
-      <ncss>291</ncss>
-      <javadocs>15</javadocs>
-      <javadoc_lines>61</javadoc_lines>
+      <ncss>292</ncss>
+      <javadocs>16</javadocs>
+      <javadoc_lines>66</javadoc_lines>
       <single_comment_lines>17</single_comment_lines>
       <multi_comment_lines>5</multi_comment_lines>
     </package>
     <total>
       <classes>15</classes>
       <functions>23</functions>
-      <ncss>430</ncss>
-      <javadocs>18</javadocs>
-      <javadoc_lines>77</javadoc_lines>
+      <ncss>431</ncss>
+      <javadocs>19</javadocs>
+      <javadoc_lines>82</javadoc_lines>
       <single_comment_lines>30</single_comment_lines>
       <multi_comment_lines>44</multi_comment_lines>
     </total>
     <table>
       <tr><td>Packages</td><td>Classes</td><td>Functions</td><td>NCSS</td><td>Javadocs</td><td>per</td></tr>
-      <tr><td>2.00</td><td>15.00</td><td>23.00</td><td>430.00</td><td>18.00</td><td>Project</td></tr>
-      <tr><td></td><td>7.50</td><td>11.50</td><td>215.00</td><td>9.00</td><td>Package</td></tr>
-      <tr><td></td><td></td><td>1.53</td><td>28.67</td><td>1.20</td><td>Class</td></tr>
-      <tr><td></td><td></td><td></td><td>18.70</td><td>0.78</td><td>Function</td></tr>
+      <tr><td>2.00</td><td>15.00</td><td>23.00</td><td>431.00</td><td>19.00</td><td>Project</td></tr>
+      <tr><td></td><td>7.50</td><td>11.50</td><td>215.50</td><td>9.50</td><td>Package</td></tr>
+      <tr><td></td><td></td><td>1.53</td><td>28.73</td><td>1.27</td><td>Class</td></tr>
+      <tr><td></td><td></td><td></td><td>18.74</td><td>0.83</td><td>Function</td></tr>
     </table>
   </packages>
 
@@ -147,8 +147,8 @@
       <ncss>11</ncss>
       <functions>1</functions>
       <classes>0</classes>
-      <javadocs>1</javadocs>
-      <javadocs_lines>7</javadocs_lines>
+      <javadocs>2</javadocs>
+      <javadocs_lines>12</javadocs_lines>
       <single_comment_lines>4</single_comment_lines>
       <implementation_comment_lines>0</implementation_comment_lines>
     </object>
@@ -196,12 +196,12 @@
       <ncss>21.00</ncss>
       <functions>1.53</functions>
       <classes>0.00</classes>
-      <javadocs>1.20</javadocs>
-      <javadocs_lines>5.13</javadocs_lines>
+      <javadocs>1.27</javadocs>
+      <javadocs_lines>5.47</javadocs_lines>
       <single_comment_lines>2.00</single_comment_lines>
       <implementation_comment_lines>2.93</implementation_comment_lines>
     </averages>
-    <ncss>430.00</ncss>
+    <ncss>431.00</ncss>
   </objects>
 
   <functions>
@@ -305,7 +305,7 @@
       <name>com.chrisdoyle.validation.tests.Test_Issue46.pomScopeDependency()</name>
       <ncss>10</ncss>
       <ccn>4</ccn>
-      <javadocs>0</javadocs>
+      <javadocs>1</javadocs>
     </function>
     <function>
       <name>com.chrisdoyle.validation.tests.Test_Issue51.testPomProjectUrls()</name>
@@ -346,9 +346,9 @@
     <function_averages>
       <ncss>12.52</ncss>
       <ccn>4.39</ccn>
-      <javadocs>0.13</javadocs>
+      <javadocs>0.17</javadocs>
     </function_averages>
-    <ncss>430.00</ncss>
+    <ncss>431.00</ncss>
   </functions>
 </javancss>
 

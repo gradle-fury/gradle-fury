@@ -8,7 +8,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="Date-Creation-yyyymmdd" content="20160101"/>
-    <meta name="Date-Revision-yyyymmdd" content="20161003"/>
+    <meta name="Date-Revision-yyyymmdd" content="20161007"/>
     <meta http-equiv="Content-Language" content="en"/>
     <title> Gradle Fury</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css"/>
@@ -65,10 +65,10 @@
             </li>
 
             <li id="publishDate" class="pull-right"><span class="divider">|</span> Last Published:
-                2016-10-03
+                2016-10-07
             </li>
             <li id="projectVersion" class="pull-right">
-                1.0.14
+                1.0.16
             </li>
 
         </ul>
@@ -243,12 +243,12 @@
 </thead>
 <tbody>
 <tr><td>Modules:</td><td>13</td></tr>
-<tr><td>Number of dependencies (NOD):</td><td>39</td></tr>
-<tr><td>Number of unique artifacts (NOA):</td><td>42</td></tr>
+<tr><td>Number of dependencies (NOD):</td><td>34</td></tr>
+<tr><td>Number of unique artifacts (NOA):</td><td>37</td></tr>
 <tr><td>Number of version-conflicting artifacts (NOC):</td><td>6</td></tr>
 <tr><td>Number of SNAPSHOT artifacts (NOS):</td><td>0</td></tr>
 <tr><td>Number of Wildcard artifacts (NOWC):</td><td>10</td></tr>
-<tr><td>Convergence (NOD/NOA):</td><td>92%</td></tr>
+<tr><td>Convergence (NOD/NOA):</td><td>91%</td></tr>
 <tr><td>Ready for release (100 % convergence and no SNAPSHOTS):</td><td><strong>Error</strong><br>You do not have 100 % convergence.</td></tr>
 </tbody>
 </table>
@@ -256,10 +256,6 @@
 <p>This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.</p>
 <pre><code>
 dependencies {
-	compile: 'org.codehaus.javancss:javancss:33.54@jar'
-	compile: 'jdepend:jdepend:2.9.1@jar'
-	compile: 'org.apache.ant:ant-jdepend:1.9.6@jar'
-	compile: 'net.sourceforge.pmd:pmd-java:5.2.3@jar'
 	compile: 'org.umlgraph:umlgraph:5.6.6@jar'
 	compile: 'com.atlassian.commonmark:commonmark:0.7.0'
 	compile: 'com.atlassian.commonmark:commonmark-ext-gfm-tables:0.7.0'
@@ -277,16 +273,14 @@ dependencies {
 	compile: 'junit:junit:4.12@jar'
 //END WARN dependency converage flag!
 
-    	compile: 'com.google.code.findbugs:findbugs:3.0.1@jar'
-	compile: 'com.chrisdoyle:hello-world-lib:1.0.14@jar'
+    	compile: 'com.chrisdoyle:hello-world-lib:1.0.16@jar'
 	compile: 'com.android.support:support-annotations:23.3.0@jar'
 	compile: 'org.jacoco:org.jacoco.agent:0.7.4.201502262128@jar'
 	compile: 'org.jacoco:org.jacoco.ant:0.7.4.201502262128@jar'
-	compile: 'com.puppycrawl.tools:checkstyle:5.9@jar'
 	compile: 'com.android.support.test:runner:0.4.+'
 	compile: 'com.android.support.test:rules:0.4.+'
 	compile: 'ch.acra:acra:4.7.0@aar'
-	compile: 'com.chrisdoyle:hello-world-aar:1.0.14@aar'
+	compile: 'com.chrisdoyle:hello-world-aar:1.0.16@aar'
 
 
 //WARN dependency converage flag! Currently used by the modules: [hello-world-apk, hello-world-gmaps, hello-world-apk-overrides]
@@ -309,40 +303,17 @@ dependencies {
 	compile: 'commons-codec:commons-codec:1+'
 	compile: 'org.osmdroid:osmdroid-android:5.4.1@aar'
 	compile: 'com.squareup.leakcanary:leakcanary-android:1.4-beta2@aar'
-	compile: 'com.chrisdoyle:hello-universe-lib:1.0.14@jar'
+	compile: 'com.chrisdoyle:hello-universe-lib:1.0.16@jar'
 	compile: 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2@aar'
 	compile: 'com.google.android.gms:play-services:8.+'
 	compile: 'com.google.android.gms:play-services-maps:8.+'
+	compile: 'commons-logging:commons-logging:1.2@jar'
 }
 </code></pre>
 <h2>Maven Dependencies, composite</h2>
 <p>This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.</p>
 <pre><code>
 &lt;dependencies&gt;
-	&lt;dependency&gt;
-		&lt;groupId&gt;org.codehaus.javancss&lt;/groupId&gt;
-		&lt;artifactId&gt;javancss&lt;/artifactId&gt;
-		&lt;version&gt;33.54&lt;/version&gt;
-		&lt;type&gt;jar&lt;/type&gt;
-	&lt;/dependency&gt;
-	&lt;dependency&gt;
-		&lt;groupId&gt;jdepend&lt;/groupId&gt;
-		&lt;artifactId&gt;jdepend&lt;/artifactId&gt;
-		&lt;version&gt;2.9.1&lt;/version&gt;
-		&lt;type&gt;jar&lt;/type&gt;
-	&lt;/dependency&gt;
-	&lt;dependency&gt;
-		&lt;groupId&gt;org.apache.ant&lt;/groupId&gt;
-		&lt;artifactId&gt;ant-jdepend&lt;/artifactId&gt;
-		&lt;version&gt;1.9.6&lt;/version&gt;
-		&lt;type&gt;jar&lt;/type&gt;
-	&lt;/dependency&gt;
-	&lt;dependency&gt;
-		&lt;groupId&gt;net.sourceforge.pmd&lt;/groupId&gt;
-		&lt;artifactId&gt;pmd-java&lt;/artifactId&gt;
-		&lt;version&gt;5.2.3&lt;/version&gt;
-		&lt;type&gt;jar&lt;/type&gt;
-	&lt;/dependency&gt;
 	&lt;dependency&gt;
 		&lt;groupId&gt;org.umlgraph&lt;/groupId&gt;
 		&lt;artifactId&gt;umlgraph&lt;/artifactId&gt;
@@ -416,15 +387,9 @@ dependencies {
 &lt;!--END WARN dependency converage flag!--&gt;
 
     	&lt;dependency&gt;
-		&lt;groupId&gt;com.google.code.findbugs&lt;/groupId&gt;
-		&lt;artifactId&gt;findbugs&lt;/artifactId&gt;
-		&lt;version&gt;3.0.1&lt;/version&gt;
-		&lt;type&gt;jar&lt;/type&gt;
-	&lt;/dependency&gt;
-	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-world-lib&lt;/artifactId&gt;
-		&lt;version&gt;1.0.14&lt;/version&gt;
+		&lt;version&gt;1.0.16&lt;/version&gt;
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
@@ -446,12 +411,6 @@ dependencies {
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
-		&lt;groupId&gt;com.puppycrawl.tools&lt;/groupId&gt;
-		&lt;artifactId&gt;checkstyle&lt;/artifactId&gt;
-		&lt;version&gt;5.9&lt;/version&gt;
-		&lt;type&gt;jar&lt;/type&gt;
-	&lt;/dependency&gt;
-	&lt;dependency&gt;
 		&lt;groupId&gt;com.android.support.test&lt;/groupId&gt;
 		&lt;artifactId&gt;runner&lt;/artifactId&gt;
 		&lt;version&gt;[0.4,)&lt;/version&gt;
@@ -470,7 +429,7 @@ dependencies {
 	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-world-aar&lt;/artifactId&gt;
-		&lt;version&gt;1.0.14&lt;/version&gt;
+		&lt;version&gt;1.0.16&lt;/version&gt;
 		&lt;type&gt;aar&lt;/type&gt;
 	&lt;/dependency&gt;
 
@@ -555,7 +514,7 @@ dependencies {
 	&lt;dependency&gt;
 		&lt;groupId&gt;com.chrisdoyle&lt;/groupId&gt;
 		&lt;artifactId&gt;hello-universe-lib&lt;/artifactId&gt;
-		&lt;version&gt;1.0.14&lt;/version&gt;
+		&lt;version&gt;1.0.16&lt;/version&gt;
 		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 	&lt;dependency&gt;
@@ -573,6 +532,12 @@ dependencies {
 		&lt;groupId&gt;com.google.android.gms&lt;/groupId&gt;
 		&lt;artifactId&gt;play-services-maps&lt;/artifactId&gt;
 		&lt;version&gt;[8,)&lt;/version&gt;
+	&lt;/dependency&gt;
+	&lt;dependency&gt;
+		&lt;groupId&gt;commons-logging&lt;/groupId&gt;
+		&lt;artifactId&gt;commons-logging&lt;/artifactId&gt;
+		&lt;version&gt;1.2&lt;/version&gt;
+		&lt;type&gt;jar&lt;/type&gt;
 	&lt;/dependency&gt;
 &lt;/dependencies&gt;
 </code></pre>

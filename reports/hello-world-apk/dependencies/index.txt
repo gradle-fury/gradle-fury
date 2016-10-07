@@ -29,7 +29,8 @@ _barDebugApk - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -64,7 +65,8 @@ _barDebugCompile - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -111,7 +113,8 @@ _barReleaseApk - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -143,7 +146,8 @@ _barReleaseCompile - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -207,7 +211,8 @@ _bazDebugApk - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -242,7 +247,8 @@ _bazDebugCompile - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -289,7 +295,8 @@ _bazReleaseApk - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -321,7 +328,8 @@ _bazReleaseCompile - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -385,7 +393,8 @@ _fooDebugApk - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -420,7 +429,8 @@ _fooDebugCompile - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -467,7 +477,8 @@ _fooReleaseApk - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -499,7 +510,8 @@ _fooReleaseCompile - ## Internal use, do not manually configure ##
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -625,7 +637,8 @@ barDebug-classes - Published classes configuration for Variant barDebug
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -686,7 +699,8 @@ barRelease-classes - Published classes configuration for Variant barRelease
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -750,7 +764,8 @@ bazDebug-classes - Published classes configuration for Variant bazDebug
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -811,7 +826,8 @@ bazRelease-classes - Published classes configuration for Variant bazRelease
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -873,7 +889,8 @@ compile - Classpath for compiling the main sources.
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -956,7 +973,8 @@ fooDebug-classes - Published classes configuration for Variant fooDebug
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0
@@ -1017,7 +1035,8 @@ fooRelease-classes - Published classes configuration for Variant fooRelease
 |         \--- com.android.support:support-annotations:23.3.0
 +--- project :hello-world-aar
 |    +--- project :hello-world-lib
-|    |    \--- org.apache.commons:commons-lang3:3.4
+|    |    +--- org.apache.commons:commons-lang3:3.4
+|    |    \--- commons-logging:commons-logging:1.2
 |    \--- com.android.support:support-annotations:23.3.0
 +--- com.android.support:appcompat-v7:23.3.0
 |    +--- com.android.support:support-vector-drawable:23.3.0

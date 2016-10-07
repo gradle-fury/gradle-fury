@@ -259,15 +259,16 @@
 <error line="41" severity="warning" message="Line is longer than 100 characters (found 106)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 </file>
 <file name="./gradle-fury-validation/src/main/java/com/chrisdoyle/validation/tests/Test_Issue46.java">
-<error line="14" severity="warning" message="Line is longer than 100 characters (found 103)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
-<error line="16" severity="warning" message="Line is longer than 100 characters (found 120)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
-<error line="20" column="14" severity="warning" message="Name &apos;Test_Issue46&apos; must match pattern &apos;^[A-Z][a-zA-Z0-9]*$&apos;." source="com.puppycrawl.tools.checkstyle.checks.naming.TypeNameCheck"/>
-<error line="23" column="54" severity="warning" message="&apos;{&apos; is not preceded with whitespace." source="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck"/>
-<error line="24" severity="warning" message="Line is longer than 100 characters (found 159)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
-<error line="30" severity="warning" message="Line is longer than 100 characters (found 140)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
-<error line="32" severity="warning" message="Line is longer than 100 characters (found 117)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
-<error line="34" severity="warning" message="Line is longer than 100 characters (found 129)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
-<error line="47" severity="warning" message="Line is longer than 100 characters (found 106)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="15" severity="warning" message="Line is longer than 100 characters (found 103)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="17" severity="warning" message="Line is longer than 100 characters (found 120)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="21" column="14" severity="warning" message="Name &apos;Test_Issue46&apos; must match pattern &apos;^[A-Z][a-zA-Z0-9]*$&apos;." source="com.puppycrawl.tools.checkstyle.checks.naming.TypeNameCheck"/>
+<error line="24" severity="warning" message="Line is longer than 100 characters (found 104)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="30" column="54" severity="warning" message="&apos;{&apos; is not preceded with whitespace." source="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAroundCheck"/>
+<error line="31" severity="warning" message="Line is longer than 100 characters (found 159)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="37" severity="warning" message="Line is longer than 100 characters (found 140)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="39" severity="warning" message="Line is longer than 100 characters (found 117)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="41" severity="warning" message="Line is longer than 100 characters (found 129)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
+<error line="54" severity="warning" message="Line is longer than 100 characters (found 106)." source="com.puppycrawl.tools.checkstyle.checks.sizes.LineLengthCheck"/>
 </file>
 <file name="./gradle-fury-validation/src/main/java/com/chrisdoyle/validation/tests/Test_Issue51.java">
 <error line="17" column="14" severity="warning" message="Name &apos;Test_Issue51&apos; must match pattern &apos;^[A-Z][a-zA-Z0-9]*$&apos;." source="com.puppycrawl.tools.checkstyle.checks.naming.TypeNameCheck"/>
