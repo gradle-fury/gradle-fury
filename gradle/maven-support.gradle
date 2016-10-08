@@ -230,8 +230,8 @@ void printMOTD(){
                 "       |____) #  ####  #    # #    # #    # #      #####     #####   #    # #    #   #   \n" +
                 "---\\___(__)   #     #  #####  ###### #    # #      #         #       #    # #####    #   \n" +
                 "               #    #  #   #  #    # #    # #      #         #       #    # #   #    #   \n" +
-                "                #####  #    # #    # #####  ###### ######    #        ####  #    #   #   \n";
-        println "                                         v" + rootProject.ext.gradleFuryVersion;
+                "                #####  #    # #    # #####  ###### ######    #        ####  #    #   #   ";
+        println "                                                                     v" + rootProject.ext.gradleFuryVersion + '\n';
         println "== Gradle Fury, bringing maven sensibility to gradle. It's NOT an incubating feature.";
         String[] MOTD = [
                 "== Gradle Fury: ProTip: Use 'gradle.properties' to set all your version and pom related information.",
@@ -247,6 +247,7 @@ void printMOTD(){
                 "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=ci' to build with all the code quality and analysis plugins",
                 "== Gradle Fury: ProTip: Use 'gradle site' to build a maven style set that wraps up all your stuff with one bow",
                 "== Gradle Fury: ProTip: Use 'gradle siteWar' to build a maven style set as a WAR file",
+                "== Gradle Tip: Use 'gradle build -x test' to build and skip tests"
         ]
 
 
@@ -394,6 +395,8 @@ try {
     build.mustRunAfter clean
     publish.dependsOn build
     uploadArchives.dependsOn publish
+    publishArtifacts.dependsOn build
+
 }catch (Throwable t){
     logger.debug("failed to attach build and publish on project" + project.name, t);
 }
@@ -448,7 +451,7 @@ afterEvaluate { project ->
 
     // (Yet Another) Gradle Execution Pipeline Hack (to override the inoperable 'install' task for
     // Android projects!!!
-    if (project.ext.isJavaProject) {
+    if (project.ext.isJavaProject || project.ext.isWarProject) {
         install {
             doFirst {
                 println "\n\n========================================================="
@@ -460,7 +463,10 @@ afterEvaluate { project ->
             }
         }
 
+        install.dependsOn build
         install.dependsOn publishToMavenLocal
+        build.mustRunAfter clean
+        publishToMavenLocal.dependsOn build
     }
     else if (project.ext.isAndroidProject) {
         task install() {
