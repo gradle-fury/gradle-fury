@@ -60,3 +60,4 @@ proguard-seeds.txt
 proguard-usage.txt
 
 docs/**
+**/fury-backup/**
