@@ -1841,7 +1841,7 @@ def uploadFile(File input, String urlDestination, String contentType){
     logger.debug("Wrote " + totalBytesRead + " bytes of " + input.length() + ", ratio: " +(double)totalBytesRead / (double)input.length());
 
     if (connection.getResponseCode()<200 || connection.getResponseCode()>=300){
-        throw new Exception("unexcepted response code. Published failed.")
+        throw new Exception("unexcepted response code. Published failed. " + connection.getResponseCode() + ": "+ connection.getResponseMessage() )
     }
 
 }
