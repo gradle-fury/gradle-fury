@@ -66,6 +66,8 @@ dependencies {
 
     //just to have an AAR that's in mavenCentral
     compile 'org.osmdroid:osmdroid-android:5.4.1:release@aar'
+
+    //wild card test
     compile "junit:junit:+"
 
 

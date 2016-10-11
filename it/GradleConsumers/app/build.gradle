@@ -20,6 +20,11 @@ android {
     lintOptions {
           abortOnError false
     }
+    packagingOptions {
+        exclude 'META-INF/maven/commons-io/commons-io/pom.properties'
+        exclude 'META-INF/maven/commons-io/commons-io/pom.xml'
+    }
+    //
 }
 
 dependencies {

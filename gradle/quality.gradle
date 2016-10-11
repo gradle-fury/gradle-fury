@@ -50,8 +50,6 @@ apply plugin: 'pmd'
 apply plugin: 'jdepend'
 
 
-
-
 buildscript{
     repositories {
         jcenter()
@@ -61,8 +59,49 @@ buildscript{
     dependencies {
         classpath 'org.apache.commons:commons-lang3:3.4'
         classpath 'commons-io:commons-io:2.5'
+        classpath 'com.github.spyhunter99:dex-method-counts-lib:2.1'
     }
 }
+
+//dex count report APKs only for now
+//import info.persistent.dex.*;
+
+task dexCountReport() << {
+
+    File outdir = new File("${buildDir}/reports/dex-count/");
+
+    if (project.plugins.hasPlugin("com.android.application")){
+
+        outdir.mkdirs();
+
+
+        //List<String> apks = new ArrayList<>();
+        File[] list = new File(buildDir.absolutePath + "/outputs/apk/").listFiles(new FilenameFilter() {
+            @Override
+            boolean accept(File dir, String name) {
+                if (name.endsWith(".apk") && !name.contains("-unaligned"))
+                    return true;
+                return false;
+            }
+        });
+        if (list!=null && list.length > 0) {
+            String[] files = new String[list.length];
+            for (int i = 0; i < list.length; i++) {
+                files[i] = list[i].absolutePath;
+            }
+
+            def dexcount = new com.github.spyhunter99.dex.Main();
+            dexcount.enableStdOut(false)
+            dexcount.enableFileOutput(true)
+            dexcount.setOutputDirectory(outdir)
+            dexcount.run(files);
+        }
+    }
+
+}
+
+//dex count report APKs only for now
+
 
 
 //produce a dependency report
@@ -129,7 +168,7 @@ task javancss << {
 
 javancss.onlyIf { file('src').exists() }
 try{
-check.dependsOn javancss
+    check.dependsOn javancss
 }catch (Throwable t){
     logger.debug("failed to attach check on project" + project.name, t);
 }
@@ -291,6 +330,9 @@ afterEvaluate {
                     tasks.findByName('checkstyleAndroid').execute();
                     tasks.findByName('jdependAndroid').execute();
                     tasks.findByName('jdependAndroidReport').execute();
+                }
+                if (project.plugins.hasPlugin("com.android.application")) {
+                    tasks.findByName('dexCountReport').execute();
                 }
             }
         }

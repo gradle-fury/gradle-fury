@@ -25,13 +25,38 @@ public class Test_Issue38 {
         //#test
         "<dependency>\\s*<groupId>junit</groupId>\\s*<artifactId>junit</artifactId>\\s*<scope>test</scope>" ,
         //compile
-        "<dependency>\\s*<groupId>org.osmdroid</groupId>\\s*<artifactId>osmdroid-android</artifactId>\\s*<scope>compile</scope>"
+        //"<dependency>\\s*<groupId>org.osmdroid</groupId>\\s*<artifactId>osmdroid-android</artifactId>\\s*<scope>compile</scope>"
         
         };
 
 
         for (int i = 0; i < Main.allPoms.length; i++) {
             if (Main.allPoms[i].contains("hello-world-apk/")) {
+                File f = new File(Main.allPoms[i]);
+
+                String str = FileUtils.readFileToString(f, "utf-8");
+                for (int k = 0; k < search.length; k++) {
+                    Pattern p = Pattern.compile(search[k]);
+                    Matcher matcher = p.matcher(str);
+                    Assert.assertTrue(search[k] + " not found in " + f.getAbsolutePath(), matcher.find());
+                }
+            }
+        }
+
+    }
+
+    @Test
+    public void testPomDependencyScopeAAR() throws Exception {
+
+        String[] search = new String[]{
+                //compile and type
+                "<dependency>\\s*<groupId>org.osmdroid</groupId>\\s*<artifactId>osmdroid-android</artifactId>\\s*<scope>compile</scope>\\s*<version>5.4.1</version>\\s*<type>aar</type>"
+
+        };
+
+
+        for (int i = 0; i < Main.allPoms.length; i++) {
+            if (Main.allPoms[i].contains("hello-world-aar/")) {
                 File f = new File(Main.allPoms[i]);
 
                 String str = FileUtils.readFileToString(f, "utf-8");

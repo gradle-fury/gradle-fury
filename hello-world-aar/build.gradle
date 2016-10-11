@@ -18,6 +18,8 @@ dependencies {
 
     // apparently the support-annotations package was compiled with java8, thanks for that
     compile "com.android.support:support-annotations:${project.property('android-support.version')}"
+    //just to have an AAR that's in mavenCentral
+    compile 'org.osmdroid:osmdroid-android:5.4.1:release@aar'
 
     testCompile "junit:junit:${project.property('junit.version')}"
 }

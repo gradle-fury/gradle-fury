@@ -29,7 +29,7 @@ import org.w3c.dom.DOMException;
 
 import java.io.*;
 
-rootProject.ext.gradleFuryVersion = "1.0.16"
+rootProject.ext.gradleFuryVersion = "1.0.17"
 
 
 /**=================================================================================================
@@ -230,8 +230,8 @@ void printMOTD(){
                 "       |____) #  ####  #    # #    # #    # #      #####     #####   #    # #    #   #   \n" +
                 "---\\___(__)   #     #  #####  ###### #    # #      #         #       #    # #####    #   \n" +
                 "               #    #  #   #  #    # #    # #      #         #       #    # #   #    #   \n" +
-                "                #####  #    # #    # #####  ###### ######    #        ####  #    #   #   \n";
-        println "                                         v" + rootProject.ext.gradleFuryVersion;
+                "                #####  #    # #    # #####  ###### ######    #        ####  #    #   #   ";
+        println "                                                                     v" + rootProject.ext.gradleFuryVersion + '\n';
         println "== Gradle Fury, bringing maven sensibility to gradle. It's NOT an incubating feature.";
         String[] MOTD = [
                 "== Gradle Fury: ProTip: Use 'gradle.properties' to set all your version and pom related information.",
@@ -247,6 +247,7 @@ void printMOTD(){
                 "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=ci' to build with all the code quality and analysis plugins",
                 "== Gradle Fury: ProTip: Use 'gradle site' to build a maven style set that wraps up all your stuff with one bow",
                 "== Gradle Fury: ProTip: Use 'gradle siteWar' to build a maven style set as a WAR file",
+                "== Gradle Tip: Use 'gradle build -x test' to build and skip tests"
         ]
 
 
@@ -255,6 +256,7 @@ void printMOTD(){
         println MOTD[index];
 
         println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues, also see the wiki for more info"
+        println "\n Building version " + project.version + " of your project...";
     }
 }
 
@@ -394,6 +396,8 @@ try {
     build.mustRunAfter clean
     publish.dependsOn build
     uploadArchives.dependsOn publish
+    publishArtifacts.dependsOn build
+
 }catch (Throwable t){
     logger.debug("failed to attach build and publish on project" + project.name, t);
 }
@@ -448,7 +452,7 @@ afterEvaluate { project ->
 
     // (Yet Another) Gradle Execution Pipeline Hack (to override the inoperable 'install' task for
     // Android projects!!!
-    if (project.ext.isJavaProject) {
+    if (project.ext.isJavaProject || project.ext.isWarProject) {
         install {
             doFirst {
                 println "\n\n========================================================="
@@ -460,7 +464,10 @@ afterEvaluate { project ->
             }
         }
 
+        install.dependsOn build
         install.dependsOn publishToMavenLocal
+        build.mustRunAfter clean
+        publishToMavenLocal.dependsOn build
     }
     else if (project.ext.isAndroidProject) {
         task install() {
@@ -758,6 +765,7 @@ def modifyGeneratedPom(pom) {
     pom.withXml { provider ->
         def node = provider.asNode()
 
+        System.out.println(":" + project.name + ":modifyGeneratedPomBecauseGradleIsTerrible");
         if (!project.pom.packaging.equals("")) {
             if (!node.packaging) {
                 node.appendNode('packaging', project.pom.packaging)
@@ -1005,73 +1013,377 @@ def modifyGeneratedPom(pom) {
                 }
                 int addedDependencies=0;
 
-                //https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
-                //maven only supports the following scope identifiers
-                //test, compile, provided, runtime, system,
+                //note to future self, gradle, when it comes to dependency managements in pom's
+                //is generally terrible
+                // for java projects
+                //      as it doesn't respect exclusions
+                //      type, scope, classifiers are ignored
+                //for android projects
+                //      all external dependencies are NOT included
+                //      type, scope, classifiers are ignored
 
-                configurationNames.each { configurationName ->
-                    try {
-                        configurations[configurationName].allDependencies.each { dependency ->
-                            if (dependency.group != null && dependency.name != null) {
+                //in addition, i wrote a huge chunk of code to prevent duplicate entries
+                //why? because gradle appears to take the last entry as gospel whether or not it's
+                //the highest in terms of importance
 
-                                addedDependencies++;
-                                def dependencyNode = dependenciesNode.appendNode('dependency')
-                                dependencyNode.appendNode('groupId', dependency.group)
-                                dependencyNode.appendNode('artifactId', dependency.name)
-                                if ("default".equalsIgnoreCase(configurationName) ||
-                                        "compile".equalsIgnoreCase(configurationName) ||
-                                        "releaseCompile".equalsIgnoreCase(configurationName))
-                                    dependencyNode.appendNode('scope', "compile");
-                                else if ("testCompile".equalsIgnoreCase(configurationName) ||
-                                        "androidTestCompile".equalsIgnoreCase(configurationName))
-                                    dependencyNode.appendNode('scope', "test");
-                                else if ("compileOnly".equalsIgnoreCase(configurationName) ||
-                                        "provided".equalsIgnoreCase(configurationName))
-                                    dependencyNode.appendNode('scope', "provided");
-                                else if ("runtime".equalsIgnoreCase(configurationName))
-                                    dependencyNode.appendNode('scope', "runtime");
+                //moreover, in my journey to dedup and fix scopes, i found that iterating over the
+                //dependency list tends to wipe out anything that was added to the list. therefore making
+                //adding an item, then deduplicating impossible with the built in stuff.
 
-                                if (dependency.version.endsWith("+")) {
-                                    //a gradle wildcard
-                                    if ("+".equals(dependency.version)) {
-                                        dependencyNode.appendNode('version', "LATEST")
-                                    } else if (dependency.version.endsWith(".+")) {
-                                        //the version is something.+
-                                        dependencyNode.appendNode('version', "[" + dependency.version.replace(".+", ",)"))
-                                    } else if (dependency.version.endsWith("+")) {
-                                        dependencyNode.appendNode('version', "[" + dependency.version.replace("+", ",)"))
+                //and that's how we ended up here, track the dependencies in our own structure
+                //dedup on that list, then add them to the gradle pom structure.
+
+                //this is our internal list for deduping dependencies
+                List<Dependency> newDeps = new ArrayList<>();
+
+                try {
+                    //https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
+                    //maven only supports the following scope identifiers
+                    //test, compile, provided, runtime, system,
+
+                    //project.configurations.each { configuration ->
+                        //def configurationName = configuration.name
+                        configurationNames.each { configurationName ->
+                        try {
+
+                            logger.info("@@@@@@@ processing dependencies for " + configurationName)
+                            //configuration.allDependencies.each { dependency ->
+                            configurations[configurationName].allDependencies.each { dependency ->
+                                if (dependency.group != null && dependency.name != null) {
+
+
+                                    //logger.debug(dependency.to)
+                                    String version;
+                                    if (dependency.version.endsWith("+")) {
+                                        //a gradle wildcard
+                                        if ("+".equals(dependency.version)) {
+                                            version = "LATEST"
+                                        } else if (dependency.version.endsWith(".+")) {
+                                            //the version is something.+
+                                            version = "[" + dependency.version.replace(".+", ",)");
+                                        } else if (dependency.version.endsWith("+")) {
+                                            version = "[" + dependency.version.replace("+", ",)")
+                                        } else {
+                                            version = dependency.version;
+                                            logger.warn("WARN - unhandled case for dependency version mediation for " +
+                                                    dependency.group + ":" + dependency.name + ":" + dependency.version);
+                                        }
+                                        //TODO there may be other cases here
+
                                     } else {
-                                        logger.warn("WARN - unhandled case for dependency version mediation for " +
-                                                dependency.group + ":" + dependency.name + ":" + dependency.version);
+                                        version = dependency.version;
                                     }
-                                    //TODO there may be other cases here
 
-                                } else {
-                                    dependencyNode.appendNode('version', dependency.version)
-                                }
+                                    String scope = "";
+                                    if ("default".equalsIgnoreCase(configurationName) ||
+                                            "compile".equalsIgnoreCase(configurationName) ||
+                                            "releaseCompile".equalsIgnoreCase(configurationName))
+                                        scope = "compile";
+                                    else if ("testCompile".equalsIgnoreCase(configurationName) ||
+                                            "androidTestCompile".equalsIgnoreCase(configurationName) ||
+                                            configurationName.toLowerCase().contains("test"))
+                                        scope = "test";
+                                    else if ("compileOnly".equalsIgnoreCase(configurationName) ||
+                                            "provided".equalsIgnoreCase(configurationName))
+                                        scope = "provided";
+                                    else if ("runtime".equalsIgnoreCase(configurationName))
+                                        scope = "runtime";
+                                    else scope = "compile";
 
-// FIXME :: Issue #21: POM dependency generation shall support type and scope
-//                        dependencyNode.appendNode('type', ???)
-//                        dependencyNode.appendNode('scope', configurationName) // ???
 
-                                // if there are any exclusions in dependency
-                                if (dependency.excludeRules.size() > 0) {
-                                    def exclusionsNode = dependencyNode.appendNode('exclusions')
-                                    dependency.excludeRules.each { rule ->
-                                        def exclusionNode = exclusionsNode.appendNode('exclusion')
-                                        exclusionNode.appendNode('groupId', rule.group)
-                                        exclusionNode.appendNode('artifactId', rule.module)
+
+
+
+                                    Dependency d = new Dependency();
+                                    d.version=version;
+                                    d.groupId=dependency.group;
+                                    d.artifactId = dependency.name;
+                                    d.scope = scope;
+                                    //throws a silent exception d.type = dependency.type;
+                                    if (configurationName.toLowerCase().contains("release")){
+                                        //d.classifier = "release";
                                     }
+                                    if (configurationName.toLowerCase().contains("debug")){
+                                        //d.classifier = "debug";
+                                    }
+                                    // FIXME :: Issue #21: POM dependency generation shall support type and scope
+                                    configurations.findAll { set ->
+                                        set.each { config ->
+                                           // System.out.println(config.name)
+                                            if (config.name.contains(d.artifactId)){
+                                                String extension=config.name.substring(config.name.lastIndexOf(".")+1);
+                                                d.type=extension;
+                                            }
+                                        }
+                                    }
+
+                                    if (dependency.excludeRules.size() > 0) {
+                                        dependency.excludeRules.each { rule ->
+                                            Dependency exc = new Dependency();
+                                            exc.groupId= rule.group;
+                                            exc.artifactId=rule.module;
+                                            if (rule.hasProperty("version"))    //maybe a future, non-incubation version of gradle will support this
+                                                exc.version=rule.version
+                                            d.exclusions.add(exc)
+                                        }
+                                    }
+
+                                    logger.info("preparing dependency " + dependency.group + ":" + dependency.name + ":" + version + ":" + scope);
+
+                                    //this bit checks for duplicate entries and upgrades the scope as needed
+                                    boolean skipAdd=false;
+                                    for (int i=0; i < newDeps.size(); i++){
+                                        Dependency existing = newDeps.get(i);
+                                        if (existing.groupId.equalsIgnoreCase(d.groupId) &&
+                                                existing.artifactId.equalsIgnoreCase(d.artifactId) &&
+                                                existing.version.equalsIgnoreCase(d.version)){
+                                            skipAdd=true;
+                                            if (existing.scope.equalsIgnoreCase("compile")){
+                                                //do nothing, ignore the new one
+                                            } else if (existing.scope.equalsIgnoreCase("test") &&
+                                                    "compile".equalsIgnoreCase(d.scope)){
+                                                //update
+                                                existing.scope = "compile";
+                                                logger.info("scope upgraded for " + existing);
+                                            } else if (existing.scope.equalsIgnoreCase("provided") &&
+                                                    "compile".equalsIgnoreCase(d.scope)){
+                                                //update
+                                                existing.scope = "compile";
+                                                logger.info("scope upgraded for " + existing);
+                                            } else if (existing.scope.equalsIgnoreCase("runtime") &&
+                                                    "compile".equalsIgnoreCase(d.scope)){
+                                                //update
+                                                existing.scope = "compile";
+                                                logger.info("scope upgraded for " + existing);
+                                            } else{
+                                                //old scope and new scope are the same
+                                                //System.out.println("huh? existing is " + existing +" new dep is "+ d);
+                                            }
+                                        }
+                                    }
+                                    if (!skipAdd)
+                                        newDeps.add(d);
+
+
+
+                                   // System.out.println("dupchecker1" + scope)
+
+                                    //duplicate check
+                                    /*
+                                    boolean dupFound = false;
+                                    //reflect(dependenciesNode)
+                                    boolean keepGoing = false;
+                                    try {
+                                        System.out.println("BEFORE");
+                                        printCurrentDependency(asNode().getAt("dependencies")[0])
+                                        dependenciesNode.each { item ->
+                                            if (keepGoing) {
+
+                                                //reflect(item);
+
+                                                            The following code was left in memory for those hours
+                                                            of time lost to this horrific build system.
+
+                                                            there's no way to get the group/artifact etc
+                                                            after it's been addeded, the only way to toString
+                                                            then parse the string output.
+
+                                                        System.out.println("dupchecker2 comparing " + item);
+                                                        System.out.println(" vs "+ dependency)
+                                                        System.out.println("3"+item.group.value);
+                                                        System.out.println("4"+item.group);
+                                                        System.out.println("5"+item.group['value']);
+
+                                                        item.attributes.each { attr->
+                                                            System.out.println("6"+ attr);
+                                                        };
+                                                        item.values.each { attr->
+                                                            System.out.println("7"+ attr);
+                                                        };
+                                                        System.out.println("8"+item['group']);
+                                                        //System.out.println("9"+item.getProperty('group'));
+
+                                                //System.out.println("9" + item.getProperties().directChildren);
+                                                //produces the following
+                                                //9[groupId[attributes={}; value=org.apache.commons], artifactId[attributes={}; value=commons-lang3], version[attributes={}; value=3.4], scope[attributes={}; value=compile]]
+
+                                                String itemscope = "compile";
+                                                String itemgroup;
+                                                String itemversion;
+                                                String itemid;
+
+                                                String crap = item.getProperties().directChildren;
+                                                //gross
+                                                int index = crap.indexOf("value=", crap.indexOf("groupId[["));
+                                                if (index > 0) {
+                                                    index += 5
+                                                    itemgroup = crap.substring(index + 1, crap.indexOf("]", index));
+                                                }
+
+                                                index = crap.indexOf("value=", crap.indexOf("scope["));
+                                                if (index > 0) {
+                                                    index += 5
+                                                    itemscope = crap.substring(index + 1, crap.indexOf("]", index));
+                                                }
+                                                index = crap.indexOf("value=", crap.indexOf("artifactId["));
+                                                if (index > 0) {
+                                                    index += 5
+                                                    itemid = crap.substring(index + 1, crap.indexOf("]", index));
+                                                }
+                                                index = crap.indexOf("value=", crap.indexOf("version["));
+                                                if (index > 0) {
+                                                    index += 5
+                                                    itemversion = crap.substring(index + 1, crap.indexOf("]", index));
+                                                }
+
+                                                System.out.println("comparing against " + itemgroup + ":" + itemid + ":" + itemversion + ":" + itemscope);
+
+                                                //System.out.println("10"+item.getProperties().directChildren.getProperties()['groupId']);
+                                                //reflect(item.getProperties().directChildren);
+
+                                                //null System.out.println("91"+item.getProperties().directChildren.hasProperty('groupId'));
+
+                                                //nopeSystem.out.println("10"+item.getProperties().directChildren.groupId);
+                                                //10[]
+
+                                                //nope System.out.println("11"+item.getProperties().directChildren.getProperty('groupId'));
+
+                                                //nope System.out.println("12"+item.getProperties().directChildren['groupId']);
+                                                //12[]
+
+                                                //nope System.out.println("13"+item.getProperties().directChildren.getProperties());
+                                                //13[class:class groovy.util.NodeList, empty:false]
+
+                                                //System.out.println("5"+item.getName());
+                                                //System.out.println("5"+item.getVersion());
+                                                //item.group.each {->val
+                                                //    System.out.println("6"+val);
+                                                //};
+                                                //System.out.println("7"+item.group.value());
+                                                //System.out.println("8"+item.group.value.value());
+
+                                                //item* is an existing item
+                                                if (itemgroup.equalsIgnoreCase(dependency.group) &&
+                                                        itemid.equalsIgnoreCase(dependency.name) &&
+                                                        itemversion.equalsIgnoreCase(version)) {
+                                                    //probable duplicate need to
+                                                    System.out.println("\t\tFOUND dupchecker2" + item)
+                                                    dupFound = true;
+
+                                                    if (itemscope.equalsIgnoreCase("compile")) {
+                                                        //do nothing
+                                                        //existing item is already compile, don't change it or add a dup
+
+                                                        System.out.println("skip, existing item is a compile dependency");
+                                                    } else if (itemscope.equals("test") && !scope.equals("test")) {
+                                                        //item.scope = scope;
+                                                        System.out.println("######### scope replaced");
+                                                        dupFound = false;
+                                                        System.out.println("Before" + dependenciesNode.size());
+                                                        //dependenciesNode.remove(item);
+                                                        keepGoing = false;
+                                                        System.out.println("after" + dependenciesNode.size());
+                                                    } else if (itemscope.equals("provided") && scope.equals("compile")) {
+                                                        //item.scope = scope;
+                                                        System.out.println("######### scope replaced");
+                                                        dupFound = false;
+                                                        System.out.println("Before" + dependenciesNode.size());
+                                                        //dependenciesNode.remove(item);
+                                                        keepGoing = false;
+                                                        System.out.println("after" + dependenciesNode.size());
+                                                    } else {
+                                                        //possible that the scopes are equal or greater than for the new node
+
+                                                        //dependenciesNode.remove(item);
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                    } catch (Throwable t) {
+                                        t.printStackTrace()
+                                    }
+
+                                    if (false) {//!dupFound
+                                        addedDependencies++;
+                                        System.out.println("adding dependency " + dependency.group + ":" + dependency.name + ":" + version + ":" + scope);
+
+                                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                                        dependencyNode.appendNode('groupId', dependency.group)
+                                        dependencyNode.appendNode('artifactId', dependency.name)
+
+                                        dependencyNode.appendNode('version', version)
+                                        dependencyNode.appendNode('scope', scope);
+
+                // FIXME :: Issue #21: POM dependency generation shall support type and scope
+                //                        dependencyNode.appendNode('type', ???)
+                //                        dependencyNode.appendNode('scope', configurationName) // ???
+
+                                        // if there are any exclusions in dependency
+                                        if (dependency.excludeRules.size() > 0) {
+                                            def exclusionsNode = dependencyNode.appendNode('exclusions')
+                                            dependency.excludeRules.each { rule ->
+                                                def exclusionNode = exclusionsNode.appendNode('exclusion')
+                                                exclusionNode.appendNode('groupId', rule.group)
+                                                exclusionNode.appendNode('artifactId', rule.module)
+                                            }
+                                        }
+                                    } else {
+                                        logger.debug("skip dependency " + dependency.group + ":" + dependency.name + ":" + version + ":" + scope);
+                                    }
+
+                                    //System.out.println("AFTER");
+                                    //printCurrentDependency(asNode().getAt("dependencies")[0])
+
+                                     */
                                 }
                             }
+                        } catch (Exception ex) {
+                            logger.info("Issue 119, swallowed exception requesting the config name " + configurationName, ex);
+                            //fix for issue 119
+                            //always possible that the requested configuration does not exist on this project,
+                            //so skip it
                         }
-                    }catch (Exception ex){
-                        logger.debug("Isseu 119, swallowed exception requesting the config name " + configurationName, ex);
-                        //fix for issue 119
-                        //always possible that the requested configuration does not exist on this project,
-                        //no skip it
                     }
+                }catch (Throwable t){
+                    logger.warn("Issue 144, unexpected error fixing pom for " + project.name, t);
                 }
+
+                //inject the deduped dependencies
+                for (int i=0; i < newDeps.size(); i++){
+                    Dependency dependency = newDeps.get(i);
+                    addedDependencies++;
+                    logger.info("adding dependency " + dependency);
+
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', dependency.groupId)
+                    dependencyNode.appendNode('artifactId', dependency.artifactId)
+
+                    dependencyNode.appendNode('scope', dependency.scope);
+                    dependencyNode.appendNode('version', dependency.version)
+                    if(dependency.classifier!=null && dependency.classifier.length()>0){
+                        dependencyNode.appendNode('classifier', dependency.classifier)
+                    }
+                    if(dependency.type!=null && dependency.type.length()>0){
+                        dependencyNode.appendNode('type', dependency.type)
+                    }
+
+                    if (!dependency.exclusions.isEmpty()) {
+                        def exclusionsNode = dependencyNode.appendNode('exclusions')
+
+                        for (int k = 0; k < dependency.exclusions.size(); k++) {
+                            def exclusionNode = exclusionsNode.appendNode('exclusion')
+                            if (dependency.exclusions.get(k).groupId!=null && dependency.exclusions.get(k).groupId.length()>0)
+                                exclusionNode.appendNode('groupId', dependency.exclusions.get(k).groupId)
+                            if (dependency.exclusions.get(k).artifactId!=null && dependency.exclusions.get(k).artifactId.length()>0)
+                                exclusionNode.appendNode('artifactId', dependency.exclusions.get(k).artifactId)
+                            if (dependency.exclusions.get(k).version!=null && dependency.exclusions.get(k).version.length()>0)
+                                exclusionNode.appendNode('version', dependency.exclusions.get(k).version)
+                        }
+                    }
+
+                }
+
                 logger.info("added " + addedDependencies + " dependencies")
             }
             //reflect(pom);
@@ -1079,6 +1391,28 @@ def modifyGeneratedPom(pom) {
     }
 }
 
+
+
+class Dependency{
+    String groupId;
+    String artifactId;
+    String version;
+    String type;
+    String classifier;
+    String scope;
+    List<Dependency> exclusions = new ArrayList<Dependency>();
+
+    String toString(){
+        return groupId+":"+artifactId+":"+version + ":" +type + ":" +classifier + ":"+scope;
+    }
+
+}
+
+void printDependences(List<Dependency> deps){
+    for (int i=0; i < deps.size(); i++){
+        System.out.println(deps.get(i));
+    }
+}
 
 // maven-publish Configuration (I love me some incubation!!!) --------------------------------------
 //
@@ -1592,15 +1926,57 @@ gradle.taskGraph.whenReady { taskGraph ->
     }
 }
 
+void printCurrentDependency(dependenciesNode){
+    dependenciesNode.each { item ->
+
+        String itemscope = "compile";
+        String itemgroup;
+        String itemversion;
+        String itemid;
+
+        String crap = item.getProperties().directChildren;
+        //gross
+        int index = crap.indexOf("value=", crap.indexOf("groupId[["));
+        if (index > 0) {
+            index += 5
+            itemgroup = crap.substring(index + 1, crap.indexOf("]", index));
+        }
+
+        index = crap.indexOf("value=", crap.indexOf("scope["));
+        if (index > 0) {
+            index += 5
+            itemscope = crap.substring(index + 1, crap.indexOf("]", index));
+        }
+        index = crap.indexOf("value=", crap.indexOf("artifactId["));
+        if (index > 0) {
+            index += 5
+            itemid = crap.substring(index + 1, crap.indexOf("]", index));
+        }
+        index = crap.indexOf("value=", crap.indexOf("version["));
+        if (index > 0) {
+            index += 5
+            itemversion = crap.substring(index + 1, crap.indexOf("]", index));
+        }
+
+        System.out.println("===================================");
+        System.out.println(itemgroup + ":" + itemid + ":" + itemversion + ":" + itemscope);
+        System.out.println("===================================");
+    }
+}
+
 
 def reflect(object) {
     Method[] bits = object.class.methods
     for (int k =0; k < bits.length; k++){
-        System.out.println(bits[k].name);
+        System.out.println("REFLECT " + bits[k].name);
         for (int x= 0; x < bits[k].parameterTypes.length; x++) {
             System.out.println("\t" + bits[k].parameterTypes[x].name);
         }
     }
+
+    //println "REFLECT groovy methods" + object.metaClass.methods*.name.sort().unique()
+    object.metaClass.properties.each {println "REFLECT groovy properties"+ it.name }
+
 }
 
 
@@ -1835,7 +2211,8 @@ def uploadFile(File input, String urlDestination, String contentType){
     logger.debug("Wrote " + totalBytesRead + " bytes of " + input.length() + ", ratio: " +(double)totalBytesRead / (double)input.length());
 
     if (connection.getResponseCode()<200 || connection.getResponseCode()>=300){
-        throw new Exception("unexcepted response code. Published failed.")
+        printError();
+        throw new Exception("unexcepted response code. Published failed. " + connection.getResponseCode() + ": "+ connection.getResponseMessage() )
     }
 
 }
@@ -2229,3 +2606,16 @@ def isGraphvizDotAvailable() {
 }
 
 
+void printError(){
+    println "     _.-^^---....,,--\n" +
+            " _--                  --_\n" +
+            "<                        >)\n" +
+            "|                         |\n" +
+            " \\._                   _./\n" +
+            "    ```--. . , ; .--'''\n" +
+            "          | |   |\n" +
+            "       .-=||  | |=-.\n" +
+            "       `-=#\$%&%\$#=-'\n" +
+            "          | ;  :|\n" +
+            " _____.,-#%&\$@%#&#~,._____ "
+}
