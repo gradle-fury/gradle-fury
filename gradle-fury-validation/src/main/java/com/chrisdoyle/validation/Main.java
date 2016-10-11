@@ -45,6 +45,7 @@ public class Main {
             Test_Issue46.class,
             Test_Issue51.class,
             Test_Issue59.class,
+            Test_Issue144.class,
     };
 
     /**
