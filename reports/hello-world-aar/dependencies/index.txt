@@ -6,68 +6,88 @@ Project :hello-world-aar - [ c h r i s d o y l e ] :: Gradle Fury :: Hello World
 _debugAndroidTestApk - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 _debugAndroidTestCompile - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 _debugCompile - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 _debugPublish - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 _debugUnitTestApk - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
 +--- com.android.support:support-annotations:23.3.0
++--- org.osmdroid:osmdroid-android:5.4.1
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
 
 _debugUnitTestCompile - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
 +--- com.android.support:support-annotations:23.3.0
++--- org.osmdroid:osmdroid-android:5.4.1
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
 
 _releaseCompile - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 _releasePublish - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 _releaseUnitTestApk - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
 +--- com.android.support:support-annotations:23.3.0
++--- org.osmdroid:osmdroid-android:5.4.1
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
 
 _releaseUnitTestCompile - ## Internal use, do not manually configure ##
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
 +--- com.android.support:support-annotations:23.3.0
++--- org.osmdroid:osmdroid-android:5.4.1
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
 
@@ -108,20 +128,26 @@ checkstyle - The Checkstyle libraries to be used for this project.
 compile - Classpath for compiling the main sources.
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 debug - Published Configuration for Variant debug
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 debug-classes - Published classes configuration for Variant debug
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 debug-mapping - Published mapping configuration for Variant debug
 No dependencies
@@ -144,8 +170,10 @@ No dependencies
 default - Configuration for default artifacts.
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 default-mapping - Configuration for default mapping artifacts.
 No dependencies
@@ -208,14 +236,18 @@ No dependencies
 release - Published Configuration for Variant release
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 release-classes - Published classes configuration for Variant release
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
-\--- com.android.support:support-annotations:23.3.0
++--- com.android.support:support-annotations:23.3.0
+\--- org.osmdroid:osmdroid-android:5.4.1
 
 release-mapping - Published mapping configuration for Variant release
 No dependencies

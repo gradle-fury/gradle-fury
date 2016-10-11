@@ -18,7 +18,7 @@ document.getElementById(id+'Link').style.display = 'none';
 <body>
 <h1>Lint Report</h1>
 <div class="titleSeparator"></div>
-Check performed at Fri Oct 07 19:06:50 EDT 2016.<br/>
+Check performed at Tue Oct 11 19:48:55 EDT 2016.<br/>
 2 errors and 13 warnings found:<br/><br/>
 <table class="overview">
 <tr><td></td><td class="categoryColumn"><a href="#Correctness">Correctness</a>
@@ -79,7 +79,7 @@ This check scans through library jars and looks for references to API packages t
 <div class="id"><a href="#" title="Return to top">GradleDependency: Obsolete Gradle Dependency</a><div class="issueSeparator"></div>
 </div>
 <div class="warningslist">
-<span class="location"><a href="../../build.gradle">../../build.gradle</a>:50</span>: <span class="message">A newer version of com.android.support:appcompat-v7 than 23.3.0 is available: 24.2.0</span><br /><pre class="errorlines">
+<span class="location"><a href="../../build.gradle">../../build.gradle</a>:50</span>: <span class="message">A newer version of com.android.support:appcompat-v7 than 23.3.0 is available: 24.2.1</span><br /><pre class="errorlines">
 <span class="lineno">  47</span> 
 <span class="lineno">  48</span>     compile project(':hello-world-aar')
 <span class="lineno">  49</span> 
@@ -87,7 +87,7 @@ This check scans through library jars and looks for references to API packages t
 <span class="lineno">  51</span>     compile "com.android.support:cardview-v7:${project.property('android-support.version')}"
 <span class="lineno">  52</span>     compile "com.android.support:design:${project.property('android-support.version')}"
 </pre>
-<span class="location"><a href="../../build.gradle">../../build.gradle</a>:51</span>: <span class="message">A newer version of com.android.support:cardview-v7 than 23.3.0 is available: 24.2.0</span><br /><pre class="errorlines">
+<span class="location"><a href="../../build.gradle">../../build.gradle</a>:51</span>: <span class="message">A newer version of com.android.support:cardview-v7 than 23.3.0 is available: 24.2.1</span><br /><pre class="errorlines">
 <span class="lineno">  48</span>     compile project(':hello-world-aar')
 <span class="lineno">  49</span> 
 <span class="lineno">  50</span>     compile "com.android.support:appcompat-v7:${project.property('android-support.version')}"
@@ -95,7 +95,7 @@ This check scans through library jars and looks for references to API packages t
 <span class="lineno">  52</span>     compile "com.android.support:design:${project.property('android-support.version')}"
 <span class="lineno">  53</span>     compile "com.android.support:recyclerview-v7:${project.property('android-support.version')}"
 </pre>
-<span class="location"><a href="../../build.gradle">../../build.gradle</a>:52</span>: <span class="message">A newer version of com.android.support:design than 23.3.0 is available: 24.2.0</span><br /><pre class="errorlines">
+<span class="location"><a href="../../build.gradle">../../build.gradle</a>:52</span>: <span class="message">A newer version of com.android.support:design than 23.3.0 is available: 24.2.1</span><br /><pre class="errorlines">
 <span class="lineno">  49</span> 
 <span class="lineno">  50</span>     compile "com.android.support:appcompat-v7:${project.property('android-support.version')}"
 <span class="lineno">  51</span>     compile "com.android.support:cardview-v7:${project.property('android-support.version')}"
@@ -103,7 +103,7 @@ This check scans through library jars and looks for references to API packages t
 <span class="lineno">  53</span>     compile "com.android.support:recyclerview-v7:${project.property('android-support.version')}"
 <span class="lineno">  54</span>     compile "com.android.support:support-v4:${project.property('android-support.version')}"
 </pre>
-<span class="location"><a href="../../build.gradle">../../build.gradle</a>:53</span>: <span class="message">A newer version of com.android.support:recyclerview-v7 than 23.3.0 is available: 24.2.0</span><br /><pre class="errorlines">
+<span class="location"><a href="../../build.gradle">../../build.gradle</a>:53</span>: <span class="message">A newer version of com.android.support:recyclerview-v7 than 23.3.0 is available: 24.2.1</span><br /><pre class="errorlines">
 <span class="lineno">  50</span>     compile "com.android.support:appcompat-v7:${project.property('android-support.version')}"
 <span class="lineno">  51</span>     compile "com.android.support:cardview-v7:${project.property('android-support.version')}"
 <span class="lineno">  52</span>     compile "com.android.support:design:${project.property('android-support.version')}"
@@ -111,7 +111,7 @@ This check scans through library jars and looks for references to API packages t
 <span class="lineno">  54</span>     compile "com.android.support:support-v4:${project.property('android-support.version')}"
 <span class="lineno">  55</span>     compile "com.android.support:support-annotations:${project.property('android-support.version')}"
 </pre>
-<span class="location"><a href="../../build.gradle">../../build.gradle</a>:54</span>: <span class="message">A newer version of com.android.support:support-v4 than 23.3.0 is available: 24.2.0</span><br /><pre class="errorlines">
+<span class="location"><a href="../../build.gradle">../../build.gradle</a>:54</span>: <span class="message">A newer version of com.android.support:support-v4 than 23.3.0 is available: 24.2.1</span><br /><pre class="errorlines">
 <span class="lineno">  51</span>     compile "com.android.support:cardview-v7:${project.property('android-support.version')}"
 <span class="lineno">  52</span>     compile "com.android.support:design:${project.property('android-support.version')}"
 <span class="lineno">  53</span>     compile "com.android.support:recyclerview-v7:${project.property('android-support.version')}"
@@ -160,29 +160,29 @@ This detector looks for usages of libraries where the version you are using is n
 <span class="lineno">  66</span> 
 <span class="lineno">  67</span>     //just to have an AAR that's in mavenCentral
 </pre>
-<span class="location"><a href="../../build.gradle">../../build.gradle</a>:69</span>: <span class="message">Avoid using + in version numbers; can lead to unpredictable and unrepeatable builds (junit:junit:+)</span><br /><pre class="errorlines">
-<span class="lineno">  66</span> 
-<span class="lineno">  67</span>     //just to have an AAR that's in mavenCentral
+<span class="location"><a href="../../build.gradle">../../build.gradle</a>:71</span>: <span class="message">Avoid using + in version numbers; can lead to unpredictable and unrepeatable builds (junit:junit:+)</span><br /><pre class="errorlines">
 <span class="lineno">  68</span>     compile 'org.osmdroid:osmdroid-android:5.4.1:release@aar'
-<span class="lineno">  69</span>     <span class="errorspan">compile "junit:junit:+"</span>
-<span class="lineno">  70</span> 
-<span class="lineno">  71</span> 
+<span class="lineno">  69</span> 
+<span class="lineno">  70</span>     //wild card test
+<span class="lineno">  71</span>     <span class="errorspan">compile "junit:junit:+"</span>
+<span class="lineno">  72</span> 
+<span class="lineno">  73</span> 
 </pre>
-<span class="location"><a href="../../build.gradle">../../build.gradle</a>:79</span>: <span class="message">Avoid using + in version numbers; can lead to unpredictable and unrepeatable builds (com.android.support.test:runner:0.4.+)</span><br /><pre class="errorlines">
-<span class="lineno">  76</span> 
-<span class="lineno">  77</span>     //on device testing
-<span class="lineno">  78</span>     androidTestCompile "com.android.support:support-annotations:${project.property('android-support.version')}"
-<span class="lineno">  79</span>     <span class="errorspan">androidTestCompile 'com.android.support.test:runner:0.4.+'</span>
-<span class="lineno">  80</span>     androidTestCompile 'com.android.support.test:rules:0.4.+'
-<span class="lineno">  81</span> }
+<span class="location"><a href="../../build.gradle">../../build.gradle</a>:81</span>: <span class="message">Avoid using + in version numbers; can lead to unpredictable and unrepeatable builds (com.android.support.test:runner:0.4.+)</span><br /><pre class="errorlines">
+<span class="lineno">  78</span> 
+<span class="lineno">  79</span>     //on device testing
+<span class="lineno">  80</span>     androidTestCompile "com.android.support:support-annotations:${project.property('android-support.version')}"
+<span class="lineno">  81</span>     <span class="errorspan">androidTestCompile 'com.android.support.test:runner:0.4.+'</span>
+<span class="lineno">  82</span>     androidTestCompile 'com.android.support.test:rules:0.4.+'
+<span class="lineno">  83</span> }
 </pre>
-<span class="location"><a href="../../build.gradle">../../build.gradle</a>:80</span>: <span class="message">Avoid using + in version numbers; can lead to unpredictable and unrepeatable builds (com.android.support.test:rules:0.4.+)</span><br /><pre class="errorlines">
-<span class="lineno">  77</span>     //on device testing
-<span class="lineno">  78</span>     androidTestCompile "com.android.support:support-annotations:${project.property('android-support.version')}"
-<span class="lineno">  79</span>     androidTestCompile 'com.android.support.test:runner:0.4.+'
-<span class="lineno">  80</span>     <span class="errorspan">androidTestCompile 'com.android.support.test:rules:0.4.+'</span>
-<span class="lineno">  81</span> }
-<span class="lineno">  82</span> 
+<span class="location"><a href="../../build.gradle">../../build.gradle</a>:82</span>: <span class="message">Avoid using + in version numbers; can lead to unpredictable and unrepeatable builds (com.android.support.test:rules:0.4.+)</span><br /><pre class="errorlines">
+<span class="lineno">  79</span>     //on device testing
+<span class="lineno">  80</span>     androidTestCompile "com.android.support:support-annotations:${project.property('android-support.version')}"
+<span class="lineno">  81</span>     androidTestCompile 'com.android.support.test:runner:0.4.+'
+<span class="lineno">  82</span>     <span class="errorspan">androidTestCompile 'com.android.support.test:rules:0.4.+'</span>
+<span class="lineno">  83</span> }
+<span class="lineno">  84</span> 
 </pre>
 </div>
 <div class="metadata">Note: This issue has an associated quickfix operation in Android Studio/IntelliJ&nbsp;<img alt="Fix" border="0" align="top" src="lint-results-barDebug_files/lint-run.png" />

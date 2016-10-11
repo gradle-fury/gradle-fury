@@ -17,24 +17,28 @@ compile - Dependencies for source set 'main'.
 +--- org.apache.commons:commons-lang3:3.4
 \--- project :hello-world-lib
      +--- org.apache.commons:commons-lang3:3.4
+     +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
      \--- commons-logging:commons-logging:1.2
 
 compileClasspath - Compile classpath for source set 'main'.
 +--- org.apache.commons:commons-lang3:3.4
 \--- project :hello-world-lib
      +--- org.apache.commons:commons-lang3:3.4
+     +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
      \--- commons-logging:commons-logging:1.2
 
 compileOnly - Compile dependencies for source set 'main'.
 +--- org.apache.commons:commons-lang3:3.4
 \--- project :hello-world-lib
      +--- org.apache.commons:commons-lang3:3.4
+     +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
      \--- commons-logging:commons-logging:1.2
 
 default - Configuration for default artifacts.
 +--- org.apache.commons:commons-lang3:3.4
 \--- project :hello-world-lib
      +--- org.apache.commons:commons-lang3:3.4
+     +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
      \--- commons-logging:commons-logging:1.2
 
 findbugs - The FindBugs libraries to be used for this project.
@@ -93,12 +97,14 @@ runtime - Runtime dependencies for source set 'main'.
 +--- org.apache.commons:commons-lang3:3.4
 \--- project :hello-world-lib
      +--- org.apache.commons:commons-lang3:3.4
+     +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
      \--- commons-logging:commons-logging:1.2
 
 testCompile - Dependencies for source set 'test'.
 +--- org.apache.commons:commons-lang3:3.4
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
@@ -107,6 +113,7 @@ testCompileClasspath - Compile classpath for source set 'test'.
 +--- org.apache.commons:commons-lang3:3.4
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
@@ -115,6 +122,7 @@ testCompileOnly - Compile dependencies for source set 'test'.
 +--- org.apache.commons:commons-lang3:3.4
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3
@@ -123,6 +131,7 @@ testRuntime - Runtime dependencies for source set 'test'.
 +--- org.apache.commons:commons-lang3:3.4
 +--- project :hello-world-lib
 |    +--- org.apache.commons:commons-lang3:3.4
+|    +--- org.apache.commons:commons-io:1.3.+ -> 1.3.2
 |    \--- commons-logging:commons-logging:1.2
 \--- junit:junit:4.12
      \--- org.hamcrest:hamcrest-core:1.3

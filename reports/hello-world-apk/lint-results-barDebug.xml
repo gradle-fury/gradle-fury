@@ -36,7 +36,7 @@ This check scans through library jars and looks for references to API packages t
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:appcompat-v7 than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:appcompat-v7 than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -53,7 +53,7 @@ This check scans through library jars and looks for references to API packages t
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:cardview-v7 than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:cardview-v7 than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -70,7 +70,7 @@ This check scans through library jars and looks for references to API packages t
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:design than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:design than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -87,7 +87,7 @@ This check scans through library jars and looks for references to API packages t
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:recyclerview-v7 than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:recyclerview-v7 than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -104,7 +104,7 @@ This check scans through library jars and looks for references to API packages t
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:support-v4 than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:support-v4 than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -182,7 +182,7 @@ This check scans through library jars and looks for references to API packages t
         quickfix="studio">
         <location
             file="./hello-world-apk/build.gradle"
-            line="69"
+            line="71"
             column="5"/>
     </issue>
 
@@ -199,7 +199,7 @@ This check scans through library jars and looks for references to API packages t
         quickfix="studio">
         <location
             file="./hello-world-apk/build.gradle"
-            line="79"
+            line="81"
             column="5"/>
     </issue>
 
@@ -216,7 +216,7 @@ This check scans through library jars and looks for references to API packages t
         quickfix="studio">
         <location
             file="./hello-world-apk/build.gradle"
-            line="80"
+            line="82"
             column="5"/>
     </issue>
 

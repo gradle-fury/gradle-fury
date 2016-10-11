@@ -43,14 +43,14 @@
 
         <Package name="com.chrisdoyle.validation.tests">
             <Stats>
-                <TotalClasses>14</TotalClasses>
-                <ConcreteClasses>14</ConcreteClasses>
+                <TotalClasses>15</TotalClasses>
+                <ConcreteClasses>15</ConcreteClasses>
                 <AbstractClasses>0</AbstractClasses>
                 <Ca>1</Ca>
-                <Ce>11</Ce>
+                <Ce>13</Ce>
                 <A>0</A>
-                <I>0.92</I>
-                <D>0.08</D>
+                <I>0.93</I>
+                <D>0.07</D>
                 <V>1</V>
             </Stats>
 
@@ -69,6 +69,9 @@
                 </Class>
                 <Class sourceFile="Test_Issue12Sigs.java">
                     com.chrisdoyle.validation.tests.Test_Issue12Sigs
+                </Class>
+                <Class sourceFile="Test_Issue144.java">
+                    com.chrisdoyle.validation.tests.Test_Issue144
                 </Class>
                 <Class sourceFile="Test_Issue22.java">
                     com.chrisdoyle.validation.tests.Test_Issue22
@@ -108,8 +111,10 @@
                 <Package>java.lang</Package>
                 <Package>java.util</Package>
                 <Package>java.util.regex</Package>
+                <Package>javax.xml.bind</Package>
                 <Package>org.apache.commons.io</Package>
                 <Package>org.apache.commons.lang3</Package>
+                <Package>org.apache.maven.pom._4_0</Package>
                 <Package>org.jsoup</Package>
                 <Package>org.jsoup.nodes</Package>
                 <Package>org.jsoup.select</Package>
@@ -141,6 +146,14 @@
             <error>No stats available: package referenced, but not analyzed.</error>
         </Package>
 
+        <Package name="javax.xml.bind">
+            <error>No stats available: package referenced, but not analyzed.</error>
+        </Package>
+
+        <Package name="javax.xml.namespace">
+            <error>No stats available: package referenced, but not analyzed.</error>
+        </Package>
+
         <Package name="org.apache.commons.cli">
             <error>No stats available: package referenced, but not analyzed.</error>
         </Package>
@@ -155,6 +168,298 @@
 
         <Package name="org.apache.commons.lang3.time">
             <error>No stats available: package referenced, but not analyzed.</error>
+        </Package>
+
+        <Package name="org.apache.maven.pom._4_0">
+            <Stats>
+                <TotalClasses>87</TotalClasses>
+                <ConcreteClasses>86</ConcreteClasses>
+                <AbstractClasses>1</AbstractClasses>
+                <Ca>1</Ca>
+                <Ce>4</Ce>
+                <A>0.01</A>
+                <I>0.8</I>
+                <D>0.19</D>
+                <V>1</V>
+            </Stats>
+
+            <AbstractClasses>
+                <Class sourceFile="package-info.java">
+                    org.apache.maven.pom._4_0.package-info
+                </Class>
+            </AbstractClasses>
+
+            <ConcreteClasses>
+                <Class sourceFile="Activation.java">
+                    org.apache.maven.pom._4_0.Activation
+                </Class>
+                <Class sourceFile="ActivationFile.java">
+                    org.apache.maven.pom._4_0.ActivationFile
+                </Class>
+                <Class sourceFile="ActivationOS.java">
+                    org.apache.maven.pom._4_0.ActivationOS
+                </Class>
+                <Class sourceFile="ActivationProperty.java">
+                    org.apache.maven.pom._4_0.ActivationProperty
+                </Class>
+                <Class sourceFile="Build.java">
+                    org.apache.maven.pom._4_0.Build
+                </Class>
+                <Class sourceFile="Build.java">
+                    org.apache.maven.pom._4_0.Build$Extensions
+                </Class>
+                <Class sourceFile="Build.java">
+                    org.apache.maven.pom._4_0.Build$Filters
+                </Class>
+                <Class sourceFile="Build.java">
+                    org.apache.maven.pom._4_0.Build$Plugins
+                </Class>
+                <Class sourceFile="Build.java">
+                    org.apache.maven.pom._4_0.Build$Resources
+                </Class>
+                <Class sourceFile="Build.java">
+                    org.apache.maven.pom._4_0.Build$TestResources
+                </Class>
+                <Class sourceFile="BuildBase.java">
+                    org.apache.maven.pom._4_0.BuildBase
+                </Class>
+                <Class sourceFile="BuildBase.java">
+                    org.apache.maven.pom._4_0.BuildBase$Filters
+                </Class>
+                <Class sourceFile="BuildBase.java">
+                    org.apache.maven.pom._4_0.BuildBase$Plugins
+                </Class>
+                <Class sourceFile="BuildBase.java">
+                    org.apache.maven.pom._4_0.BuildBase$Resources
+                </Class>
+                <Class sourceFile="BuildBase.java">
+                    org.apache.maven.pom._4_0.BuildBase$TestResources
+                </Class>
+                <Class sourceFile="CiManagement.java">
+                    org.apache.maven.pom._4_0.CiManagement
+                </Class>
+                <Class sourceFile="CiManagement.java">
+                    org.apache.maven.pom._4_0.CiManagement$Notifiers
+                </Class>
+                <Class sourceFile="Contributor.java">
+                    org.apache.maven.pom._4_0.Contributor
+                </Class>
+                <Class sourceFile="Contributor.java">
+                    org.apache.maven.pom._4_0.Contributor$Properties
+                </Class>
+                <Class sourceFile="Contributor.java">
+                    org.apache.maven.pom._4_0.Contributor$Roles
+                </Class>
+                <Class sourceFile="Dependency.java">
+                    org.apache.maven.pom._4_0.Dependency
+                </Class>
+                <Class sourceFile="Dependency.java">
+                    org.apache.maven.pom._4_0.Dependency$Exclusions
+                </Class>
+                <Class sourceFile="DependencyManagement.java">
+                    org.apache.maven.pom._4_0.DependencyManagement
+                </Class>
+                <Class sourceFile="DependencyManagement.java">
+                    org.apache.maven.pom._4_0.DependencyManagement$Dependencies
+                </Class>
+                <Class sourceFile="DeploymentRepository.java">
+                    org.apache.maven.pom._4_0.DeploymentRepository
+                </Class>
+                <Class sourceFile="Developer.java">
+                    org.apache.maven.pom._4_0.Developer
+                </Class>
+                <Class sourceFile="Developer.java">
+                    org.apache.maven.pom._4_0.Developer$Properties
+                </Class>
+                <Class sourceFile="Developer.java">
+                    org.apache.maven.pom._4_0.Developer$Roles
+                </Class>
+                <Class sourceFile="DistributionManagement.java">
+                    org.apache.maven.pom._4_0.DistributionManagement
+                </Class>
+                <Class sourceFile="Exclusion.java">
+                    org.apache.maven.pom._4_0.Exclusion
+                </Class>
+                <Class sourceFile="Extension.java">
+                    org.apache.maven.pom._4_0.Extension
+                </Class>
+                <Class sourceFile="IssueManagement.java">
+                    org.apache.maven.pom._4_0.IssueManagement
+                </Class>
+                <Class sourceFile="License.java">
+                    org.apache.maven.pom._4_0.License
+                </Class>
+                <Class sourceFile="MailingList.java">
+                    org.apache.maven.pom._4_0.MailingList
+                </Class>
+                <Class sourceFile="MailingList.java">
+                    org.apache.maven.pom._4_0.MailingList$OtherArchives
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Contributors
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Dependencies
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Developers
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Licenses
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$MailingLists
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Modules
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$PluginRepositories
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Profiles
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Properties
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Reports
+                </Class>
+                <Class sourceFile="Model.java">
+                    org.apache.maven.pom._4_0.Model$Repositories
+                </Class>
+                <Class sourceFile="Notifier.java">
+                    org.apache.maven.pom._4_0.Notifier
+                </Class>
+                <Class sourceFile="Notifier.java">
+                    org.apache.maven.pom._4_0.Notifier$Configuration
+                </Class>
+                <Class sourceFile="ObjectFactory.java">
+                    org.apache.maven.pom._4_0.ObjectFactory
+                </Class>
+                <Class sourceFile="Organization.java">
+                    org.apache.maven.pom._4_0.Organization
+                </Class>
+                <Class sourceFile="Parent.java">
+                    org.apache.maven.pom._4_0.Parent
+                </Class>
+                <Class sourceFile="Plugin.java">
+                    org.apache.maven.pom._4_0.Plugin
+                </Class>
+                <Class sourceFile="Plugin.java">
+                    org.apache.maven.pom._4_0.Plugin$Configuration
+                </Class>
+                <Class sourceFile="Plugin.java">
+                    org.apache.maven.pom._4_0.Plugin$Dependencies
+                </Class>
+                <Class sourceFile="Plugin.java">
+                    org.apache.maven.pom._4_0.Plugin$Executions
+                </Class>
+                <Class sourceFile="Plugin.java">
+                    org.apache.maven.pom._4_0.Plugin$Goals
+                </Class>
+                <Class sourceFile="PluginExecution.java">
+                    org.apache.maven.pom._4_0.PluginExecution
+                </Class>
+                <Class sourceFile="PluginExecution.java">
+                    org.apache.maven.pom._4_0.PluginExecution$Configuration
+                </Class>
+                <Class sourceFile="PluginExecution.java">
+                    org.apache.maven.pom._4_0.PluginExecution$Goals
+                </Class>
+                <Class sourceFile="PluginManagement.java">
+                    org.apache.maven.pom._4_0.PluginManagement
+                </Class>
+                <Class sourceFile="PluginManagement.java">
+                    org.apache.maven.pom._4_0.PluginManagement$Plugins
+                </Class>
+                <Class sourceFile="Prerequisites.java">
+                    org.apache.maven.pom._4_0.Prerequisites
+                </Class>
+                <Class sourceFile="Profile.java">
+                    org.apache.maven.pom._4_0.Profile
+                </Class>
+                <Class sourceFile="Profile.java">
+                    org.apache.maven.pom._4_0.Profile$Dependencies
+                </Class>
+                <Class sourceFile="Profile.java">
+                    org.apache.maven.pom._4_0.Profile$Modules
+                </Class>
+                <Class sourceFile="Profile.java">
+                    org.apache.maven.pom._4_0.Profile$PluginRepositories
+                </Class>
+                <Class sourceFile="Profile.java">
+                    org.apache.maven.pom._4_0.Profile$Properties
+                </Class>
+                <Class sourceFile="Profile.java">
+                    org.apache.maven.pom._4_0.Profile$Reports
+                </Class>
+                <Class sourceFile="Profile.java">
+                    org.apache.maven.pom._4_0.Profile$Repositories
+                </Class>
+                <Class sourceFile="Relocation.java">
+                    org.apache.maven.pom._4_0.Relocation
+                </Class>
+                <Class sourceFile="ReportPlugin.java">
+                    org.apache.maven.pom._4_0.ReportPlugin
+                </Class>
+                <Class sourceFile="ReportPlugin.java">
+                    org.apache.maven.pom._4_0.ReportPlugin$Configuration
+                </Class>
+                <Class sourceFile="ReportPlugin.java">
+                    org.apache.maven.pom._4_0.ReportPlugin$ReportSets
+                </Class>
+                <Class sourceFile="ReportSet.java">
+                    org.apache.maven.pom._4_0.ReportSet
+                </Class>
+                <Class sourceFile="ReportSet.java">
+                    org.apache.maven.pom._4_0.ReportSet$Configuration
+                </Class>
+                <Class sourceFile="ReportSet.java">
+                    org.apache.maven.pom._4_0.ReportSet$Reports
+                </Class>
+                <Class sourceFile="Reporting.java">
+                    org.apache.maven.pom._4_0.Reporting
+                </Class>
+                <Class sourceFile="Reporting.java">
+                    org.apache.maven.pom._4_0.Reporting$Plugins
+                </Class>
+                <Class sourceFile="Repository.java">
+                    org.apache.maven.pom._4_0.Repository
+                </Class>
+                <Class sourceFile="RepositoryPolicy.java">
+                    org.apache.maven.pom._4_0.RepositoryPolicy
+                </Class>
+                <Class sourceFile="Resource.java">
+                    org.apache.maven.pom._4_0.Resource
+                </Class>
+                <Class sourceFile="Resource.java">
+                    org.apache.maven.pom._4_0.Resource$Excludes
+                </Class>
+                <Class sourceFile="Resource.java">
+                    org.apache.maven.pom._4_0.Resource$Includes
+                </Class>
+                <Class sourceFile="Scm.java">
+                    org.apache.maven.pom._4_0.Scm
+                </Class>
+                <Class sourceFile="Site.java">
+                    org.apache.maven.pom._4_0.Site
+                </Class>
+            </ConcreteClasses>
+
+            <DependsUpon>
+                <Package>java.lang</Package>
+                <Package>java.util</Package>
+                <Package>javax.xml.bind</Package>
+                <Package>javax.xml.namespace</Package>
+            </DependsUpon>
+
+            <UsedBy>
+                <Package>com.chrisdoyle.validation.tests</Package>
+            </UsedBy>
         </Package>
 
         <Package name="org.jsoup">

@@ -4,7 +4,7 @@
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:appcompat-v7 than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:appcompat-v7 than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -21,7 +21,7 @@
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:cardview-v7 than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:cardview-v7 than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -38,7 +38,7 @@
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:design than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:design than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -55,7 +55,7 @@
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:recyclerview-v7 than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:recyclerview-v7 than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
@@ -72,7 +72,7 @@
     <issue
         id="GradleDependency"
         severity="Warning"
-        message="A newer version of com.android.support:support-v4 than 23.3.0 is available: 24.2.0"
+        message="A newer version of com.android.support:support-v4 than 23.3.0 is available: 24.2.1"
         category="Correctness"
         priority="4"
         summary="Obsolete Gradle Dependency"
