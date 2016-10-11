@@ -1339,14 +1339,14 @@ def modifyGeneratedPom(pom) {
                                 }
                             }
                         } catch (Exception ex) {
-                            logger.warn("Issue 119, swallowed exception requesting the config name " + configurationName, ex);
+                            logger.info("Issue 119, swallowed exception requesting the config name " + configurationName, ex);
                             //fix for issue 119
                             //always possible that the requested configuration does not exist on this project,
                             //so skip it
                         }
                     }
                 }catch (Throwable t){
-                    t.printStackTrace()
+                    logger.warn("Issue 144, unexpected error fixing pom for " + project.name, t);
                 }
 
                 //inject the deduped dependencies
