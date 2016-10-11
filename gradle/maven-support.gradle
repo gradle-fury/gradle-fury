@@ -256,6 +256,7 @@ void printMOTD(){
         println MOTD[index];
 
         println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues, also see the wiki for more info"
+        println "\n Building version " + project.version + " of your project...";
     }
 }
 
