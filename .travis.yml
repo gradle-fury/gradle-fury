@@ -160,15 +160,15 @@ script:
   # now let's build some it projects to confirm stuff is working and dependencies are resolved
   - cd it
   - cd GradleConsumers
-  - ./gradlew build -Pprofile=ci
-  # TODO future, enable site generation
+  - ./gradlew build
   - cd ..
   - cd MavenConsumers
   - cd ..
   - cd GradleBootstrap
   - ./gradlew bootstrap
   - ./gradlew install -Pprofile=javadocs,sources
-  # FIXME uncomment this when #147 is merged and a version is cut- ./gradlew site
+  # FIXME uncomment this when #147 is merged and a version is cut
+  - ./gradlew site
   #build using maven with integration tests
   #we build 3 times due to issues with the maven-android-plugin. root cause is unknown but seems to be related to how artifacts are resolved for android projects
   #in case you're wondering -fn means fail never, which loosely means, if the build fails, the exit code is always 0, which is basically all CI engines look for.
