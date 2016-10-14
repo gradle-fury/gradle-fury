@@ -16,6 +16,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import java.lang.reflect.Method
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -29,7 +31,7 @@ import org.w3c.dom.DOMException;
 
 import java.io.*;
 
-rootProject.ext.gradleFuryVersion = "1.0.17"
+rootProject.ext.gradleFuryVersion = "1.0.18"
 
 
 /**=================================================================================================
@@ -247,6 +249,7 @@ void printMOTD(){
                 "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=ci' to build with all the code quality and analysis plugins",
                 "== Gradle Fury: ProTip: Use 'gradle site' to build a maven style set that wraps up all your stuff with one bow",
                 "== Gradle Fury: ProTip: Use 'gradle siteWar' to build a maven style set as a WAR file",
+                "== Gradle Fury: ProTip: When using gradle 2.2.1 or older, include distZip when running install",
                 "== Gradle Tip: Use 'gradle build -x test' to build and skip tests"
         ]
 
@@ -485,6 +488,17 @@ afterEvaluate { project ->
 
         build.mustRunAfter clean
         publishToMavenLocal.dependsOn build
+    } else if (project.ext.isDistribution && !project.ext.isJavaProject){
+        //distro only project
+        task install() {
+
+        }
+
+        distZip.mustRunAfter clean
+        publishToMavenLocal.dependsOn distZip
+        install.dependsOn publishToMavenLocal
+        install.mustRunAfter distZip
+        install.finalizedBy installDistZipPom
     }
 
     if (project.hasProperty('profile')) {
@@ -1441,46 +1455,47 @@ project.plugins.withType(MavenPublishPlugin) {
             new org.gradle.api.internal.ClosureBackedAction({
 
                 publications {
-                    if (project.isDistribution){
+                    //System.out.println(project.isDistribution.toString() + " " + project.isJavaProject.toString() + " " +project.isWarProject.toString() + " " + project.isAndroidProject.toString())
+                    if (project.isDistribution && !project.isJavaProject) {
+                        //System.out.println("prcocessing as zip" + project.name)
                         project.pom.packaging = 'zip'
 
                         //System.out.println("processing dist zip")
-                        zip(MavenPublication) {
+                        distributions(MavenPublication) {
                             groupId project.group
                             artifactId project.name
                             version project.version
 
-                            modifyGeneratedPom(pom)
+
 
                             //System.out.println("processing dist zip pom")
                             def artifactName = project.name + "-" + project.version + "." + project.pom.packaging;
                             def artifactRoot = "${buildDir}/distributions/"
 
 
-                            //fun fact, gradle does not generate poms for dist only packages. thanks for that.
+                            //fun fact, gradle does generate poms for dist only packages except our
+                            //modifyPom method just doesn't work. not sure why. gradle could be overridding it
+                            //no idea why it would behavior differently than anything else
+
                             //here we manually reparse rootDir/gradle.properties for all the pom settings
                             //then create a pom on the fly and write it to disk
-                            if (project.isDistribution && !project.isJavaProject) {
-                                //System.out.println("processing dist only package generating pom")
-                                createPom("${artifactRoot}", "pom-default.xml")
-                                //the pom
-                                Container c = new Container();
-                                c.buildDir = "${buildDir}";
-                                c.fileName = artifactName;
-                                c.fileNameAndPath = "$buildDir/distributions/pom-default.xml";
-                                c.type = "pom";
-                                project.ext.artifacts.add(c);
-                                logger.debug("Adding " + "$buildDir/distributions/pom-default.xml" + " to artifact list");
+                            createPom("$buildDir/distributions/", "pom-default.xml")
+                            //the pom
+                            Container c = new Container();
+                            c.buildDir = "${buildDir}";
+                            c.fileName = artifactName;
+                            c.fileNameAndPath = "$buildDir/distributions/pom-default.xml";
+                            c.type = "pom";
+                            project.ext.artifacts.add(c);
+                            logger.debug("Adding " + "$buildDir/distributions/pom-default.xml" + " to artifact list");
 
-                                //needed for local pom publishing
-                                artifact(c.fileNameAndPath) {
-                                    extension 'pom'
-                                }
-
-                            }
+                            //needed for local pom publishing
+                            //artifact(c.fileNameAndPath) {
+                              //  extension 'pom'
+                            //}
 
                             //primary out
-                            Container c;
+
                             c = new Container();
                             c.buildDir = "${buildDir}";
                             c.fileName = artifactName;
@@ -1497,10 +1512,137 @@ project.plugins.withType(MavenPublishPlugin) {
 
 
                         }
-
-
-
+                        //modifyGeneratedPom(pom)
+                        //createPom("$buildDir/distributions/", "pom-default.xml")
                     }
+
+
+                    if (project.isDistribution && project.isJavaProject) {
+                        System.out.println("prcocessing as jar AND zip " + project.name)
+                        project.pom.packaging = 'jar'
+
+                        //System.out.println("processing dist zip")
+                        distributions(MavenPublication) {
+                            groupId project.group
+                            artifactId project.name
+                            version project.version
+
+
+                            //modifyGeneratedPom(pom)
+                            //System.out.println("processing dist zip pom")
+                            def artifactName = project.name + "-" + project.version + ".zip";
+                            def artifactRoot = "${buildDir}/distributions/"
+
+
+                            Container c ;
+
+
+
+                            //primary out
+
+                            c = new Container();
+                            c.buildDir = "${buildDir}";
+                            c.fileName = artifactName;
+                            c.fileNameAndPath = "${artifactRoot}${artifactName}";
+                            c.type = "zip";
+                            project.ext.artifacts.add(c);
+                            logger.debug("Adding " + "${artifactRoot}${artifactName}" + " to artifact list");
+
+
+                            //needed for local publishing
+                            artifact("${artifactRoot}/${artifactName}") {
+
+                            }
+
+
+                        }
+
+                        //System.out.println("prcocessing as jar" + project.name)
+                        project.pom.packaging = 'jar'
+                        def artifactName = project.name + "-" + project.version + "." + project.pom.packaging;
+                        def artifactRoot = "${buildDir}/libs/"
+
+                        javaArtifacts(MavenPublication) {
+                            from components.java
+
+                            groupId project.group
+                            artifactId project.name
+                            version project.version
+
+                            modifyGeneratedPom(pom)
+
+                            //the jar
+                            Container c;
+                            c = new Container();
+                            c.buildDir = "${buildDir}";
+                            c.fileName = artifactName;
+                            c.fileNameAndPath = "${artifactRoot}${artifactName}";
+                            c.type = "jar";
+                            project.ext.artifacts.add(c);
+                            logger.debug("Adding " + "${artifactRoot}${artifactName}" + " to artifact list");
+
+
+                            //the pom
+                            c = new Container();
+                            c.buildDir = "${buildDir}";
+                            c.fileName = artifactName;
+                            c.fileNameAndPath = "$buildDir/publications/javaArtifacts/pom-default.xml";
+                            c.type = "jar";
+                            project.ext.artifacts.add(c);
+                            logger.debug("Adding " + "$buildDir/publications/javaArtifacts/pom-default.xml" + " to artifact list");
+
+                        }
+
+                        if (project.javadocProfileEnabled) {
+                            javadocArtifacts(MavenPublication) {
+                                from components.java
+
+                                groupId project.group
+                                artifactId project.name
+                                version project.version
+
+                                modifyGeneratedPom(pom)
+
+                                artifact javadocJar
+
+
+                                Container c;
+                                c = new Container();
+                                c.buildDir = "${buildDir}";
+                                c.fileName = artifactName;
+                                c.fileNameAndPath = "${buildDir}" + "/libs/" + project.name + "-" + project.version + "-javadoc.jar";
+                                c.type = "jar";
+                                project.ext.artifacts.add(c);
+                                logger.debug("Adding " + "${buildDir}" + "/libs/" + project.name + "-" + project.version + "-javadoc.jar" + " to artifact list");
+
+                            }
+                        }
+
+                        if (project.sourcesProfileEnabled) {
+                            sourceJarArtifacts(MavenPublication) {
+                                from components.java
+
+                                groupId project.group
+                                artifactId project.name
+                                version project.version
+
+                                modifyGeneratedPom(pom)
+
+                                artifact sourcesJar
+
+                                Container c;
+                                c = new Container();
+                                c.buildDir = "${buildDir}";
+                                c.fileName = artifactName;
+                                c.fileNameAndPath = "${buildDir}" + "/libs/" + project.name + "-" + project.version + "-sources.jar";
+                                c.type = "jar";
+                                project.ext.artifacts.add(c);
+                                logger.debug("Adding " + "${buildDir}" + "/libs/" + project.name + "-" + project.version + "-sources.jar" + " to artifact list");
+
+                            }
+                        }
+                    }   //jave and distribution
+
                     if (project.isWarProject) {
                         project.pom.packaging = 'war'
 
@@ -1593,8 +1735,9 @@ project.plugins.withType(MavenPublishPlugin) {
                             }
                         }
 
-                    } else if (project.isJavaProject) {
+                    } else if (project.isJavaProject && !project.isDistribution) {
 
+                        System.out.println("prcocessing as jar" + project.name)
                         project.pom.packaging = 'jar'
                         def artifactName = project.name + "-" + project.version + "." + project.pom.packaging;
                         def artifactRoot = "${buildDir}/libs/"
@@ -1817,6 +1960,41 @@ project.plugins.withType(MavenPublishPlugin) {
                 }
             })
 }
+
+
+
+//because distribution only generates and installs a crap pom, this injects our rectified one
+//into maven local
+task installDistZipPom(description: 'Install a correct and valid pom for distribution only modules to maven local',
+group: 'Publishing') << {
+    if (project.isDistribution && !project.isJavaProject){
+        //dist only
+        createPom("$buildDir/distributions/", "pom-default.xml")
+        String groupId = project.group;
+        groupId = groupId.replace(".","/");
+        File target = new File(System.getProperty("user.home") + "/.m2/repository/" + groupId + "/" + project.name + "/" + project.version + "/" + project.name + "-" + project.version + ".pom");
+        //System.out.println("copying from " + buildDir.absolutePath + " " + project.buildDir.absolutePath + "/distributions/" + " to " + t.absolutePath + " ? exists:" + t.exists());
+
+
+        File srcpom = new File(project.buildDir.absolutePath + "/distributions/pom-default.xml");
+        java.nio.file.Files.copy(srcpom.toPath(), target.toPath(),  StandardCopyOption.REPLACE_EXISTING);
+
+        //new File(System.getProperty("user.home") + "/.m2/repository/" + groupId + "/" + project.name + "/" + project.version + "/"+ project.name + "-" + project.version + ".pom").delete()
+        /*copy{
+            //fun fact buildDir vs project.buildDir can be different on multimodule projects!
+            from project.buildDir.absolutePath + "/distributions/"
+            include 'pom-default.xml'
+            into System.getProperty("user.home") + "/.m2/repository/" + groupId + "/" + project.name + "/" + project.version + "/"
+            rename ('pom-default.xml', project.name + "-" + project.version + ".pom")
+            eachFile{
+            //    System.out.println("Copying...." + it.getPath())
+            }
+        }*/
+
+
+    }
+}
+
 
 /**
  * Signs a file via gpg
@@ -2140,6 +2318,8 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
         //an artifact was added to the list that is a signature, we'll skip it since we sign everything anyhow
         if (uploadedFileName.toLowerCase().endsWith(".asc"))
             continue;
+        uploadedFileName=uploadedFileName.replace("-release","");
+        uploadedFileName=uploadedFileName.replace("Release","");
 
         //upload the primart artifact
         if (uploadedFileName.endsWith(".pom"))
@@ -2178,41 +2358,46 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
  * @return
  */
 def uploadFile(File input, String urlDestination, String contentType){
-    URL url = new URL(urlDestination);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setDoOutput(true);
-    connection.setRequestMethod("PUT");
-    connection.setRequestProperty("Content-Type", contentType);
-    connection.setRequestProperty("Content-Length", String.valueOf(input.length()));
-    connection.setUseCaches(false);
-    connection.setDoOutput(true);
-    connection.connect();
-    FileInputStream streamFileInputStream = new FileInputStream(input);
-    BufferedInputStream streamFileBufferedInputStream = new BufferedInputStream(streamFileInputStream);
-    OutputStream outputStream = connection.getOutputStream();
-    byte[] streamFileBytes = new byte[4096];
-    int bytesRead = 0;
-    int totalBytesRead = 0;
+    try {
+        URL url = new URL(urlDestination);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod("PUT");
+        connection.setRequestProperty("Content-Type", contentType);
+        connection.setRequestProperty("Content-Length", String.valueOf(input.length()));
+        connection.setUseCaches(false);
+        connection.setDoOutput(true);
+        connection.connect();
+        FileInputStream streamFileInputStream = new FileInputStream(input);
+        BufferedInputStream streamFileBufferedInputStream = new BufferedInputStream(streamFileInputStream);
+        OutputStream outputStream = connection.getOutputStream();
+        byte[] streamFileBytes = new byte[4096];
+        int bytesRead = 0;
+        int totalBytesRead = 0;
 
-    while ((bytesRead = streamFileBufferedInputStream.read(streamFileBytes)) > 0) {
-        outputStream.write(streamFileBytes, 0, bytesRead);
+        while ((bytesRead = streamFileBufferedInputStream.read(streamFileBytes)) > 0) {
+            outputStream.write(streamFileBytes, 0, bytesRead);
 
-        totalBytesRead += bytesRead;
-       // notifyListenersOnProgress((double)totalBytesRead / (double)input.length());
-    }
+            totalBytesRead += bytesRead;
+            // notifyListenersOnProgress((double)totalBytesRead / (double)input.length());
+        }
 
-    outputStream.flush();
-    outputStream.close();
+        outputStream.flush();
+        outputStream.close();
 
-    System.out.println("Upload " + urlDestination + " : " + connection.getResponseCode() + ": "+ connection.getResponseMessage());
+        System.out.println("Upload " + urlDestination + " : " + connection.getResponseCode() + ": " + connection.getResponseMessage());
 
-    connection.disconnect();
+        connection.disconnect();
 
-    logger.debug("Wrote " + totalBytesRead + " bytes of " + input.length() + ", ratio: " +(double)totalBytesRead / (double)input.length());
+        logger.debug("Wrote " + totalBytesRead + " bytes of " + input.length() + ", ratio: " + (double) totalBytesRead / (double) input.length());
 
-    if (connection.getResponseCode()<200 || connection.getResponseCode()>=300){
+        if (connection.getResponseCode() < 200 || connection.getResponseCode() >= 300) {
+            printError();
+            throw new Exception("unexcepted response code. Published failed. " + connection.getResponseCode() + ": " + connection.getResponseMessage())
+        }
+    }catch (Exception ex){
         printError();
-        throw new Exception("unexcepted response code. Published failed. " + connection.getResponseCode() + ": "+ connection.getResponseMessage() )
+        throw new Exception("unexcepted exception. Published failed. " + ex.getMessage(), ex);
     }
 
 }
@@ -2439,6 +2624,7 @@ def createPom(String outdir, String filename) {
         root.appendChild(group);
     }
 
+    //TODO dependencies and repositories
 
     //finally write out the xml
     // Use a Transformer for output

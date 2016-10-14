@@ -53,11 +53,24 @@ Tested configurations for gradle and the android gradle build tools.
 | 2.14   | 2.1.0               | 7,8 | OK 
 | 2.14   | 2.0.0               | 7,8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus 
 | 2.2.1  | 1.5.0               | 7,8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus 
-| 2.2.1  | 1.3.1               | 7,8 | OK 
+| 2.2.1  | 1.3.1               | 7,8 | OK* 
 | 2.2.1  | 1.3.0               | 7,8 | FAIL - Fails to generate poms for android projects, maven install local and publish to nexus 
 
 
 So as long as you're not using one of those 3 versions of the android plugin, you're good to go.
+
+* When using gradle 2.2.1 with the `application` or `distribution` and it's a Java project, there are
+some problems with hooking in the install task with distZip (the think that makes the distribution).
+The fix is to include distZip with your command. 
+
+| Gradle  | Build Command
+| ------  | ------------------- 
+| 2.2.1   | gradlew clean distZip install 
+| > 2.2.1 | gradlew clean install
+
+Again, distZip this only applies if you're using gradle 2.2.1 AND you have a project module that uses
+the (distribution OR application plugin) AND it's a Java project. I tried to tie it in, but I can't 
+make gold from lead - ao
 
 Usage
 -----

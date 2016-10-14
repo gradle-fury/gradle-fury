@@ -105,17 +105,12 @@ script:
 
   #build using gradle
   - ./gradlew -version
-  - ./gradlew clean distZip install -Pprofile=sources,javadoc
+  #distZip is only needed on gradle 2.2.1 or older
+  - ./gradlew clean distZip install -Pprofile=ci
   #verify publish
   - ci/verify.sh
-
-  # ok let's blow up the local maven repo
-  - rm -rf ~/.m2/
-  # build again with signatures, then verify the signatures and all the reporting stuff
-  - ./gradlew clean
-  - ./gradlew distZip install -Pprofile=ci
-  - ci/verify.sh
-
+  #make sure the installed jar is executable
+  - ci/runApp.sh
 
 
   #setup nexus, should this be moved to before script?
@@ -133,12 +128,6 @@ script:
 
   # wait for nexus
   - ci//waitForNexus.sh
-
-  - ./gradlew distZip -Pprofile=sources,javadoc
-
-  # build with signatures and publish
-  #- ./gradlew publishArtifacts -Pprofile=sources,javadoc
-  #- ci/verifyNoSignatures.sh
 
   # build with signatures and publish
   - ./gradlew publishArtifacts -Pprofile=sources,javadoc
@@ -160,15 +149,15 @@ script:
   # now let's build some it projects to confirm stuff is working and dependencies are resolved
   - cd it
   - cd GradleConsumers
-  - ./gradlew build -Pprofile=ci
-  # TODO future, enable site generation
+  - ./gradlew build
   - cd ..
   - cd MavenConsumers
   - cd ..
   - cd GradleBootstrap
   - ./gradlew bootstrap
   - ./gradlew install -Pprofile=javadocs,sources
-  # FIXME uncomment this when #147 is merged and a version is cut- ./gradlew site
+  # FIXME uncomment this when #147 is merged and a version is cut
+  - ./gradlew site
   #build using maven with integration tests
   #we build 3 times due to issues with the maven-android-plugin. root cause is unknown but seems to be related to how artifacts are resolved for android projects
   #in case you're wondering -fn means fail never, which loosely means, if the build fails, the exit code is always 0, which is basically all CI engines look for.

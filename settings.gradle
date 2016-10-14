@@ -7,6 +7,9 @@ include ':hello-universe-lib'
 include ':hello-child'
 include ':hello-child:hello-grandchild-lib'
 
+//apps
+include ':hello-world-app'
+
 //dists
 include ':hello-world-dist'
 

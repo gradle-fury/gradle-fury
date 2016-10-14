@@ -1,0 +1,41 @@
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Java Application (JAR)'
+
+apply plugin: 'java'
+//make an executable jar
+apply plugin: 'application'
+
+//make a distribution zip too, which contains our executable jar, startup scripts (which can have
+//issues on window because of gradle issues) and finally, anything put in the src/dist folder
+try {
+    apply plugin: 'distribution'    //needed to produce zip on gradle 2.2.1 and older
+}catch (Throwable t){
+    //catch for older versions of gradle barfing when both application and distribution are applied.
+}
+
+
+compileJava {
+    sourceCompatibility = "${project.property('compileJava.sourceCompatibility')}"
+    targetCompatibility = "${project.property('compileJava.targetCompatibility')}"
+}
+
+dependencies{
+    compile "commons-cli:commons-cli:${project.property('commons-cli.version')}"
+
+    testCompile "junit:junit:${project.property('junit.version')}"
+}
+
+
+
+//the following sets up a "fat jar", in maven speak this is a single jar with dependencies
+mainClassName ='com.chrisdoyle.helloworld.EntryPoint'
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+
+//note that with gradle-fury, gradlew install will publish both the fat jar and the distribution zip to mavenLocal
