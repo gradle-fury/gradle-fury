@@ -8,7 +8,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="Date-Creation-yyyymmdd" content="20160101"/>
-    <meta name="Date-Revision-yyyymmdd" content="20161011"/>
+    <meta name="Date-Revision-yyyymmdd" content="20161014"/>
     <meta http-equiv="Content-Language" content="en"/>
     <title> Gradle Fury</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css"/>
@@ -65,10 +65,10 @@
             </li>
 
             <li id="publishDate" class="pull-right"><span class="divider">|</span> Last Published:
-                2016-10-11
+                2016-10-14
             </li>
             <li id="projectVersion" class="pull-right">
-                1.0.17
+                1.0.18
             </li>
 
         </ul>
@@ -273,11 +273,28 @@ Master: <a href="https://travis-ci.org/chrisdoyle/gradle-fury"><img src="https:/
 <tr><td>2.14</td><td>2.1.0</td><td>7,8</td><td>OK</td></tr>
 <tr><td>2.14</td><td>2.0.0</td><td>7,8</td><td>FAIL - Fails to generate poms for android projects, maven install local and publish to nexus</td></tr>
 <tr><td>2.2.1</td><td>1.5.0</td><td>7,8</td><td>FAIL - Fails to generate poms for android projects, maven install local and publish to nexus</td></tr>
-<tr><td>2.2.1</td><td>1.3.1</td><td>7,8</td><td>OK</td></tr>
+<tr><td>2.2.1</td><td>1.3.1</td><td>7,8</td><td>OK*</td></tr>
 <tr><td>2.2.1</td><td>1.3.0</td><td>7,8</td><td>FAIL - Fails to generate poms for android projects, maven install local and publish to nexus</td></tr>
 </tbody>
 </table>
 <p>So as long as you're not using one of those 3 versions of the android plugin, you're good to go.</p>
+<ul>
+<li>When using gradle 2.2.1 with the <code>application</code> or <code>distribution</code> and it's a Java project, there are
+some problems with hooking in the install task with distZip (the think that makes the distribution).
+The fix is to include distZip with your command.</li>
+</ul>
+<table>
+<thead>
+<tr><th>Gradle</th><th>Build Command</th></tr>
+</thead>
+<tbody>
+<tr><td>2.2.1</td><td>gradlew clean distZip install</td></tr>
+<tr><td>&gt; 2.2.1</td><td>gradlew clean install</td></tr>
+</tbody>
+</table>
+<p>Again, distZip this only applies if you're using gradle 2.2.1 AND you have a project module that uses
+the (distribution OR application plugin) AND it's a Java project. I tried to tie it in, but I can't
+make gold from lead - ao</p>
 <h2>Usage</h2>
 <p>Please refer to the dummy &quot;Hello World&quot; subprojects along with the provided root project
 <code>build.gradle</code> and <code>gradle.properties</code> files included with this project as a general usage guide:</p>

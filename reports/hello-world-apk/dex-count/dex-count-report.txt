@@ -1,4 +1,4 @@
-Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.17-barDebug.apk
+Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.18-barDebug.apk
 Read in 44267 method IDs and 18596 field IDs
 ----------------------------------
 Package details:
@@ -326,7 +326,7 @@ sun Methods 2 Fields 0
 	misc Methods 1 Fields 0
 	nio Methods 1 Fields 0
 		ch Methods 1 Fields 0
-Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.17-bazDebug.apk
+Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.18-bazDebug.apk
 Read in 44267 method IDs and 18596 field IDs
 ----------------------------------
 Package details:
@@ -654,7 +654,7 @@ sun Methods 2 Fields 0
 	misc Methods 1 Fields 0
 	nio Methods 1 Fields 0
 		ch Methods 1 Fields 0
-Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.17-fooDebug.apk
+Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.18-fooDebug.apk
 Read in 44267 method IDs and 18596 field IDs
 ----------------------------------
 Package details:

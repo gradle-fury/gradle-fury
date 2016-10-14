@@ -43,8 +43,8 @@
 
         <Package name="com.chrisdoyle.validation.tests">
             <Stats>
-                <TotalClasses>15</TotalClasses>
-                <ConcreteClasses>15</ConcreteClasses>
+                <TotalClasses>16</TotalClasses>
+                <ConcreteClasses>16</ConcreteClasses>
                 <AbstractClasses>0</AbstractClasses>
                 <Ca>1</Ca>
                 <Ce>13</Ce>
@@ -102,6 +102,9 @@
                 </Class>
                 <Class sourceFile="Utils.java">
                     com.chrisdoyle.validation.tests.Utils
+                </Class>
+                <Class sourceFile="ValidatePoms.java">
+                    com.chrisdoyle.validation.tests.ValidatePoms
                 </Class>
             </ConcreteClasses>
 
