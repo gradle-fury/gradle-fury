@@ -105,17 +105,11 @@ script:
 
   #build using gradle
   - ./gradlew -version
-  - ./gradlew clean distZip install -Pprofile=sources,javadoc
+  - ./gradlew clean distZip install -Pprofile=ci
   #verify publish
   - ci/verify.sh
-
-  # ok let's blow up the local maven repo
-  - rm -rf ~/.m2/
-  # build again with signatures, then verify the signatures and all the reporting stuff
-  - ./gradlew clean
-  - ./gradlew distZip install -Pprofile=ci
-  - ci/verify.sh
-
+  #make sure the installed jar is executable
+  - ci/runApp.sh
 
 
   #setup nexus, should this be moved to before script?
@@ -133,12 +127,6 @@ script:
 
   # wait for nexus
   - ci//waitForNexus.sh
-
-  - ./gradlew distZip -Pprofile=sources,javadoc
-
-  # build with signatures and publish
-  #- ./gradlew publishArtifacts -Pprofile=sources,javadoc
-  #- ci/verifyNoSignatures.sh
 
   # build with signatures and publish
   - ./gradlew publishArtifacts -Pprofile=sources,javadoc

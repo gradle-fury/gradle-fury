@@ -39,7 +39,14 @@ public class Test_Issues_23_27 {
 
             String str = FileUtils.readFileToString(f, "utf-8");
             for (int k=0; k < elementsThatShouldBeThere.length; k++){
-                Assert.assertTrue(elementsThatShouldBeThere[k] + " not found in " + f.getAbsolutePath(),str.contains(elementsThatShouldBeThere[k]));
+                if (f.getAbsolutePath().contains("hello-world-dist") &&
+                        "<repositories>".equalsIgnoreCase(elementsThatShouldBeThere[k])){
+                    //do nothing, skip this
+                } else if (f.getAbsolutePath().contains("hello-world-dist") &&
+                        "<dependencies>".equalsIgnoreCase(elementsThatShouldBeThere[k])){
+                    //do nothing, skip this
+                } else
+                    Assert.assertTrue(elementsThatShouldBeThere[k] + " not found in " + f.getAbsolutePath() + " contents is as follows" + str,str.contains(elementsThatShouldBeThere[k]));
             }
 
         }
@@ -84,7 +91,7 @@ public class Test_Issues_23_27 {
 
                 String str = FileUtils.readFileToString(f, "utf-8");
                 for (int k=0; k < aarDeps.length; k++){
-                    Assert.assertTrue(aarDeps[k] + " not found in " + f.getAbsolutePath(),str.contains(aarDeps[k]));
+                    Assert.assertTrue(aarDeps[k] + " not found in " + f.getAbsolutePath() + " contents is as follows" + str,str.contains(aarDeps[k]));
                 }
             }
             if (Main.allPoms[i].contains("hello-world-apk-" + Main.version)){
@@ -92,7 +99,7 @@ public class Test_Issues_23_27 {
 
                 String str = FileUtils.readFileToString(f, "utf-8");
                 for (int k=0; k < apkDeps.length; k++){
-                    Assert.assertTrue(apkDeps[k] + " not found in " + f.getAbsolutePath(),str.contains(apkDeps[k]));
+                    Assert.assertTrue(apkDeps[k] + " not found in " + f.getAbsolutePath() + " contents is as follows" + str,str.contains(apkDeps[k]));
                 }
             }
             if (Main.allPoms[i].contains("hello-world-lib")){
@@ -100,7 +107,7 @@ public class Test_Issues_23_27 {
 
                 String str = FileUtils.readFileToString(f, "utf-8");
                 for (int k=0; k < libDeps.length; k++){
-                    Assert.assertTrue(libDeps[k] + " not found in " + f.getAbsolutePath(),str.contains(libDeps[k]));
+                    Assert.assertTrue(libDeps[k] + " not found in " + f.getAbsolutePath() + " contents is as follows" + str,str.contains(libDeps[k]));
                 }
             }
 

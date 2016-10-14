@@ -1,16 +1,19 @@
 description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Distro'
 apply plugin: 'distribution'
 
+//"The distribution plugin is currently incubating. Please be aware that the DSL and other configuration may change in later Gradle versions."
+//grumble grumble grumble
 
 distributions {
     main {
         contents {
             into('bin') {
 
-                from { project(':hello-world-lib').jar }
+                from { "$rootDir/hello-world-lib/build/libs/" }
             }
             into('gradle') {
-                from "$rootDir/gradle/*.gradle"
+                from "$rootDir/gradle/"
+                include "*.gradle"
             }
         }
     }

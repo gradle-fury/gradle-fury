@@ -46,6 +46,7 @@ public class Main {
             Test_Issue51.class,
             Test_Issue59.class,
             Test_Issue144.class,
+            ValidatePoms.class
     };
 
     /**
@@ -171,6 +172,17 @@ public class Main {
             "./hello-world-war/build/libs/hello-world-war-$version-javadoc.jar" ,
             "./hello-world-war/build/libs/hello-world-war-$version-sources.jar" ,
             "./hello-world-war/build/publications/webApp/pom-default.xml" ,
+
+
+            "./hello-world-app/build/libs/hello-world-app-$version.jar" ,
+            "./hello-world-app/build/libs/hello-world-app-$version-sources.jar" ,
+            "./hello-world-app/build/libs/hello-world-app-$version-javadoc.jar" ,
+            "./hello-world-app/build/publications/javaArtifacts/pom-default.xml" ,
+            "./hello-world-app/build/distributions/hello-world-app-$version.zip",
+
+            "./hello-world-dist/build/distributions/hello-world-dist-$version.zip" ,
+            "./hello-world-dist/build/distributions/pom-default.xml" ,
+
     };
 
     /**
@@ -253,6 +265,8 @@ public class Main {
             "~/.m2/repository/com/chrisdoyle/hello-world-apk/$version/hello-world-apk-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version.pom",
+            "~/.m2/repository/com/chrisdoyle/hello-world-app/$version/hello-world-app-$version.pom",
+            "~/.m2/repository/com/chrisdoyle/hello-world-dist/$version/hello-world-dist-$version.pom",
 
     };
 

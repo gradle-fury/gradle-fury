@@ -61,3 +61,8 @@ proguard-usage.txt
 
 docs/**
 **/fury-backup/**
+
+it/GradleBootstrap/config/**
+it/GradleBootstrap/fury-backup/**
+it/GradleBootstrap/src/site/**
+src/site/index.md
