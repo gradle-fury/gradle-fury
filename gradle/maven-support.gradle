@@ -2140,6 +2140,8 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
         //an artifact was added to the list that is a signature, we'll skip it since we sign everything anyhow
         if (uploadedFileName.toLowerCase().endsWith(".asc"))
             continue;
+        uploadedFileName=uploadedFileName.replace("-release","");
+        uploadedFileName=uploadedFileName.replace("Release","");
 
         //upload the primart artifact
         if (uploadedFileName.endsWith(".pom"))
@@ -2178,41 +2180,46 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
  * @return
  */
 def uploadFile(File input, String urlDestination, String contentType){
-    URL url = new URL(urlDestination);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setDoOutput(true);
-    connection.setRequestMethod("PUT");
-    connection.setRequestProperty("Content-Type", contentType);
-    connection.setRequestProperty("Content-Length", String.valueOf(input.length()));
-    connection.setUseCaches(false);
-    connection.setDoOutput(true);
-    connection.connect();
-    FileInputStream streamFileInputStream = new FileInputStream(input);
-    BufferedInputStream streamFileBufferedInputStream = new BufferedInputStream(streamFileInputStream);
-    OutputStream outputStream = connection.getOutputStream();
-    byte[] streamFileBytes = new byte[4096];
-    int bytesRead = 0;
-    int totalBytesRead = 0;
+    try {
+        URL url = new URL(urlDestination);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod("PUT");
+        connection.setRequestProperty("Content-Type", contentType);
+        connection.setRequestProperty("Content-Length", String.valueOf(input.length()));
+        connection.setUseCaches(false);
+        connection.setDoOutput(true);
+        connection.connect();
+        FileInputStream streamFileInputStream = new FileInputStream(input);
+        BufferedInputStream streamFileBufferedInputStream = new BufferedInputStream(streamFileInputStream);
+        OutputStream outputStream = connection.getOutputStream();
+        byte[] streamFileBytes = new byte[4096];
+        int bytesRead = 0;
+        int totalBytesRead = 0;
 
-    while ((bytesRead = streamFileBufferedInputStream.read(streamFileBytes)) > 0) {
-        outputStream.write(streamFileBytes, 0, bytesRead);
+        while ((bytesRead = streamFileBufferedInputStream.read(streamFileBytes)) > 0) {
+            outputStream.write(streamFileBytes, 0, bytesRead);
 
-        totalBytesRead += bytesRead;
-       // notifyListenersOnProgress((double)totalBytesRead / (double)input.length());
-    }
+            totalBytesRead += bytesRead;
+            // notifyListenersOnProgress((double)totalBytesRead / (double)input.length());
+        }
 
-    outputStream.flush();
-    outputStream.close();
+        outputStream.flush();
+        outputStream.close();
 
-    System.out.println("Upload " + urlDestination + " : " + connection.getResponseCode() + ": "+ connection.getResponseMessage());
+        System.out.println("Upload " + urlDestination + " : " + connection.getResponseCode() + ": " + connection.getResponseMessage());
 
-    connection.disconnect();
+        connection.disconnect();
 
-    logger.debug("Wrote " + totalBytesRead + " bytes of " + input.length() + ", ratio: " +(double)totalBytesRead / (double)input.length());
+        logger.debug("Wrote " + totalBytesRead + " bytes of " + input.length() + ", ratio: " + (double) totalBytesRead / (double) input.length());
 
-    if (connection.getResponseCode()<200 || connection.getResponseCode()>=300){
+        if (connection.getResponseCode() < 200 || connection.getResponseCode() >= 300) {
+            printError();
+            throw new Exception("unexcepted response code. Published failed. " + connection.getResponseCode() + ": " + connection.getResponseMessage())
+        }
+    }catch (Exception ex){
         printError();
-        throw new Exception("unexcepted response code. Published failed. " + connection.getResponseCode() + ": "+ connection.getResponseMessage() )
+        throw new Exception("unexcepted exception. Published failed. " + ex.getMessage(), ex);
     }
 
 }
