@@ -31,7 +31,7 @@ import org.w3c.dom.DOMException;
 
 import java.io.*;
 
-rootProject.ext.gradleFuryVersion = "1.0.18-SNAPSHOT"
+rootProject.ext.gradleFuryVersion = "1.1.0-SNAPSHOT"
 
 
 /**=================================================================================================
@@ -249,6 +249,7 @@ void printMOTD(){
                 "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=ci' to build with all the code quality and analysis plugins",
                 "== Gradle Fury: ProTip: Use 'gradle site' to build a maven style set that wraps up all your stuff with one bow",
                 "== Gradle Fury: ProTip: Use 'gradle siteWar' to build a maven style set as a WAR file",
+                "== Gradle Fury: ProTip: When using gradle 2.2.1 or older, include distZip when running install",
                 "== Gradle Tip: Use 'gradle build -x test' to build and skip tests"
         ]
 

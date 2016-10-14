@@ -105,6 +105,7 @@ script:
 
   #build using gradle
   - ./gradlew -version
+  #distZip is only needed on gradle 2.2.1 or older
   - ./gradlew clean distZip install -Pprofile=ci
   #verify publish
   - ci/verify.sh
