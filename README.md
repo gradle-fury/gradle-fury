@@ -60,13 +60,13 @@ Tested configurations for gradle and the android gradle build tools.
 So as long as you're not using one of those 3 versions of the android plugin, you're good to go.
 
 * When using gradle 2.2.1 with the `application` or `distribution` and it's a Java project, there are
-some problems with hooking in the install task with distZip (the think that makes the distribution).
+some problems with hooking in the install task with distZip (the thing that makes the distribution).
 The fix is to include distZip with your command. 
 
-| Gradle  | Build Command
-| ------  | ------------------- 
-| 2.2.1   | gradlew clean distZip install 
-| > 2.2.1 | gradlew clean install
+| Gradle             | Build Command
+| ------             | ------------------- 
+| version <= 2.2.1   | gradlew clean distZip install 
+| version > 2.2.1    | gradlew clean install
 
 Again, distZip this only applies if you're using gradle 2.2.1 AND you have a project module that uses
 the (distribution OR application plugin) AND it's a Java project. I tried to tie it in, but I can't 

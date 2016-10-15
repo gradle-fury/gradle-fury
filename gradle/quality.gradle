@@ -1,3 +1,6 @@
+import com.github.spyhunter99.dex.model.*
+import org.apache.commons.lang3.StringEscapeUtils
+
 import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -17,23 +20,17 @@ import java.nio.file.Paths
  * To apply to your project, apply this file under 'allprojects'
  * then copy the files from gradle-fury/config and place it in your project
  *
- * allprojects {
- *        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
- *  }
- *  then execute with `gradelw build`
+ * allprojects {*        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
+ *}*  then execute with `gradelw build`
  *
  * Since the checks can add a lot of time to your build, you probably want to make it optional...
  *
- * allprojects {
- *      if (project.hasProperty('profile') && project.profile.split(',').contains("ci")) {
- *        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
- *     }
- *  }
- *
+ * allprojects {*      if (project.hasProperty('profile') && project.profile.split(',').contains("ci")) {*        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
+ *}*}*
  *  then execute with `gradelw build -Pprofile=ci`
  *
- *  @since 1.0.10
- *  @author Alex O'Ree
+ * @since 1.0.10
+ * @author Alex O'Ree
  *
  *
  *  addendum
@@ -50,7 +47,15 @@ apply plugin: 'pmd'
 apply plugin: 'jdepend'
 
 
-buildscript{
+//our MOTD
+if (!rootProject.hasProperty('codeQuality')) {
+    rootProject.ext.codeQuality = true
+    println "== Quality plugin active. Hold on to your butts...";
+}
+
+
+
+buildscript {
     repositories {
         jcenter()
         mavenCentral()
@@ -59,21 +64,117 @@ buildscript{
     dependencies {
         classpath 'org.apache.commons:commons-lang3:3.4'
         classpath 'commons-io:commons-io:2.5'
-        classpath 'com.github.spyhunter99:dex-method-counts-lib:2.1'
+        classpath 'com.github.spyhunter99:dex-method-counts-lib:2.1.1'
     }
 }
 
-//dex count report APKs only for now
-//import info.persistent.dex.*;
 
+ext.checkStyleEnable = (
+        hasProperty('quality.checkStyle.enable')
+                ? Boolean.parseBoolean(project.property("quality.checkStyle.enable"))
+                : true
+);
+ext.checkStyleIgnoreFailures = (
+        hasProperty('quality.checkStyle.ignoreFailures')
+                ? Boolean.parseBoolean(project.property("quality.checkStyle.ignoreFailures"))
+                : true
+);
+
+
+ext.findbugsEnable = (
+        hasProperty('quality.findbugs.enable')
+                ? Boolean.parseBoolean(project.property("quality.findbugs.enable"))
+                : true
+);
+ext.findbugsIgnoreFailures = (
+        hasProperty('quality.findbugs.ignoreFailures')
+                ? Boolean.parseBoolean(project.property("quality.findbugs.ignoreFailures"))
+                : true
+);
+ext.findbugsEffort = (
+        hasProperty('quality.findbugs.effort')
+                ? project.property("quality.findbugs.effort")
+                : "max"
+);
+ext.findbugsReportLevel = (
+        hasProperty('quality.findbugs.reportLevel')
+                ? project.property("quality.findbugs.reportLevel")
+                : "high"
+);
+
+//TODO
+//filter
+//excludes
+//ignoreFailures
+//excludeFilter
+
+
+ext.pmdEnable = (
+        hasProperty('quality.pmd.enable')
+                ? Boolean.parseBoolean(project.property("quality.pmd.enable"))
+                : true
+);
+ext.pmdIgnoreFailures = (
+        hasProperty('quality.pmd.ignoreFailures')
+                ? Boolean.parseBoolean(project.property("quality.pmd.ignoreFailures"))
+                : true
+);
+//TODO rulePriority
+
+
+ext.jdependEnable = (
+        hasProperty('quality.jdepend.enable')
+                ? Boolean.parseBoolean(project.property("quality.jdepend.enable"))
+                : true
+);
+ext.jdependIgnoreFailures = (
+        hasProperty('quality.jdepend.ignoreFailures')
+                ? Boolean.parseBoolean(project.property("quality.jdepend.ignoreFailures"))
+                : true
+);
+
+
+
+
+ext.dexcountEnable = (
+        hasProperty('quality.dexcount.enable')
+                ? Boolean.parseBoolean(project.property("quality.dexcount.enable"))
+                : true
+);
+//no options to configure
+
+ext.javancssEnable = (
+        hasProperty('quality.javancss.enable')
+                ? Boolean.parseBoolean(project.property("quality.javancss.enable"))
+                : true
+);
+//"$rootDir/config/javancss/javancss2html.xsl"
+//TODO javancess version 33.54
+//javancss
+
+
+
+
+
+
+/*
+######                    #####
+#     # ###### #    #    #     #  ####  #    # #    # #####
+#     # #       #  #     #       #    # #    # ##   #   #
+#     # #####    ##      #       #    # #    # # #  #   #
+#     # #        ##      #       #    # #    # #  # #   #
+#     # #       #  #     #     # #    # #    # #   ##   #
+######  ###### #    #     #####   ####   ####  #    #   #
+ */
+
+//dex count report APKs only for now
 task dexCountReport() << {
 
     File outdir = new File("${buildDir}/reports/dex-count/");
 
-    if (project.plugins.hasPlugin("com.android.application")){
+    if (project.plugins.hasPlugin("com.android.application")) {
 
         outdir.mkdirs();
-
 
         //List<String> apks = new ArrayList<>();
         File[] list = new File(buildDir.absolutePath + "/outputs/apk/").listFiles(new FilenameFilter() {
@@ -84,7 +185,7 @@ task dexCountReport() << {
                 return false;
             }
         });
-        if (list!=null && list.length > 0) {
+        if (list != null && list.length > 0) {
             String[] files = new String[list.length];
             for (int i = 0; i < list.length; i++) {
                 files[i] = list[i].absolutePath;
@@ -95,8 +196,17 @@ task dexCountReport() << {
             dexcount.enableFileOutput(true)
             dexcount.setOutputDirectory(outdir)
             dexcount.run(files);
+            List<CountData> results = dexcount.getData()
+            for (int k = 0; k < results.size(); k++) {
+                if (results.get(k).overallMetrics.methodCount > 60000 && 65536 < results.get(k).overallMetrics.methodCount) {
+                    logger.warn(results.get(k).fileName + ": Method count is near the limit: " + results.get(k).overallMetrics.methodCount)
+                }
+                if (results.get(k).overallMetrics.fieldCount > 60000 && 65536 < results.get(k).overallMetrics.fieldCount) {
+                    logger.warn(results.get(k).fileName + ": Field count is near the limit: " + results.get(k).overallMetrics.fieldCount)
+                }
+            }
         }
-        if (list!=null && list.length==1){
+        if (list != null && list.length == 1) {
             //need to rename the singular output file to index.html
             File report = new File(outdir.absolutePath + "/dex-count-report.html");
             File index = new File(outdir.absolutePath + "/index.html");
@@ -108,23 +218,31 @@ task dexCountReport() << {
 
 //dex count report APKs only for now
 
-
-
+/*
+######
+#     # ###### #####  ###### #    # #####  ###### #    #  ####  #   #
+#     # #      #    # #      ##   # #    # #      ##   # #    #  # #
+#     # #####  #    # #####  # #  # #    # #####  # #  # #        #
+#     # #      #####  #      #  # # #    # #      #  # # #        #
+#     # #      #      #      #   ## #    # #      #   ## #    #   #
+######  ###### #      ###### #    # #####  ###### #    #  ####    #
+ */
+//<editor-fold desc="gradle dependency report">
 //produce a dependency report
-import org.apache.commons.lang3.StringEscapeUtils
+import java.nio.file.StandardCopyOption
 
-import java.nio.file.StandardCopyOption;
 task dependencyReportGradlePre() << {
     new File("${buildDir}/reports/dependencies/").mkdirs();
 }
-task dependencyReportGradle(type: DependencyReportTask, dependsOn: dependencyReportGradlePre)  {
+
+task dependencyReportGradle(type: DependencyReportTask, dependsOn: dependencyReportGradlePre) {
     projects = [project]
     outputFile = new File("${buildDir}/reports/dependencies/index.txt");
 }
 
 task dependencyReportTransform(dependsOn: dependencyReportGradle) << {
     //strip out an absolute paths
-    String contents = readFile("${buildDir}/reports/dependencies/index.txt",Charset.defaultCharset());
+    String contents = readFile("${buildDir}/reports/dependencies/index.txt", Charset.defaultCharset());
     contents = contents.replace(rootDir.absolutePath, ".");
 
     //inject into template
@@ -139,17 +257,31 @@ task dependencyReportTransform(dependsOn: dependencyReportGradle) << {
 }
 try {
     check.dependsOn dependencyReportTransform
-}catch (Throwable t){
+} catch (Throwable t) {
     logger.debug("failed to attach check on project" + project.name, t);
 }
+
 static String readFile(String path, Charset encoding)
-        throws IOException
-{
+        throws IOException {
     byte[] encoded = Files.readAllBytes(Paths.get(path));
     return new String(encoded, encoding);
 }
 
+//</editor-fold>
 
+
+
+/*
+      #                      #     #  #####   #####   #####
+      #   ##   #    #   ##   ##    # #     # #     # #     #
+      #  #  #  #    #  #  #  # #   # #       #       #
+      # #    # #    # #    # #  #  # #        #####   #####
+#     # ###### #    # ###### #   # # #             #       #
+#     # #    #  #  #  #    # #    ## #     # #     # #     #
+ #####  #    #   ##   #    # #     #  #####   #####   #####
+
+ */
+//<editor-fold desc="JavaNCSS">
 // setup for java ncss
 configurations {
     javancss
@@ -161,11 +293,9 @@ dependencies {
 task javancss << {
     new File("${buildDir}/reports/javancss/").mkdirs()
     ant {
-        taskdef name:'javancss', classname:'javancss.JavancssAntTask', classpath:configurations.javancss.asPath
+        taskdef name: 'javancss', classname: 'javancss.JavancssAntTask', classpath: configurations.javancss.asPath
 
-        //${buildDir}/
-        //javancss srcdir:'src', includes:'**/*.java', packageMetrics:'true', classMetrics:'true', functionMetrics:'true',abortOnFail:false, generateReport:true, outputfile:"${buildDir}/reports/javancss/main.txt", format:'plain'
-        javancss srcdir:'src', includes:'**/*.java', packageMetrics:'true', classMetrics:'true', functionMetrics:'true',abortOnFail:false, generateReport:true, outputfile:"${buildDir}/reports/javancss/main.xml", format:'xml'
+        javancss srcdir: 'src', includes: '**/*.java', packageMetrics: 'true', classMetrics: 'true', functionMetrics: 'true', abortOnFail: false, generateReport: true, outputfile: "${buildDir}/reports/javancss/main.xml", format: 'xml'
     }
 
     ant.xslt(
@@ -175,22 +305,32 @@ task javancss << {
 }
 
 javancss.onlyIf { file('src').exists() }
-try{
+try {
     check.dependsOn javancss
-}catch (Throwable t){
+} catch (Throwable t) {
     logger.debug("failed to attach check on project" + project.name, t);
 }
 // END setup for java ncss
+//</editor-fold>
 
 
-if (!rootProject.hasProperty('codeQuality')) {
-    rootProject.ext.codeQuality = true
-    println "== Quality plugin active. Hold on to your butts...";
-}
 
+
+
+
+//       ######
+//     # #     # ###### #####  ###### #    # #####
+//     # #     # #      #    # #      ##   # #    #
+//     # #     # #####  #    # #####  # #  # #    #
+//     # #     # #      #####  #      #  # # #    #
+//#    # #     # #      #      #      #   ## #    #
+// ####  ######  ###### #      ###### #    # #####
+
+
+//<editor-fold desc="jDepend">
 //configure jdepend for 'normal' projects
 jdepend {
-    ignoreFailures = true
+    ignoreFailures = project.ext.jdependIgnoreFailures
 }
 
 task jdependReport(group: 'verification', description: 'Generates a HTML report after executing jdepend checks.') << {
@@ -202,14 +342,13 @@ task jdependReport(group: 'verification', description: 'Generates a HTML report 
                 out: "$reporting.baseDir/jdepend/index.html")
     }
 }
-try{
-check {
-    dependsOn += ['jdependReport']
-}
-}catch (Throwable t){
+try {
+    check {
+        dependsOn += ['jdependReport']
+    }
+} catch (Throwable t) {
     logger.debug("failed to attach check on project" + project.name, t);
 }
-
 
 //configure jdepend for 'android' projects
 task jdependAndroidReport(group: 'verification', description: 'Generates a HTML report after executing jdepend checks.') << {
@@ -232,18 +371,34 @@ task jdependAndroid(type: JDepend, dependsOn: 'compileDebugSources') {
 }
 
 jdependAndroidReport.dependsOn jdependAndroid
+//</editor-fold>
 
 
 
+
+
+//#####                               #####
+//#     # #    # ######  ####  #    # #     # ##### #   # #      ######
+//#       #    # #      #    # #   #  #         #    # #  #      #
+//#       ###### #####  #      ####    #####    #     #   #      #####
+//#       #    # #      #      #  #         #   #     #   #      #
+//#     # #    # #      #    # #   #  #     #   #     #   #      #
+//#####  #    # ######  ####  #    #  #####    #     #   ###### ######
+
+
+//<editor-fold desc="Checkstyle">
+if (project.ext.checkStyleEnable) {
 //configure checkstyle for 'normal' projects
-checkstyle {
-    ignoreFailures = true
-    configFile new File("${project.rootDir}/config/checkstyle/checkstyle.xml")
-}
+    checkstyle {
+        ignoreFailures = project.ext.checkStyleIgnoreFailures
+        configFile new File("${project.rootDir}/config/checkstyle/checkstyle.xml")
+    }
 
+
+}
 //configure checkstyle for 'android' projects
 task checkstyleAndroid(type: Checkstyle) {
-    ignoreFailures = true
+    ignoreFailures = project.ext.checkStyleIgnoreFailures
     configFile new File("${project.rootDir}/config/checkstyle/checkstyle.xml")
 
     source 'src'
@@ -253,11 +408,12 @@ task checkstyleAndroid(type: Checkstyle) {
     classpath = files()
 }
 
-
+//ignore failures is really "ignore errors when running checkstyle", not problems with your code
 tasks.withType(Checkstyle).each { checkstyleTask ->
 
     checkstyleTask.doLast {
         reports.all { report ->
+            System.out.println(report.destination.absolutePath + " checking report for warnings")
             def outputFile = report.destination
             if (outputFile.exists() && outputFile.text.contains("<error ") && !checkstyleTask.ignoreFailures) {
                 throw new GradleException("There were checkstyle warnings! For more info check $outputFile")
@@ -265,18 +421,34 @@ tasks.withType(Checkstyle).each { checkstyleTask ->
         }
     }
 }
+//</editor-fold>
+
+
+
+
+
+//######  #     # ######
+//#     # ##   ## #     #
+//#     # # # # # #     #
+//######  #  #  # #     #
+//#       #     # #     #
+//#       #     # #     #
+//#       #     # ######
+
+//<editor-fold desc="PMD">
+
+if (project.ext.pmdEnable) {
 
 //configure pmd for 'normal' projects
-pmd {
-    ignoreFailures = true
-    ruleSetFiles = files("${project.rootDir}/config/pmd/pmd-ruleset.xml")
-    ruleSets = []
+    pmd {
+        ignoreFailures = project.ext.pmdIgnoreFailures
+        ruleSetFiles = files("${project.rootDir}/config/pmd/pmd-ruleset.xml")
+        ruleSets = []
+    }
 }
-
-
 //configure pmd for 'android' projects
 task pmdAndroid(type: Pmd) {
-    ignoreFailures = true
+    ignoreFailures = project.ext.pmdIgnoreFailures
     ruleSetFiles = files("${project.rootDir}/config/pmd/pmd-ruleset.xml")
     ruleSets = []
 
@@ -290,21 +462,45 @@ task pmdAndroid(type: Pmd) {
     }
 }
 
+//NOTE to post analysis is necessary, ignore failures does it job and fails the build if something
+//is wrong
 
+
+//</editor-fold>
+
+
+
+
+
+
+
+
+/*
+#######                 ######
+#       # #    # #####  #     # #    #  ####   ####
+#       # ##   # #    # #     # #    # #    # #
+#####   # # #  # #    # ######  #    # #       ####
+#       # #  # # #    # #     # #    # #  ###      #
+#       # #   ## #    # #     # #    # #    # #    #
+#       # #    # #####  ######   ####   ####   ####
+
+ */
+//<editor-fold desc="findbugs">
 //configure findbugs for 'normal' projects
-findbugs {
-    ignoreFailures = true
-    excludeFilter = new File("${project.rootDir}/config/findbugs/findbugs-filter.xml")
-    effort = "max"
-    reportLevel = "high"
+if (project.ext.findbugsEnable) {
+    findbugs {
+        ignoreFailures = project.ext.findbugsIgnoreFailures
+        excludeFilter = new File("${project.rootDir}/config/findbugs/findbugs-filter.xml")
+        effort = project.ext.findbugsEffort
+        reportLevel = project.ext.findbugsReportLevel
+    }
 }
-
 //configure findbugs for 'android' projects...seriously?
 task findbugsAndroid(type: FindBugs) {
-    ignoreFailures = true
+    ignoreFailures = project.ext.findbugsIgnoreFailures
     excludeFilter = new File("${project.rootDir}/config/findbugs/findbugs-filter.xml")
-    effort = "max"
-    reportLevel = "high"
+    effort = project.ext.findbugsEffort
+    reportLevel = project.ext.findbugsReportLevel
     classes = files("$project.buildDir/intermediates/classes")
 
     source 'src'
@@ -324,18 +520,26 @@ task findbugsAndroid(type: FindBugs) {
     }
     classpath = files()
 }
+//NOTE to post analysis is necessary, ignore failures does it job and fails the build if something
+//is wrong
+//</editor-fold>
+
+
 
 
 afterEvaluate {
     tasks.withType(Task).each { task ->
         task.doLast {
-            if(task.name.startsWith("assemble")){
+            if (task.name.startsWith("assemble")) {
                 if (project.plugins.hasPlugin("com.android.library") || project.plugins.hasPlugin("com.android.application")) {
                     //dumpTasks(project.tasks)
                     //tasks.add(findbugsAndroid);
-                    tasks.findByName("findbugsAndroid").execute()
-                    tasks.findByName('pmdAndroid').execute();
-                    tasks.findByName('checkstyleAndroid').execute();
+                    if (project.ext.findbugsEnable)
+                        tasks.findByName("findbugsAndroid").execute()
+                    if (project.ext.pmdEnable)
+                        tasks.findByName('pmdAndroid').execute();
+                    if (project.ext.checkStyleEnable)
+                        tasks.findByName('checkstyleAndroid').execute();
                     tasks.findByName('jdependAndroid').execute();
                     tasks.findByName('jdependAndroidReport').execute();
                 }
@@ -357,17 +561,19 @@ tasks.withType(FindBugs) {
 }
 
 
-def dumpTasks(TaskExecutionGraph graph){
+
+
+
+def dumpTasks(TaskExecutionGraph graph) {
     List<Task> allTasks = graph.getAllTasks();
-    for (int i=0; i < allTasks.size(); i++){
+    for (int i = 0; i < allTasks.size(); i++) {
         System.out.println("TASK DUMP " + allTasks.get(i).name);
     }
 
 }
 
 
-
-def dumpTasks(TaskContainer graph){
+def dumpTasks(TaskContainer graph) {
     List<Task> allTasks = graph.all {
 
         System.out.println("TASK DUMP " + it.name);
