@@ -96,6 +96,12 @@ task dexCountReport() << {
             dexcount.setOutputDirectory(outdir)
             dexcount.run(files);
         }
+        if (list!=null && list.length==1){
+            //need to rename the singular output file to index.html
+            File report = new File(outdir.absolutePath + "/dex-count-report.html");
+            File index = new File(outdir.absolutePath + "/index.html");
+            Files.move(report.toPath(), index.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
 }
@@ -105,7 +111,9 @@ task dexCountReport() << {
 
 
 //produce a dependency report
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils
+
+import java.nio.file.StandardCopyOption;
 task dependencyReportGradlePre() << {
     new File("${buildDir}/reports/dependencies/").mkdirs();
 }
