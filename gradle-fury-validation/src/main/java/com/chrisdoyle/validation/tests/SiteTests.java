@@ -55,19 +55,15 @@ public class SiteTests {
 
     @Test
     public void confirmCheckStyleReportsExist() throws Exception {
-        if (System.getenv().containsKey("GRADLE_VERSION")){
-            Assume.assumeFalse("Skip, dependency plugin wasn't until after gradle 2.2.1", System.getenv().get("GRADLE_VERSION").contains("2.2.1"));
-        }
+        //if (System.getenv().containsKey("GRADLE_VERSION")){
+          //  Assume.assumeFalse("Skip, dependency plugin wasn't until after gradle 2.2.1", System.getenv().get("GRADLE_VERSION").contains("2.2.1"));
+        //}
 
         test("checkstyle", "main.html","android.html");
     }
 
     @Test
     public void confirmDependenciesReportsExist() throws Exception {
-        if (System.getenv().containsKey("GRADLE_VERSION")){
-            Assume.assumeFalse("Skip, dependency plugin wasn't until after gradle 2.2.1", System.getenv().get("GRADLE_VERSION").contains("2.2.1"));
-        }
-
         test("dependencies", "index.html","index.html");
     }
 
@@ -78,18 +74,11 @@ public class SiteTests {
 
     @Test
     public void confirmJDependReportsExist() throws Exception {
-        if (System.getenv().containsKey("GRADLE_VERSION")){
-            Assume.assumeFalse("Skip, dependency plugin wasn't until after gradle 2.2.1", System.getenv().get("GRADLE_VERSION").contains("2.2.1"));
-        }
         test("jdepend", "main.html","index.html");
     }
 
     @Test
     public void confirmJavancssReportsExist() throws Exception {
-        if (System.getenv().containsKey("GRADLE_VERSION")){
-            Assume.assumeFalse("Skip, dependency plugin wasn't until after gradle 2.2.1", System.getenv().get("GRADLE_VERSION").contains("2.2.1"));
-        }
-
         test("javancss", "index.html","index.html");
     }
 
