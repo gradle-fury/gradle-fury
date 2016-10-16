@@ -411,6 +411,12 @@ task checkstyleAndroid(type: Checkstyle) {
 //ignore failures is really "ignore errors when running checkstyle", not problems with your code
 tasks.withType(Checkstyle).each { checkstyleTask ->
 
+    /* ugh this MIGHT solve the issue with gradle 2.2.1 and not auto generating the html report
+    ant.xslt(in: checkstyleTask.reports.xml.destination,
+            style: new File("${project.rootDir}/config/checkstyle/checkstyle-noframes-sorted.xsl"),
+            out: new File(checkstyleTask.reports.xml.destination.parent, 'main.html'))
+*/
+
     checkstyleTask.doLast {
         reports.all { report ->
             System.out.println(report.destination.absolutePath + " checking report for warnings")

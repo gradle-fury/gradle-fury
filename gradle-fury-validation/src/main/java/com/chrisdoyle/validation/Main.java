@@ -70,6 +70,10 @@ public class Main {
             TestPostPublicationNoSig.class,
     };
 
+    static final Class[] siteTests = new Class[]{
+            SiteTests.class,
+    };
+
 
     /**
      * all artifacts that are expected to be signed, in the gradle build folders
@@ -331,6 +335,7 @@ public class Main {
 
         options.addOption("publishWithSig", false, "Also run tests against nexus with gpg signatures");
         options.addOption("publishWithNoSig", false, "Also run tests against nexus without signatures");
+        options.addOption("withSite", false, "Also run tests for the site");
         options.addOption("help", false, "Help");
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse( options, args);
@@ -364,7 +369,18 @@ public class Main {
                 classesToRun[index] = noSignatureTests[i];
                 index++;
             }
-        } else {
+        } else if (cmd.hasOption("withSite")){
+            classesToRun = new Class[normalTests.length + siteTests.length];
+            int index=0;
+            for (int i=0; i < normalTests.length; i++){
+                classesToRun[index] = normalTests[i];
+                index++;
+            }
+            for (int i=0; i < siteTests.length; i++){
+                classesToRun[index] = siteTests[i];
+                index++;
+            }
+        }else {
             classesToRun = normalTests;
         }
 

@@ -90,6 +90,16 @@ ext.webBootstrapUrl = "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/
 if (!hasProperty("site.name"))
     ext.setProperty("site.name", rootDir.getName());
 
+
+configurations {
+    umljavadocsite
+}
+
+dependencies {
+    umljavadocsite 'org.umlgraph:umlgraph:5.6.6'
+}
+
+
 /**
  * bootstraps the site, only ran during the first AND /src/site/template.html doesn't exist
  */
@@ -1134,15 +1144,22 @@ def generateProjectInfo(){
 }
 
 
+
+
 def reflect(object) {
     Method[] bits = object.class.methods
     for (int k =0; k < bits.length; k++){
-        System.out.println(bits[k].name);
+        System.out.println("REFLECT " + bits[k].name);
         for (int x= 0; x < bits[k].parameterTypes.length; x++) {
             System.out.println("\t" + bits[k].parameterTypes[x].name);
         }
     }
+
+    //println "REFLECT groovy methods" + object.metaClass.methods*.name.sort().unique()
+    object.metaClass.properties.each {println "REFLECT groovy properties"+ it.name }
+
 }
+
 
 
 def generateRepositories(){
@@ -1662,4 +1679,242 @@ Set<String> resolveType(Project it, String artificat, String version){
     return ret;
 }
 
+
+task javadocAggregate(type: Javadoc)  {
+
+    if (!hasProperty("buildWebsiteDir")){
+        ext.buildWebsiteDir = "${rootDir}/build/site/"
+    }
+    destinationDir = new File(project.ext.buildWebsiteDir + "/javadocAll/");
+    destinationDir.mkdirs()
+    //System.out.println("javadocAggregate output to " + project.ext.buildWebsiteDir)
+
+    outputs.upToDateWhen { false }
+    subprojects.each { p ->
+        //System.out.println("javadocAggregate " + p.name)
+        if (p.hasProperty("sourceSets")) {
+
+            //source sets aren't available at this phase of the build cycle. damnit.
+            source += p.sourceSets.main.allJava
+            source += p.sourceSets.test.allJava
+            System.out.println(p.sourceSets.main.allJava)
+            if (p.plugins.hasPlugin('com.android.library') ||p.plugins.hasPlugin('com.android.application') )
+            try {
+                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+                classpath.plus(p.files(variant.javaCompile.classpath.files))
+                //classpath += p.files(ext.androidJar)
+            } catch (Throwable ex) {
+                ex.printStackTrace()
+            }
+        } else {
+            FileTree tree = fileTree(dir: p.projectDir.absolutePath + "/src/main/java")
+            tree.include '**/*.java'
+            source+=tree;
+
+            tree = fileTree(dir: p.projectDir.absolutePath + "/src/androidTest/java")
+            tree.include '**/*.java'
+            source+=tree;
+
+            tree = fileTree(dir: p.projectDir.absolutePath + "/src/test/java")
+            tree.include '**/*.java'
+            source+=tree;
+
+            try{
+                classpath += p.configurations.compile
+            }catch (Exception ex){}
+            try{
+                classpath += p.configurations.test
+            }catch (Exception ex){}
+            try{
+                classpath += p.configurations.all
+            }catch (Exception ex){}
+            try {
+                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+            }catch (Exception ex){}
+
+        }
+
+        //reflect(p)
+
+    }
+
+
+
+    String compileSdk = getProperty("android.compileSdkVersion");
+    String jar=""
+    try {
+        String csdk = compileSdk
+        if (csdk.contains("Google")) {
+            try {
+                csdk = csdk.split(":")[2];
+            } catch (Exception ex) {
+            }
+        }
+
+        jar = System.getenv().get("ANDROID_HOME") +
+                "/platforms/android-" + csdk + "/android.jar"
+
+    } catch (Exception ex) {
+        ex.printStackTrace()
+    }
+
+    File j = new File(jar);
+    if (j.exists())
+        classpath+= project.files(j);
+
+
+    compileSdk = 'Google Inc.:Google APIs:23';
+    jar=""
+    try {
+        String csdk = compileSdk
+        if (csdk.contains("Google")) {
+            try {
+                csdk = csdk.split(":")[2];
+            } catch (Exception ex) {
+            }
+        }
+
+        jar = System.getenv().get("ANDROID_HOME") +
+                "/platforms/android-" + csdk + "/android.jar"
+
+    } catch (Exception ex) {
+        ex.printStackTrace()
+    }
+
+    j = new File(jar);
+    if (j.exists()) {
+        classpath += project.files(j);
+    }
+
+    System.out.println("classpath for javadoc is now " + classpath);
+
+    options.charSet 'UTF-8'
+    options.docEncoding 'UTF-8'
+    options.encoding 'UTF-8'
+    options {
+        try {
+            linksOffline("http://d.android.com/reference",
+                    System.getenv().get("ANDROID_HOME") + "/docs/reference")
+        } catch (Exception ex) {
+        }
+        setMemberLevel(JavadocMemberLevel.PACKAGE)
+        docEncoding = 'UTF-8'
+        encoding = 'UTF-8'
+        charSet = 'UTF-8'
+    }
+    //options.addStringOption('Xdoclint:none', '-quiet')
+    //classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+    failOnError false
+
+    if (hasProperty('compileJava.sourceCompatibility') &&
+            project.property("compileJava.sourceCompatibility").equals("1.5")) {
+        options.links 'http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec'
+        options.links 'http://java.sun.com/j2se/1.5/docs/api/'
+    } else if (hasProperty('compileJava.sourceCompatibility') &&
+            project.property("compileJava.sourceCompatibility").equals("1.6")) {
+        options.links 'http://docs.oracle.com/javase/6/docs/api/'
+    } else if (hasProperty('compileJava.sourceCompatibility') &&
+            project.property("compileJava.sourceCompatibility").equals("1.7")) {
+        options.links 'http://docs.oracle.com/javase/7/docs/api/'
+    } else if (hasProperty('compileJava.sourceCompatibility') &&
+            project.property("compileJava.sourceCompatibility").equals("1.8")) {
+        options.links 'http://docs.oracle.com/javase/8/docs/api/'
+    }
+
+    if (isGraphvizDotAvailable()) {
+
+        options {
+            doclet = 'org.umlgraph.doclet.UmlGraphDoc'
+            options.docletpath = rootProject.configurations.umljavadocsite.files.asType(List)
+            addStringOption('inferrel')
+            addStringOption('inferdep')
+            addStringOption('qualify')
+            addStringOption('postfixpackage')
+            addStringOption('hide=java.*')
+            addStringOption('collpackages=java.util.*')
+            addStringOption('nodefontsize=9')
+            addStringOption('nodefontpackagesize','7')
+
+        }
+
+    }
+    exclude '**/BuildConfig.java'
+    exclude '**/R.java'
+    options {
+        setMemberLevel(JavadocMemberLevel.PACKAGE)
+    }
+}
+
+
+
+def isGraphvizDotAvailable() {
+
+    if (rootProject.hasProperty('isGraphvizDotAvailable')) {
+        return rootProject.ext.isGraphvizDotAvailable;
+    }
+    //if os is mac, return false becasue the DOT build for mac os isn't so great and will cause
+    //javadoc failures
+    String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+    if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
+        logger.warn("WARN - Graphviz/DOT has some issues with MacOS and may cause javadoc generation to fail. Just a heads up");
+    }
+
+    //if opt-in is not set or is false, return false
+    if (!project.hasProperty("fury.javadocs.umlgraph.enabled")) {
+        logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
+        return false;
+    }
+    if (project.property("fury.javadocs.umlgraph.enabled")==null) {
+        logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
+        return false;
+    }
+    if (!"true".equalsIgnoreCase(project.property("fury.javadocs.umlgraph.enabled"))){
+        logger.info("UML Graph skipped, opt-in setting 'fury.javadocs.umlgraph.enabled' is not set");
+        rootProject.ext.isGraphvizDotAvailable=false;
+        return false;
+    }
+    try {
+        Runtime rt = Runtime.getRuntime();
+        Process proc = rt.exec("dot -?");
+        int exitVal = proc.waitFor();
+
+        if (exitVal == 0) {
+            logger.info("DOT is available");
+            rootProject.ext.isGraphvizDotAvailable=true;
+            return true;
+        }
+    }catch (Exception ex){
+        //ex.printStackTrace();
+    }
+
+    logger.info("DOT is NOT available");
+    rootProject.ext.isGraphvizDotAvailable=false;
+    return false;
+}
+
+task copyJavaDocExtra() << {
+
+    File destinationDir = new File(project.ext.buildWebsiteDir + "/javadocAll/");
+    destinationDir.mkdirs()
+
+    subprojects.each { p ->
+        File f = new File(p.buildDir.absolutePath + "/../src/main/java");
+        if (f.exists()){
+            System.out.println(f.absolutePath)
+            copy {
+                from f.absolutePath
+                into destinationDir
+                include "**/doc-files/*"
+            }
+        }
+
+
+    }
+
+}
+
 site.dependsOn dependencyReportMd
+site.dependsOn javadocAggregate
+javadocAggregate.finalizedBy copyJavaDocExtra

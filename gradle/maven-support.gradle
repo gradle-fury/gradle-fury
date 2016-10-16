@@ -247,8 +247,8 @@ void printMOTD(){
                 "== Gradle Fury: ProTip: Use 'gradle generateMasterKey' to make an encryption key",
                 "== Gradle Fury: ProTip: Use 'gradle encryptPassword -PstoreField=NEXUS_PASSWORD' to encrypt your nexus password",
                 "== Gradle Fury: ProTip: Use 'gradle install -Pprofile=ci' to build with all the code quality and analysis plugins",
-                "== Gradle Fury: ProTip: Use 'gradle site' to build a maven style set that wraps up all your stuff with one bow",
-                "== Gradle Fury: ProTip: Use 'gradle siteWar' to build a maven style set as a WAR file",
+                "== Gradle Fury: ProTip: Use 'gradle site' to build a maven style site that wraps up all your stuff with one bow",
+                "== Gradle Fury: ProTip: Use 'gradle siteWar' to build a maven style site as a WAR file",
                 "== Gradle Fury: ProTip: When using gradle 2.2.1 or older, include distZip when running install",
                 "== Gradle Tip: Use 'gradle build -x test' to build and skip tests"
         ]
@@ -551,11 +551,14 @@ afterEvaluate { project ->
                     options.links 'http://docs.oracle.com/javase/8/docs/api/'
                 }
 
+
                 if (isGraphvizDotAvailable()) {
 
                     options {
                         doclet = 'org.umlgraph.doclet.UmlGraphDoc'
                         options.docletpath = configurations.umljavadoc.files.asType(List)
+                        //looks like all of these settings are NOT passed to the doclet because of gradle.
+                        //https://discuss.gradle.org/t/add-custom-javadoc-option-that-does-not-take-an-argument/5959/5
                         addStringOption('-inferrel')
                         addStringOption('-inferdep')
                         addStringOption('-qualify')
@@ -564,20 +567,6 @@ afterEvaluate { project ->
                         addStringOption('-collpackages=java.util.*')
                         addStringOption('-nodefontsize=9')
                         addStringOption('-nodefontpackagesize=7')
-                        if (hasProperty('compileJava.sourceCompatibility') &&
-                                project.property("compileJava.sourceCompatibility").equals("1.5")) {
-                            addStringOption('-link=http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec')
-                            addStringOption('-link=http://java.sun.com/j2se/1.5/docs/api')
-                        } else if (hasProperty('compileJava.sourceCompatibility') &&
-                                project.property("compileJava.sourceCompatibility").equals("1.6")) {
-                            addStringOption('-link=http://docs.oracle.com/javase/6/docs/api/')
-                        } else if (hasProperty('compileJava.sourceCompatibility') &&
-                                project.property("compileJava.sourceCompatibility").equals("1.7")) {
-                            addStringOption('-link=http://docs.oracle.com/javase/7/docs/api/')
-                        } else if (hasProperty('compileJava.sourceCompatibility') &&
-                                project.property("compileJava.sourceCompatibility").equals("1.8")) {
-                            addStringOption('-link=http://docs.oracle.com/javase/8/docs/api/')
-                        }
                     }
                 }
                 options {
@@ -625,13 +614,16 @@ afterEvaluate { project ->
 
             if (project.javadocProfileEnabled) {
                 project.task("${variant.name}Javadoc", type: Javadoc) {
-
+                    description "Generates Javadoc for $variant.name."
                     // https://github.com/chrisbanes/gradle-mvn-push/issues/9
                     failOnError false
 
                     destinationDir = new File("$project.buildDir/javadoc/$variant.name")
 
+                    //reflect(project.android.sourceSets.main)
+                    //source = projectDir.absolutePath + "/src/main/java/"
                     source = variant.javaCompile.source
+
 
                     String csdk = "${project.android.compileSdkVersion}";
                     if (csdk.contains("Google")){
@@ -641,10 +633,11 @@ afterEvaluate { project ->
                     }
 
                     ext.androidJar =
-                            "${project.android.sdkDirectory}/platforms/" + csdk + "/android.jar"
+                            "${android.sdkDirectory}/platforms/android-" + csdk + "/android.jar"
 
                     classpath = project.files(variant.javaCompile.classpath.files)
                     classpath += project.files(ext.androidJar)
+                    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
                     //-bootclasspath /path/to/sdk/platforms/android-##/android.jar
                     // other lame attempts to overcome the 3-headed monster...
 //                      classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
@@ -677,6 +670,8 @@ afterEvaluate { project ->
                         options {
                             doclet = 'org.umlgraph.doclet.UmlGraphDoc'
                             options.docletpath = configurations.umljavadoc.files.asType(List)
+                            //looks like all of these settings are NOT passed to the doclet because of gradle.
+                            //https://discuss.gradle.org/t/add-custom-javadoc-option-that-does-not-take-an-argument/5959/5
                             addStringOption('-inferrel')
                             addStringOption('-inferdep')
                             addStringOption('-qualify')
@@ -685,21 +680,7 @@ afterEvaluate { project ->
                             addStringOption('-collpackages=java.util.*')
                             addStringOption('-nodefontsize=9')
                             addStringOption('-nodefontpackagesize=7')
-                            if (hasProperty('compileJava.sourceCompatibility') &&
-                                 project.property("compileJava.sourceCompatibility").equals("1.5")) {
-                                addStringOption('-link=http://java.sun.com/j2se/1.5.0/docs/guide/javadoc/doclet/spec')
-                                addStringOption('-link=http://java.sun.com/j2se/1.5/docs/api')
-                            } else if (hasProperty('compileJava.sourceCompatibility') &&
-                                    project.property("compileJava.sourceCompatibility").equals("1.6")) {
-                                addStringOption('-link=http://docs.oracle.com/javase/6/docs/api/')
-                            } else if (hasProperty('compileJava.sourceCompatibility') &&
-                                    project.property("compileJava.sourceCompatibility").equals("1.7")) {
-                                addStringOption('-link=http://docs.oracle.com/javase/7/docs/api/')
-                            } else if (hasProperty('compileJava.sourceCompatibility') &&
-                                project.property("compileJava.sourceCompatibility").equals("1.8")) {
-                                addStringOption('-link=http://docs.oracle.com/javase/8/docs/api/')
-                            }
-                            addStringOption('-link=http://developer.android.com/reference/')
+
                         }
                     }
 
@@ -1518,7 +1499,7 @@ project.plugins.withType(MavenPublishPlugin) {
 
 
                     if (project.isDistribution && project.isJavaProject) {
-                        System.out.println("prcocessing as jar AND zip " + project.name)
+                        //System.out.println("prcocessing as jar AND zip " + project.name)
                         project.pom.packaging = 'jar'
 
                         //System.out.println("processing dist zip")
@@ -1737,7 +1718,7 @@ project.plugins.withType(MavenPublishPlugin) {
 
                     } else if (project.isJavaProject && !project.isDistribution) {
 
-                        System.out.println("prcocessing as jar" + project.name)
+                       // System.out.println("prcocessing as jar" + project.name)
                         project.pom.packaging = 'jar'
                         def artifactName = project.name + "-" + project.version + "." + project.pom.packaging;
                         def artifactRoot = "${buildDir}/libs/"
@@ -2307,7 +2288,7 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
 
         String groupurl = project.group.replace(".", "/");
         Container item = myiterator.next();
-        logger.warn(item.fileNameAndPath + " " + item.fileName + " " + item.type + " " + project.name);
+        //logger.warn(item.fileNameAndPath + " " + item.fileName + " " + item.type + " " + project.name);
         File f = new File(item.fileNameAndPath);
 
         String uploadedFileName = f.getName();

@@ -38,4 +38,4 @@ echo " ======== Validation script for gradle fury ======== "
 echo " "
 
 
-java -jar gradle-fury-validation/build/libs/gradle-fury-validation-$version.jar -publishWithNoSig
+java -jar gradle-fury-validation/build/libs/gradle-fury-validation-$version.jar -withSite
