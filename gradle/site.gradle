@@ -631,8 +631,10 @@ class ReportsContainer{
             processAndroidLint(file, link);
         } else if ("androidtests".equalsIgnoreCase(reportType)){
             processGradleTestResult(file, link);
+        } else if ("pmd".equalsIgnoreCase(reportType)){
+            processPmdReport(file, link);
         }
-
+        //FIXME dex-count reports
     }
 
 
@@ -697,6 +699,29 @@ class ReportsContainer{
                     }
                 }
             }
+            break;
+        }
+
+    }
+
+    private void processPmdReport(String file, Link link){
+        String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
+        Document doc = Jsoup.parse(contents);
+
+        Element lastRow=null;
+        for (Element table : doc.select("table")) {
+            //only expecting one table
+            //get the last row in the table
+            for (Element tr : table.select("tr")){
+                lastRow = tr;
+            }
+            break;
+        }
+        for (Element td : lastRow.select("td")) {
+            //first td's content is the error count
+            String errors = td.text();
+            System.out.println("Error count: " + errors);
+            link.errors+= Integer.parseInt(errors.trim());
             break;
         }
 
@@ -780,7 +805,9 @@ List<ReportsContainer> scanReports(List<String> reports){
             for (int k = 0; k < report.length; k++) {
                 File test = report[k];
                 //i hate that i need to do special handling for everything. f gradle
-                if (test.getName().equalsIgnoreCase("findbugs") || test.getName().equalsIgnoreCase("checkstyle")){
+                if (test.getName().equalsIgnoreCase("findbugs")
+                        || test.getName().equalsIgnoreCase("checkstyle")
+                        || test.getName().equalsIgnoreCase("pmd")){
                     //get all .html files within the folder 'test' and add to the findbugs reports
 
                     File[] buggers = test.listFiles(new FilenameFilter() {
