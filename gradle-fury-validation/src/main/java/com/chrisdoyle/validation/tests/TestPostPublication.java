@@ -125,7 +125,7 @@ public class TestPostPublication {
         return ret;
     }
 
-    private List<String> getModules() {
+    public static List<String> getModules() {
         List<String> ret = new ArrayList<>();
         File[] files = new File(Main.cwdDir).listFiles();
         Assert.assertNotNull(files);

@@ -114,6 +114,11 @@ apply from: "${rootDir}/gradle/encryption.gradle"
 
 //this is the gradle-fury site plugin, very similar to the maven site plugin
 //apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/site.gradle'
+
+//tip, you can override the output directory of the site by uncommenting the following
+//note that gradlew siteWar will always go to the build/site.war file
+ext.buildWebsiteDir = rootDir.absolutePath + "/docs/"
+
 apply from: "${rootDir}/gradle/site.gradle"
 
 
@@ -127,10 +132,6 @@ task copyReadme() << {
 }
 site.dependsOn copyReadme
 
-//tip, you can override the output directory of the site by uncommenting the following
-ext.buildWebsiteDir = rootDir.absolutePath + "/docs/"
-
-//note that gradlew siteWar will always go to the build/site.war file
 
 /*******************************************************/
 /*******************************************************/

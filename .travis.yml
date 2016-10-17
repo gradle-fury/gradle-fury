@@ -136,6 +136,7 @@ script:
 
   #build the site
   - ./gradlew siteWar
+  - ci/verifySite.sh
 
   #stop nexus
   - cd nexus-2.13.0-01/bin

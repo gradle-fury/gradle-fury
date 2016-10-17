@@ -185,10 +185,12 @@ android {
     // globally ignore all errors reported by lint
     // (admittedly, this is probably not a good idea...) O:-)
     lintOptions {
-        abortOnError false
+        //quality.lint.ignoreFailures
+        abortOnError ( project.hasProperty('quality.lint.ignoreFailures')
+                ? !Boolean.parseBoolean(project.property('quality.lint.ignoreFailures')) : false )
     }
 
-    // disable lint executtion for non-CI builds...
+    // disable lint execution for non-CI builds...
     // (also probably not a good idea...) O:-)
     if (project.hasProperty('profile')) {
         if (!project.profile.split(',').contains("ci")) {
