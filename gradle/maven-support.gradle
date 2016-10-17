@@ -31,7 +31,7 @@ import org.w3c.dom.DOMException;
 
 import java.io.*;
 
-rootProject.ext.gradleFuryVersion = "1.1.0-SNAPSHOT"
+rootProject.ext.gradleFuryVersion = "1.0.20-SNAPSHOT"
 
 
 /**=================================================================================================
