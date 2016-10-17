@@ -3,6 +3,12 @@
 <file name="./hello-world-apk/src/androidTest/java/com/chrisdoyle/helloworld/app/HelloWorldActivityTest.java">
 <error line="18" column="17" severity="warning" message="Name &apos;test_toMapPixels_0_0&apos; must match pattern &apos;^[a-z][a-zA-Z0-9]*$&apos;." source="com.puppycrawl.tools.checkstyle.checks.naming.MethodNameCheck"/>
 </file>
+<file name="./hello-world-apk/src/bar/java/com/chrisdoyle/helloworld/app/BarClass.java">
+</file>
+<file name="./hello-world-apk/src/baz/java/com/chrisdoyle/helloworld/app/BazClass.java">
+</file>
+<file name="./hello-world-apk/src/foo/java/com/chrisdoyle/helloworld/app/FooClass.java">
+</file>
 <file name="./hello-world-apk/src/main/java/com/chrisdoyle/helloworld/app/HelloWorldActivity.java">
 <error line="5" column="8" severity="warning" message="Unused import - android.support.design.widget.Snackbar." source="com.puppycrawl.tools.checkstyle.checks.imports.UnusedImportsCheck"/>
 </file>

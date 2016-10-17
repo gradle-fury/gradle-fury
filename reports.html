@@ -8,7 +8,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="Date-Creation-yyyymmdd" content="20160101"/>
-    <meta name="Date-Revision-yyyymmdd" content="20161014"/>
+    <meta name="Date-Revision-yyyymmdd" content="20161016"/>
     <meta http-equiv="Content-Language" content="en"/>
     <title> Gradle Fury</title>
     <link rel="stylesheet" href="./css/apache-maven-fluido-1.4.min.css"/>
@@ -65,10 +65,10 @@
             </li>
 
             <li id="publishDate" class="pull-right"><span class="divider">|</span> Last Published:
-                2016-10-14
+                2016-10-16
             </li>
             <li id="projectVersion" class="pull-right">
-                1.0.18
+                1.0.19
             </li>
 
         </ul>
@@ -203,9 +203,16 @@
                             </li>
                             <li>
 
-                                <a href="javadoc.html" title="Project Reports">
+                                <a href="javadoc.html" title="Project Javadocs">
                                     <span class="none"></span>
                                     Javadocs</a>
+
+                            </li>
+                            <li>
+
+                                <a href="javadocAll/index.html" title="Project Javadocs">
+                                    <span class="none"></span>
+                                    Javadocs Aggregated</a>
 
                             </li>
 
@@ -240,11 +247,12 @@
 <tr><th>Module</th><th>Report Type</th><th>Link</th><th>Errors</th><th>Warnings</th></tr>
 </thead>
 <tbody>
-<tr><td>gradle-fury-validation</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/gradle-fury-validation/checkstyle/main.html');">Main</a></td><td>551</td><td>0</td></tr>
+<tr><td>gradle-fury-validation</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/gradle-fury-validation/checkstyle/main.html');">Main</a></td><td>589</td><td>0</td></tr>
 <tr><td>gradle-fury-validation</td><td>Dependencies</td><td><a href="javascript:showReport('reports/gradle-fury-validation/dependencies/index.html');">Dependencies</a></td><td>0</td><td>0</td></tr>
 <tr><td>gradle-fury-validation</td><td>Findbugs</td><td><a href="javascript:showReport('reports/gradle-fury-validation/findbugs/main.html');">Main</a></td><td>3</td><td>0</td></tr>
 <tr><td>gradle-fury-validation</td><td>Javancss</td><td><a href="javascript:showReport('reports/gradle-fury-validation/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>gradle-fury-validation</td><td>Jdepend</td><td><a href="javascript:showReport('reports/gradle-fury-validation/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
+<tr><td>gradle-fury-validation</td><td>Pmd</td><td><a href="javascript:showReport('reports/gradle-fury-validation/pmd/main.html');">Main</a></td><td>49</td><td>0</td></tr>
 <tr><td>hello-grandchild-lib</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/checkstyle/main.html');">Main</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-grandchild-lib</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/checkstyle/test.html');">Test</a></td><td>1</td><td>0</td></tr>
 <tr><td>hello-grandchild-lib</td><td>Dependencies</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/dependencies/index.html');">Dependencies</a></td><td>0</td><td>0</td></tr>
@@ -252,17 +260,21 @@
 <tr><td>hello-grandchild-lib</td><td>Findbugs</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/findbugs/test.html');">Test</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-grandchild-lib</td><td>Javancss</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-grandchild-lib</td><td>Jdepend</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-grandchild-lib</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/pmd/main.html');">Main</a></td><td>1</td><td>0</td></tr>
+<tr><td>hello-grandchild-lib</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/pmd/test.html');">Test</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-grandchild-lib</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-grandchild-lib/tests/index.html');">Tests</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-gradhell</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-gradhell/checkstyle/main.html');">Main</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-gradhell</td><td>Dependencies</td><td><a href="javascript:showReport('reports/hello-gradhell/dependencies/index.html');">Dependencies</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-gradhell</td><td>Findbugs</td><td><a href="javascript:showReport('reports/hello-gradhell/findbugs/main.html');">Main</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-gradhell</td><td>Javancss</td><td><a href="javascript:showReport('reports/hello-gradhell/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-gradhell</td><td>Jdepend</td><td><a href="javascript:showReport('reports/hello-gradhell/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-gradhell</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-gradhell/pmd/main.html');">Main</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-universe-lib</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-universe-lib/checkstyle/main.html');">Main</a></td><td>1</td><td>0</td></tr>
 <tr><td>hello-universe-lib</td><td>Dependencies</td><td><a href="javascript:showReport('reports/hello-universe-lib/dependencies/index.html');">Dependencies</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-universe-lib</td><td>Findbugs</td><td><a href="javascript:showReport('reports/hello-universe-lib/findbugs/main.html');">Main</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-universe-lib</td><td>Javancss</td><td><a href="javascript:showReport('reports/hello-universe-lib/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-universe-lib</td><td>Jdepend</td><td><a href="javascript:showReport('reports/hello-universe-lib/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-universe-lib</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-universe-lib/pmd/main.html');">Main</a></td><td>1</td><td>0</td></tr>
 <tr><td>hello-world-aar</td><td>AndroidTests</td><td><a href="javascript:showReport('reports/hello-world-aar/androidTests/connected/index.html');">Connected</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-aar</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-world-aar/checkstyle/android.html');">Android</a></td><td>2</td><td>0</td></tr>
 <tr><td>hello-world-aar</td><td>Dependencies</td><td><a href="javascript:showReport('reports/hello-world-aar/dependencies/index.html');">Dependencies</a></td><td>0</td><td>0</td></tr>
@@ -270,6 +282,8 @@
 <tr><td>hello-world-aar</td><td>Javancss</td><td><a href="javascript:showReport('reports/hello-world-aar/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-aar</td><td>Jdepend</td><td><a href="javascript:showReport('reports/hello-world-aar/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-aar</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-aar/lint-results-debug.html');">Lint-results-debug</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-world-aar</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-aar/lint-results.html');">Lint-results</a></td><td>0</td><td>1</td></tr>
+<tr><td>hello-world-aar</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-aar/pmd/android.html');">Android</a></td><td>2</td><td>0</td></tr>
 <tr><td>hello-world-aar</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-aar/tests/debug/index.html');">Debug</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-aar</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-aar/tests/release/index.html');">Release</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk</td><td>AndroidTests</td><td><a href="javascript:showReport('reports/hello-world-apk/androidTests/connected/all/index.html');">All</a></td><td>0</td><td>0</td></tr>
@@ -286,6 +300,8 @@
 <tr><td>hello-world-apk</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-apk/lint-results-barRelease-fatal.html');">Lint-results-barRelease-fatal</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-apk/lint-results-bazRelease-fatal.html');">Lint-results-bazRelease-fatal</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-apk/lint-results-fooRelease-fatal.html');">Lint-results-fooRelease-fatal</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-world-apk</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-apk/lint-results.html');">Lint-results</a></td><td>2</td><td>15</td></tr>
+<tr><td>hello-world-apk</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-apk/pmd/android.html');">Android</a></td><td>2</td><td>0</td></tr>
 <tr><td>hello-world-apk</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-apk/tests/barDebug/index.html');">BarDebug</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-apk/tests/barRelease/index.html');">BarRelease</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-apk/tests/bazDebug/index.html');">BazDebug</a></td><td>0</td><td>0</td></tr>
@@ -306,6 +322,8 @@
 <tr><td>hello-world-apk-overrides</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-apk-overrides/lint-results-barRelease-fatal.html');">Lint-results-barRelease-fatal</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk-overrides</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-apk-overrides/lint-results-bazRelease-fatal.html');">Lint-results-bazRelease-fatal</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk-overrides</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-apk-overrides/lint-results-fooRelease-fatal.html');">Lint-results-fooRelease-fatal</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-world-apk-overrides</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-apk-overrides/lint-results.html');">Lint-results</a></td><td>0</td><td>9</td></tr>
+<tr><td>hello-world-apk-overrides</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-apk-overrides/pmd/android.html');">Android</a></td><td>1</td><td>0</td></tr>
 <tr><td>hello-world-apk-overrides</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-apk-overrides/tests/barDebug/index.html');">BarDebug</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk-overrides</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-apk-overrides/tests/barRelease/index.html');">BarRelease</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-apk-overrides</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-apk-overrides/tests/bazDebug/index.html');">BazDebug</a></td><td>0</td><td>0</td></tr>
@@ -319,6 +337,8 @@
 <tr><td>hello-world-app</td><td>Findbugs</td><td><a href="javascript:showReport('reports/hello-world-app/findbugs/test.html');">Test</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-app</td><td>Javancss</td><td><a href="javascript:showReport('reports/hello-world-app/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-app</td><td>Jdepend</td><td><a href="javascript:showReport('reports/hello-world-app/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-world-app</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-app/pmd/main.html');">Main</a></td><td>1</td><td>0</td></tr>
+<tr><td>hello-world-app</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-app/pmd/test.html');">Test</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-app</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-app/tests/index.html');">Tests</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-gmaps</td><td>AndroidTests</td><td><a href="javascript:showReport('reports/hello-world-gmaps/androidTests/connected/index.html');">Connected</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-gmaps</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-world-gmaps/checkstyle/android.html');">Android</a></td><td>0</td><td>0</td></tr>
@@ -329,6 +349,8 @@
 <tr><td>hello-world-gmaps</td><td>Jdepend</td><td><a href="javascript:showReport('reports/hello-world-gmaps/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-gmaps</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-gmaps/lint-results-debug.html');">Lint-results-debug</a></td><td>0</td><td>14</td></tr>
 <tr><td>hello-world-gmaps</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-gmaps/lint-results-release-fatal.html');">Lint-results-release-fatal</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-world-gmaps</td><td>Lint</td><td><a href="javascript:showReport('reports/hello-world-gmaps/lint-results.html');">Lint-results</a></td><td>0</td><td>15</td></tr>
+<tr><td>hello-world-gmaps</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-gmaps/pmd/android.html');">Android</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-gmaps</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-gmaps/tests/debug/index.html');">Debug</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-gmaps</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-gmaps/tests/release/index.html');">Release</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-lib</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-world-lib/checkstyle/main.html');">Main</a></td><td>0</td><td>0</td></tr>
@@ -338,6 +360,8 @@
 <tr><td>hello-world-lib</td><td>Findbugs</td><td><a href="javascript:showReport('reports/hello-world-lib/findbugs/test.html');">Test</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-lib</td><td>Javancss</td><td><a href="javascript:showReport('reports/hello-world-lib/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-lib</td><td>Jdepend</td><td><a href="javascript:showReport('reports/hello-world-lib/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-world-lib</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-lib/pmd/main.html');">Main</a></td><td>1</td><td>0</td></tr>
+<tr><td>hello-world-lib</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-lib/pmd/test.html');">Test</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-lib</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-lib/tests/index.html');">Tests</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-war</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-world-war/checkstyle/main.html');">Main</a></td><td>2</td><td>0</td></tr>
 <tr><td>hello-world-war</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/hello-world-war/checkstyle/test.html');">Test</a></td><td>1</td><td>0</td></tr>
@@ -346,6 +370,8 @@
 <tr><td>hello-world-war</td><td>Findbugs</td><td><a href="javascript:showReport('reports/hello-world-war/findbugs/test.html');">Test</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-war</td><td>Javancss</td><td><a href="javascript:showReport('reports/hello-world-war/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-war</td><td>Jdepend</td><td><a href="javascript:showReport('reports/hello-world-war/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-world-war</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-war/pmd/main.html');">Main</a></td><td>0</td><td>0</td></tr>
+<tr><td>hello-world-war</td><td>Pmd</td><td><a href="javascript:showReport('reports/hello-world-war/pmd/test.html');">Test</a></td><td>0</td><td>0</td></tr>
 <tr><td>hello-world-war</td><td>Tests</td><td><a href="javascript:showReport('reports/hello-world-war/tests/index.html');">Tests</a></td><td>0</td><td>0</td></tr>
 <tr><td>app</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/app/checkstyle/android.html');">Android</a></td><td>0</td><td>0</td></tr>
 <tr><td>app</td><td>Findbugs</td><td><a href="javascript:showReport('reports/app/findbugs/findbugs.html');">Findbugs</a></td><td>0</td><td>0</td></tr>
@@ -353,6 +379,7 @@
 <tr><td>app</td><td>Jdepend</td><td><a href="javascript:showReport('reports/app/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
 <tr><td>app</td><td>Lint</td><td><a href="javascript:showReport('reports/app/lint-results-debug.html');">Lint-results-debug</a></td><td>1</td><td>6</td></tr>
 <tr><td>app</td><td>Lint</td><td><a href="javascript:showReport('reports/app/lint-results-release-fatal.html');">Lint-results-release-fatal</a></td><td>0</td><td>0</td></tr>
+<tr><td>app</td><td>Pmd</td><td><a href="javascript:showReport('reports/app/pmd/android.html');">Android</a></td><td>1</td><td>0</td></tr>
 <tr><td>app</td><td>Tests</td><td><a href="javascript:showReport('reports/app/tests/debug/index.html');">Debug</a></td><td>0</td><td>0</td></tr>
 <tr><td>app</td><td>Tests</td><td><a href="javascript:showReport('reports/app/tests/release/index.html');">Release</a></td><td>0</td><td>0</td></tr>
 <tr><td>bootstrap-aar</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/bootstrap-aar/checkstyle/android.html');">Android</a></td><td>1</td><td>0</td></tr>
@@ -360,12 +387,14 @@
 <tr><td>bootstrap-aar</td><td>Javancss</td><td><a href="javascript:showReport('reports/bootstrap-aar/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>bootstrap-aar</td><td>Jdepend</td><td><a href="javascript:showReport('reports/bootstrap-aar/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
 <tr><td>bootstrap-aar</td><td>Lint</td><td><a href="javascript:showReport('reports/bootstrap-aar/lint-results-debug.html');">Lint-results-debug</a></td><td>0</td><td>4</td></tr>
+<tr><td>bootstrap-aar</td><td>Pmd</td><td><a href="javascript:showReport('reports/bootstrap-aar/pmd/android.html');">Android</a></td><td>1</td><td>0</td></tr>
 <tr><td>bootstrap-aar</td><td>Tests</td><td><a href="javascript:showReport('reports/bootstrap-aar/tests/debug/index.html');">Debug</a></td><td>0</td><td>0</td></tr>
 <tr><td>bootstrap-aar</td><td>Tests</td><td><a href="javascript:showReport('reports/bootstrap-aar/tests/release/index.html');">Release</a></td><td>0</td><td>0</td></tr>
 <tr><td>bootstrap-jar</td><td>Checkstyle</td><td><a href="javascript:showReport('reports/bootstrap-jar/checkstyle/main.html');">Main</a></td><td>0</td><td>0</td></tr>
 <tr><td>bootstrap-jar</td><td>Findbugs</td><td><a href="javascript:showReport('reports/bootstrap-jar/findbugs/main.html');">Main</a></td><td>0</td><td>0</td></tr>
 <tr><td>bootstrap-jar</td><td>Javancss</td><td><a href="javascript:showReport('reports/bootstrap-jar/javancss/index.html');">Javancss</a></td><td>0</td><td>0</td></tr>
 <tr><td>bootstrap-jar</td><td>Jdepend</td><td><a href="javascript:showReport('reports/bootstrap-jar/jdepend/index.html');">Jdepend</a></td><td>0</td><td>0</td></tr>
+<tr><td>bootstrap-jar</td><td>Pmd</td><td><a href="javascript:showReport('reports/bootstrap-jar/pmd/main.html');">Main</a></td><td>0</td><td>0</td></tr>
 <tr><td>app2</td><td>Lint</td><td><a href="javascript:showReport('reports/app2/lint-results-debug.html');">Lint-results-debug</a></td><td>1</td><td>6</td></tr>
 <tr><td>app2</td><td>Lint</td><td><a href="javascript:showReport('reports/app2/lint-results-release-fatal.html');">Lint-results-release-fatal</a></td><td>0</td><td>0</td></tr>
 <tr><td>app2</td><td>Tests</td><td><a href="javascript:showReport('reports/app2/tests/debug/index.html');">Debug</a></td><td>0</td><td>0</td></tr>

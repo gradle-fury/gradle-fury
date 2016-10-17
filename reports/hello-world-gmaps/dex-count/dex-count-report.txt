@@ -1,4 +1,4 @@
-Processing ./hello-world-gmaps/build/outputs/apk/hello-world-gmaps-1.0.18-debug.apk
+Processing ./hello-world-gmaps/build/outputs/apk/hello-world-gmaps-1.0.19-debug.apk
 Read in 55179 method IDs and 30221 field IDs
 ----------------------------------
 Package details:
@@ -319,4 +319,7 @@ org Methods 101 Fields 1
 	json Methods 49 Fields 1
 	xmlpull Methods 12 Fields 0
 		v1 Methods 12 Fields 0
+Processed ./hello-world-gmaps/build/outputs/apk/hello-world-gmaps-1.0.19-debug.apk
+Read in 55179 method IDs and 30221 field IDs
+----------------------------------
 

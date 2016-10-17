@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="4" by="lint 25.2.2">
+
+    <issue
+        id="UnusedAttribute"
+        severity="Warning"
+        message="Attribute `supportsRtl` is only used in API level 17 and higher (current min is 16)"
+        category="Correctness"
+        priority="6"
+        summary="Attribute unused on older versions"
+        explanation="This check finds attributes set in XML files that were introduced in a version newer than the oldest version targeted by your application (with the `minSdkVersion` attribute).
+
+This is not an error; the application will simply ignore the attribute. However, if the attribute is important to the appearance of functionality of your application, you should consider finding an alternative way to achieve the same result with only available attributes, and then you can optionally create a copy of the layout in a layout-vNN folder which will be used on API NN or higher where you can take advantage of the newer attribute.
+
+Note: This check does not only apply to attributes. For example, some tags can be unused too, such as the new `&lt;tag>` element in layouts introduced in API 21."
+        errorLine1="        android:supportsRtl=&quot;true&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="./hello-world-apk-overrides/src/main/AndroidManifest.xml"
+            line="9"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of com.android.support:appcompat-v7 than 23.3.0 is available: 24.2.1"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1="    compile &quot;com.android.support:appcompat-v7:${project.property(&apos;android-support.version&apos;)}&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        quickfix="studio">
+        <location
+            file="./hello-world-apk-overrides/build.gradle"
+            line="16"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of com.android.support:cardview-v7 than 23.3.0 is available: 24.2.1"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1="    compile &quot;com.android.support:cardview-v7:${project.property(&apos;android-support.version&apos;)}&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        quickfix="studio">
+        <location
+            file="./hello-world-apk-overrides/build.gradle"
+            line="17"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of com.android.support:design than 23.3.0 is available: 24.2.1"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1="    compile &quot;com.android.support:design:${project.property(&apos;android-support.version&apos;)}&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        quickfix="studio">
+        <location
+            file="./hello-world-apk-overrides/build.gradle"
+            line="18"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of com.android.support:recyclerview-v7 than 23.3.0 is available: 24.2.1"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1="    compile &quot;com.android.support:recyclerview-v7:${project.property(&apos;android-support.version&apos;)}&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        quickfix="studio">
+        <location
+            file="./hello-world-apk-overrides/build.gradle"
+            line="19"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        severity="Warning"
+        message="A newer version of com.android.support:support-v4 than 23.3.0 is available: 24.2.1"
+        category="Correctness"
+        priority="4"
+        summary="Obsolete Gradle Dependency"
+        explanation="This detector looks for usages of libraries where the version you are using is not the current stable release. Using older versions is fine, and there are cases where you deliberately want to stick with an older version. However, you may simply not be aware that a more recent version is available, and that is what this lint check helps find."
+        errorLine1="    compile &quot;com.android.support:support-v4:${project.property(&apos;android-support.version&apos;)}&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        quickfix="studio">
+        <location
+            file="./hello-world-apk-overrides/build.gradle"
+            line="20"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PrivateResource"
+        severity="Warning"
+        message="The resource `@attr/actionBarSize` is marked as private in com.android.support:design"
+        category="Correctness"
+        priority="3"
+        summary="Using private resources"
+        explanation="Private resources should not be referenced; the may not be present everywhere, and even where they are they may disappear without notice.
+
+To fix this, copy the resource into your own project instead."
+        errorLine1="            android:layout_height=&quot;?attr/actionBarSize&quot;"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="./hello-world-apk-overrides/src/main/res/layout/activity_hello_world.xml"
+            line="18"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="PrivateResource"
+        severity="Warning"
+        message="The resource `@attr/colorPrimary` is marked as private in com.android.support:design"
+        category="Correctness"
+        priority="3"
+        summary="Using private resources"
+        explanation="Private resources should not be referenced; the may not be present everywhere, and even where they are they may disappear without notice.
+
+To fix this, copy the resource into your own project instead."
+        errorLine1="            android:background=&quot;?attr/colorPrimary&quot;"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="./hello-world-apk-overrides/src/main/res/layout/activity_hello_world.xml"
+            line="19"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="AllowBackup"
+        severity="Warning"
+        message="Should explicitly set `android:fullBackupContent` to `true` or `false` to opt-in to or out of full app data back-up and restore, or alternatively to an `@xml` resource which specifies which files to backup"
+        category="Security"
+        priority="3"
+        summary="Missing `allowBackup` attribute"
+        explanation="The allowBackup attribute determines if an application&apos;s data can be backed up and restored. It is documented at http://developer.android.com/reference/android/R.attr.html#allowBackup
+
+By default, this flag is set to `true`. When this flag is set to `true`, application data can be backed up and restored by the user using `adb backup` and `adb restore`.
+
+This may have security consequences for an application. `adb backup` allows users who have enabled USB debugging to copy application data off of the device. Once backed up, all application data can be read by the user. `adb restore` allows creation of application data from a source specified by the user. Following a restore, applications should not assume that the data, file permissions, and directory permissions were created by the application itself.
+
+Setting `allowBackup=&quot;false&quot;` opts an application out of both backup and restore.
+
+To fix this warning, decide whether your application should support backup, and explicitly set `android:allowBackup=(true|false)&quot;`"
+        url="http://developer.android.com/reference/android/R.attr.html#allowBackup"
+        urls="http://developer.android.com/reference/android/R.attr.html#allowBackup"
+        errorLine1="    &lt;application"
+        errorLine2="    ^"
+        quickfix="studio,adt">
+        <location
+            file="./hello-world-apk-overrides/src/main/AndroidManifest.xml"
+            line="5"
+            column="5"/>
+    </issue>
+
+</issues>
+
+

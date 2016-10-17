@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <javancss>
-  <date>2016-10-14</date>
-  <time>18:02:09</time>
+  <date>2016-10-16</date>
+  <time>22:09:50</time>
   <packages>
     <package>
       <name>com.chrisdoyle.validation</name>
       <classes>1</classes>
       <functions>2</functions>
-      <ncss>139</ncss>
+      <ncss>151</ncss>
       <javadocs>3</javadocs>
       <javadoc_lines>16</javadoc_lines>
       <single_comment_lines>13</single_comment_lines>
@@ -15,12 +15,12 @@
     </package>
     <package>
       <name>com.chrisdoyle.validation.tests</name>
-      <classes>16</classes>
-      <functions>25</functions>
-      <ncss>343</ncss>
-      <javadocs>18</javadocs>
-      <javadoc_lines>72</javadoc_lines>
-      <single_comment_lines>21</single_comment_lines>
+      <classes>17</classes>
+      <functions>33</functions>
+      <ncss>384</ncss>
+      <javadocs>19</javadocs>
+      <javadoc_lines>75</javadoc_lines>
+      <single_comment_lines>27</single_comment_lines>
       <multi_comment_lines>5</multi_comment_lines>
     </package>
     <package>
@@ -34,33 +34,43 @@
       <multi_comment_lines>0</multi_comment_lines>
     </package>
     <total>
-      <classes>54</classes>
-      <functions>522</functions>
-      <ncss>2225</ncss>
-      <javadocs>651</javadocs>
-      <javadoc_lines>7211</javadoc_lines>
-      <single_comment_lines>262</single_comment_lines>
+      <classes>55</classes>
+      <functions>530</functions>
+      <ncss>2278</ncss>
+      <javadocs>652</javadocs>
+      <javadoc_lines>7214</javadoc_lines>
+      <single_comment_lines>268</single_comment_lines>
       <multi_comment_lines>44</multi_comment_lines>
     </total>
     <table>
       <tr><td>Packages</td><td>Classes</td><td>Functions</td><td>NCSS</td><td>Javadocs</td><td>per</td></tr>
-      <tr><td>3.00</td><td>54.00</td><td>522.00</td><td>2,225.00</td><td>651.00</td><td>Project</td></tr>
-      <tr><td></td><td>18.00</td><td>174.00</td><td>741.67</td><td>217.00</td><td>Package</td></tr>
-      <tr><td></td><td></td><td>9.67</td><td>41.20</td><td>12.06</td><td>Class</td></tr>
-      <tr><td></td><td></td><td></td><td>4.26</td><td>1.25</td><td>Function</td></tr>
+      <tr><td>3.00</td><td>55.00</td><td>530.00</td><td>2,278.00</td><td>652.00</td><td>Project</td></tr>
+      <tr><td></td><td>18.33</td><td>176.67</td><td>759.33</td><td>217.33</td><td>Package</td></tr>
+      <tr><td></td><td></td><td>9.64</td><td>41.42</td><td>11.85</td><td>Class</td></tr>
+      <tr><td></td><td></td><td></td><td>4.30</td><td>1.23</td><td>Function</td></tr>
     </table>
   </packages>
 
   <objects>
     <object>
       <name>com.chrisdoyle.validation.Main</name>
-      <ncss>124</ncss>
+      <ncss>136</ncss>
       <functions>2</functions>
       <classes>0</classes>
       <javadocs>3</javadocs>
       <javadocs_lines>16</javadocs_lines>
       <single_comment_lines>13</single_comment_lines>
       <implementation_comment_lines>39</implementation_comment_lines>
+    </object>
+    <object>
+      <name>com.chrisdoyle.validation.tests.SiteTests</name>
+      <ncss>36</ncss>
+      <functions>8</functions>
+      <classes>0</classes>
+      <javadocs>1</javadocs>
+      <javadocs_lines>3</javadocs_lines>
+      <single_comment_lines>6</single_comment_lines>
+      <implementation_comment_lines>0</implementation_comment_lines>
     </object>
     <object>
       <name>com.chrisdoyle.validation.tests.TestPostPublication</name>
@@ -593,22 +603,22 @@
       <implementation_comment_lines>0</implementation_comment_lines>
     </object>
     <averages>
-      <ncss>34.70</ncss>
-      <functions>9.67</functions>
-      <classes>0.91</classes>
-      <javadocs>12.06</javadocs>
-      <javadocs_lines>133.54</javadocs_lines>
-      <single_comment_lines>0.63</single_comment_lines>
-      <implementation_comment_lines>0.81</implementation_comment_lines>
+      <ncss>34.95</ncss>
+      <functions>9.64</functions>
+      <classes>0.89</classes>
+      <javadocs>11.85</javadocs>
+      <javadocs_lines>131.16</javadocs_lines>
+      <single_comment_lines>0.73</single_comment_lines>
+      <implementation_comment_lines>0.80</implementation_comment_lines>
     </averages>
-    <ncss>2,225.00</ncss>
+    <ncss>2,278.00</ncss>
   </objects>
 
   <functions>
     <function>
       <name>com.chrisdoyle.validation.Main.main(String[])</name>
-      <ncss>99</ncss>
-      <ccn>23</ccn>
+      <ncss>110</ncss>
+      <ccn>26</ccn>
       <javadocs>1</javadocs>
     </function>
     <function>
@@ -616,6 +626,54 @@
       <ncss>13</ncss>
       <ccn>5</ccn>
       <javadocs>1</javadocs>
+    </function>
+    <function>
+      <name>com.chrisdoyle.validation.tests.SiteTests.confirmJavadocsExist()</name>
+      <ncss>13</ncss>
+      <ccn>4</ccn>
+      <javadocs>0</javadocs>
+    </function>
+    <function>
+      <name>com.chrisdoyle.validation.tests.SiteTests.confirmCheckStyleReportsExist()</name>
+      <ncss>2</ncss>
+      <ccn>1</ccn>
+      <javadocs>0</javadocs>
+    </function>
+    <function>
+      <name>com.chrisdoyle.validation.tests.SiteTests.confirmDependenciesReportsExist()</name>
+      <ncss>2</ncss>
+      <ccn>1</ccn>
+      <javadocs>0</javadocs>
+    </function>
+    <function>
+      <name>com.chrisdoyle.validation.tests.SiteTests.confirmFindbugsReportsExist()</name>
+      <ncss>2</ncss>
+      <ccn>1</ccn>
+      <javadocs>0</javadocs>
+    </function>
+    <function>
+      <name>com.chrisdoyle.validation.tests.SiteTests.confirmJDependReportsExist()</name>
+      <ncss>2</ncss>
+      <ccn>1</ccn>
+      <javadocs>0</javadocs>
+    </function>
+    <function>
+      <name>com.chrisdoyle.validation.tests.SiteTests.confirmJavancssReportsExist()</name>
+      <ncss>2</ncss>
+      <ccn>1</ccn>
+      <javadocs>0</javadocs>
+    </function>
+    <function>
+      <name>com.chrisdoyle.validation.tests.SiteTests.confirmPmdReportsExist()</name>
+      <ncss>2</ncss>
+      <ccn>1</ccn>
+      <javadocs>0</javadocs>
+    </function>
+    <function>
+      <name>com.chrisdoyle.validation.tests.SiteTests.test(String,String,String)</name>
+      <ncss>7</ncss>
+      <ccn>7</ccn>
+      <javadocs>0</javadocs>
     </function>
     <function>
       <name>com.chrisdoyle.validation.tests.TestPostPublication.checkNexusPublicationsWithSignatures(boolean)</name>
@@ -4032,11 +4090,11 @@
       <javadocs>1</javadocs>
     </function>
     <function_averages>
-      <ncss>2.64</ncss>
-      <ccn>1.25</ccn>
-      <javadocs>0.96</javadocs>
+      <ncss>2.67</ncss>
+      <ccn>1.26</ccn>
+      <javadocs>0.95</javadocs>
     </function_averages>
-    <ncss>2,225.00</ncss>
+    <ncss>2,278.00</ncss>
   </functions>
 </javancss>
 

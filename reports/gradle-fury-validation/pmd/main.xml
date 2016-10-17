@@ -1,56 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="5.2.3" timestamp="2016-10-14T18:02:09.965">
+<pmd version="5.2.3" timestamp="2016-10-16T22:09:51.696">
 <file name="./gradle-fury-validation/src/main/java/com/chrisdoyle/validation/Main.java">
-<violation beginline="26" endline="483" begincolumn="8" endcolumn="1" rule="ShortClassName" ruleset="Naming" package="com.chrisdoyle.validation" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/naming.html#ShortClassName" priority="4">
+<violation beginline="26" endline="499" begincolumn="8" endcolumn="1" rule="ShortClassName" ruleset="Naming" package="com.chrisdoyle.validation" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/naming.html#ShortClassName" priority="4">
 Avoid short class names like Main
 </violation>
-<violation beginline="300" endline="300" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
-System.out.println is used
-</violation>
-<violation beginline="301" endline="301" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="304" endline="304" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
 <violation beginline="305" endline="305" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="306" endline="306" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="309" endline="309" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="385" endline="385" begincolumn="20" endcolumn="65" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/strings.html#AvoidDuplicateLiterals" priority="3">
-The String literal &quot;____________________________________________&quot; appears 6 times in this file; the first occurrence is on line 385
-</violation>
-<violation beginline="423" endline="423" begincolumn="21" endcolumn="38" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="310" endline="310" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="440" endline="440" begincolumn="17" endcolumn="36" rule="AvoidPrintStackTrace" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#AvoidPrintStackTrace" priority="3">
+<violation beginline="401" endline="401" begincolumn="20" endcolumn="65" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;____________________________________________&quot; appears 6 times in this file; the first occurrence is on line 401
+</violation>
+<violation beginline="439" endline="439" begincolumn="21" endcolumn="38" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+System.out.println is used
+</violation>
+<violation beginline="456" endline="456" begincolumn="17" endcolumn="36" rule="AvoidPrintStackTrace" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#AvoidPrintStackTrace" priority="3">
 Avoid printStackTrace(); use a logger call instead.
 </violation>
-<violation beginline="443" endline="443" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="459" endline="459" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="444" endline="444" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="460" endline="460" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="445" endline="445" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="461" endline="461" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="446" endline="446" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="462" endline="462" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="447" endline="447" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="463" endline="463" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="448" endline="448" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="464" endline="464" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="450" endline="450" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="466" endline="466" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="453" endline="453" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
+<violation beginline="469" endline="469" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.validation" class="Main" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used
 </violation>
-<violation beginline="475" endline="476" begincolumn="9" endcolumn="44" rule="IfStmtsMustUseBraces" ruleset="Braces" package="com.chrisdoyle.validation" class="Main" method="init" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/braces.html#IfStmtsMustUseBraces" priority="3">
+<violation beginline="491" endline="492" begincolumn="9" endcolumn="44" rule="IfStmtsMustUseBraces" ruleset="Braces" package="com.chrisdoyle.validation" class="Main" method="init" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/braces.html#IfStmtsMustUseBraces" priority="3">
 Avoid using if statements without curly braces
+</violation>
+</file>
+<file name="./gradle-fury-validation/src/main/java/com/chrisdoyle/validation/tests/SiteTests.java">
+<violation beginline="4" endline="4" begincolumn="1" endcolumn="24" rule="UnusedImports" ruleset="Import Statements" package="com.chrisdoyle.validation.tests" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/imports.html#UnusedImports" priority="4">
+Avoid unused imports such as 'org.junit.Assume'
+</violation>
+<violation beginline="39" endline="39" begincolumn="71" endcolumn="86" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer" package="com.chrisdoyle.validation.tests" class="SiteTests" method="confirmJavadocsExist" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;docs/javadocs/&quot; appears 9 times in this file; the first occurrence is on line 39
+</violation>
+<violation beginline="39" endline="39" begincolumn="31" endcolumn="46" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer" package="com.chrisdoyle.validation.tests" class="SiteTests" method="confirmJavadocsExist" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;no javadoc at &quot; appears 9 times in this file; the first occurrence is on line 39
+</violation>
+<violation beginline="62" endline="62" begincolumn="28" endcolumn="38" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer" package="com.chrisdoyle.validation.tests" class="SiteTests" method="confirmCheckStyleReportsExist" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;main.html&quot; appears 4 times in this file; the first occurrence is on line 62
+</violation>
+<violation beginline="67" endline="67" begincolumn="30" endcolumn="41" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer" package="com.chrisdoyle.validation.tests" class="SiteTests" method="confirmDependenciesReportsExist" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;index.html&quot; appears 5 times in this file; the first occurrence is on line 67
+</violation>
+<violation beginline="96" endline="96" begincolumn="30" endcolumn="44" rule="AvoidDuplicateLiterals" ruleset="String and StringBuffer" package="com.chrisdoyle.validation.tests" class="SiteTests" method="test" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/strings.html#AvoidDuplicateLiterals" priority="3">
+The String literal &quot;docs/reports/&quot; appears 6 times in this file; the first occurrence is on line 96
 </violation>
 </file>
 <file name="./gradle-fury-validation/src/main/java/com/chrisdoyle/validation/tests/TestPostPublication.java">

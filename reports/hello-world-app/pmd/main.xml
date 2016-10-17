@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="5.2.3" timestamp="2016-10-14T18:05:26.735">
+<pmd version="5.2.3" timestamp="2016-10-16T22:13:32.566">
 <file name="./hello-world-app/src/main/java/com/chrisdoyle/helloworld/EntryPoint.java">
 <violation beginline="6" endline="6" begincolumn="9" endcolumn="26" rule="SystemPrintln" ruleset="Java Logging" package="com.chrisdoyle.helloworld" class="EntryPoint" method="main" externalInfoUrl="http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/logging-java.html#SystemPrintln" priority="2">
 System.out.println is used

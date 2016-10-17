@@ -7433,8 +7433,8 @@
 
         <Package name="com.chrisdoyle.helloworld.app">
             <Stats>
-                <TotalClasses>17</TotalClasses>
-                <ConcreteClasses>17</ConcreteClasses>
+                <TotalClasses>20</TotalClasses>
+                <ConcreteClasses>20</ConcreteClasses>
                 <AbstractClasses>0</AbstractClasses>
                 <Ca>0</Ca>
                 <Ce>8</Ce>
@@ -7448,8 +7448,17 @@
             </AbstractClasses>
 
             <ConcreteClasses>
+                <Class sourceFile="BarClass.java">
+                    com.chrisdoyle.helloworld.app.BarClass
+                </Class>
+                <Class sourceFile="BazClass.java">
+                    com.chrisdoyle.helloworld.app.BazClass
+                </Class>
                 <Class sourceFile="BuildConfig.java">
                     com.chrisdoyle.helloworld.app.BuildConfig
+                </Class>
+                <Class sourceFile="FooClass.java">
+                    com.chrisdoyle.helloworld.app.FooClass
                 </Class>
                 <Class sourceFile="HelloWorldActivity.java">
                     com.chrisdoyle.helloworld.app.HelloWorldActivity

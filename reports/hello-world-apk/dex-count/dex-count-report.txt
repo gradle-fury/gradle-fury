@@ -1,5 +1,5 @@
-Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.18-barDebug.apk
-Read in 44267 method IDs and 18596 field IDs
+Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.19-barDebug.apk
+Read in 44268 method IDs and 18596 field IDs
 ----------------------------------
 Package details:
 (default) Methods 1 Fields 0
@@ -99,10 +99,10 @@ android Methods 20122 Fields 8886
 ch Methods 1 Fields 1
 	acra Methods 1 Fields 1
 		acra Methods 1 Fields 1
-com Methods 2787 Fields 2622
-	chrisdoyle Methods 42 Fields 1776
-		helloworld Methods 42 Fields 1776
-			app Methods 26 Fields 1713
+com Methods 2788 Fields 2622
+	chrisdoyle Methods 43 Fields 1776
+		helloworld Methods 43 Fields 1776
+			app Methods 27 Fields 1713
 	squareup Methods 2745 Fields 846
 		haha Methods 2314 Fields 565
 			guava Methods 1733 Fields 307
@@ -326,8 +326,11 @@ sun Methods 2 Fields 0
 	misc Methods 1 Fields 0
 	nio Methods 1 Fields 0
 		ch Methods 1 Fields 0
-Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.18-bazDebug.apk
-Read in 44267 method IDs and 18596 field IDs
+Processed ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.19-barDebug.apk
+Read in 44268 method IDs and 18596 field IDs
+----------------------------------
+Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.19-bazDebug.apk
+Read in 44268 method IDs and 18596 field IDs
 ----------------------------------
 Package details:
 (default) Methods 1 Fields 0
@@ -427,10 +430,10 @@ android Methods 20122 Fields 8886
 ch Methods 1 Fields 1
 	acra Methods 1 Fields 1
 		acra Methods 1 Fields 1
-com Methods 2787 Fields 2622
-	chrisdoyle Methods 42 Fields 1776
-		helloworld Methods 42 Fields 1776
-			app Methods 26 Fields 1713
+com Methods 2788 Fields 2622
+	chrisdoyle Methods 43 Fields 1776
+		helloworld Methods 43 Fields 1776
+			app Methods 27 Fields 1713
 	squareup Methods 2745 Fields 846
 		haha Methods 2314 Fields 565
 			guava Methods 1733 Fields 307
@@ -654,8 +657,11 @@ sun Methods 2 Fields 0
 	misc Methods 1 Fields 0
 	nio Methods 1 Fields 0
 		ch Methods 1 Fields 0
-Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.18-fooDebug.apk
-Read in 44267 method IDs and 18596 field IDs
+Processed ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.19-bazDebug.apk
+Read in 44268 method IDs and 18596 field IDs
+----------------------------------
+Processing ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.19-fooDebug.apk
+Read in 44268 method IDs and 18596 field IDs
 ----------------------------------
 Package details:
 (default) Methods 1 Fields 0
@@ -755,10 +761,10 @@ android Methods 20122 Fields 8886
 ch Methods 1 Fields 1
 	acra Methods 1 Fields 1
 		acra Methods 1 Fields 1
-com Methods 2787 Fields 2622
-	chrisdoyle Methods 42 Fields 1776
-		helloworld Methods 42 Fields 1776
-			app Methods 26 Fields 1713
+com Methods 2788 Fields 2622
+	chrisdoyle Methods 43 Fields 1776
+		helloworld Methods 43 Fields 1776
+			app Methods 27 Fields 1713
 	squareup Methods 2745 Fields 846
 		haha Methods 2314 Fields 565
 			guava Methods 1733 Fields 307
@@ -982,4 +988,7 @@ sun Methods 2 Fields 0
 	misc Methods 1 Fields 0
 	nio Methods 1 Fields 0
 		ch Methods 1 Fields 0
+Processed ./hello-world-apk/build/outputs/apk/hello-world-apk-1.0.19-fooDebug.apk
+Read in 44268 method IDs and 18596 field IDs
+----------------------------------
 

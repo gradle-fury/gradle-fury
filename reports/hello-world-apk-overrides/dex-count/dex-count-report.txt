@@ -1,4 +1,4 @@
-Processing ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.18-barDebug.apk
+Processing ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.19-barDebug.apk
 Read in 26576 method IDs and 12503 field IDs
 ----------------------------------
 Package details:
@@ -162,7 +162,10 @@ org Methods 5467 Fields 1853
 				constants Methods 0 Fields 18
 	xmlpull Methods 12 Fields 0
 		v1 Methods 12 Fields 0
-Processing ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.18-bazDebug.apk
+Processed ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.19-barDebug.apk
+Read in 26576 method IDs and 12503 field IDs
+----------------------------------
+Processing ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.19-bazDebug.apk
 Read in 26576 method IDs and 12503 field IDs
 ----------------------------------
 Package details:
@@ -326,7 +329,10 @@ org Methods 5467 Fields 1853
 				constants Methods 0 Fields 18
 	xmlpull Methods 12 Fields 0
 		v1 Methods 12 Fields 0
-Processing ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.18-fooDebug.apk
+Processed ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.19-bazDebug.apk
+Read in 26576 method IDs and 12503 field IDs
+----------------------------------
+Processing ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.19-fooDebug.apk
 Read in 26576 method IDs and 12503 field IDs
 ----------------------------------
 Package details:
@@ -490,4 +496,7 @@ org Methods 5467 Fields 1853
 				constants Methods 0 Fields 18
 	xmlpull Methods 12 Fields 0
 		v1 Methods 12 Fields 0
+Processed ./hello-world-apk-overrides/build/outputs/apk/hello-world-apk-overrides-1.0.19-fooDebug.apk
+Read in 26576 method IDs and 12503 field IDs
+----------------------------------
 
