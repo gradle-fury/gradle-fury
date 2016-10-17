@@ -1766,54 +1766,55 @@ task javadocAggregate(type: Javadoc)  {
     }
 
 
-
-    String compileSdk = getProperty("android.compileSdkVersion");
-    String jar=""
-    try {
-        String csdk = compileSdk
-        if (csdk.contains("Google")) {
-            try {
-                csdk = csdk.split(":")[2];
-            } catch (Exception ex) {
+    if (hasProperty("android.compileSdkVersion")) {
+        String compileSdk = getProperty("android.compileSdkVersion");
+        String jar = ""
+        try {
+            String csdk = compileSdk
+            if (csdk.contains("Google")) {
+                try {
+                    csdk = csdk.split(":")[2];
+                } catch (Exception ex) {
+                }
             }
+
+            jar = System.getenv().get("ANDROID_HOME") +
+                    "/platforms/android-" + csdk + "/android.jar"
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
         }
 
-        jar = System.getenv().get("ANDROID_HOME") +
-                "/platforms/android-" + csdk + "/android.jar"
-
-    } catch (Exception ex) {
-        ex.printStackTrace()
-    }
-
-    File j = new File(jar);
-    if (j.exists())
-        classpath+= project.files(j);
+        File j = new File(jar);
+        if (j.exists())
+            classpath += project.files(j);
 
 
-    compileSdk = 'Google Inc.:Google APIs:23';
-    jar=""
-    try {
-        String csdk = compileSdk
-        if (csdk.contains("Google")) {
-            try {
-                csdk = csdk.split(":")[2];
-            } catch (Exception ex) {
+        compileSdk = 'Google Inc.:Google APIs:23';
+        jar = ""
+        try {
+            String csdk = compileSdk
+            if (csdk.contains("Google")) {
+                try {
+                    csdk = csdk.split(":")[2];
+                } catch (Exception ex) {
+                }
             }
+
+            jar = System.getenv().get("ANDROID_HOME") +
+                    "/platforms/android-" + csdk + "/android.jar"
+
+        } catch (Exception ex) {
+            ex.printStackTrace()
         }
 
-        jar = System.getenv().get("ANDROID_HOME") +
-                "/platforms/android-" + csdk + "/android.jar"
-
-    } catch (Exception ex) {
-        ex.printStackTrace()
+        j = new File(jar);
+        if (j.exists()) {
+            classpath += project.files(j);
+        }
     }
 
-    j = new File(jar);
-    if (j.exists()) {
-        classpath += project.files(j);
-    }
-
-    System.out.println("classpath for javadoc is now " + classpath);
+    //System.out.println("classpath for javadoc is now " + classpath);
 
     options.charSet 'UTF-8'
     options.docEncoding 'UTF-8'
