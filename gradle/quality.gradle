@@ -60,11 +60,15 @@ buildscript {
         jcenter()
         mavenCentral()
         mavenLocal()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath 'org.apache.commons:commons-lang3:3.4'
         classpath 'commons-io:commons-io:2.5'
         classpath 'com.github.spyhunter99:dex-method-counts-lib:2.1.1'
+        classpath 'org.owasp:dependency-check-gradle:1.4.3'
     }
 }
 
@@ -152,6 +156,16 @@ ext.javancssEnable = (
 //TODO javancess version 33.54
 //javancss
 
+ext.owaspEnable = (
+        hasProperty('quality.owasp.enable')
+                ? Boolean.parseBoolean(project.property("quality.owasp.enable"))
+                : true
+);
+ext.owaspIgnoreFailures = (
+        hasProperty('quality.owasp.ignoreWarnings')
+                ? Boolean.parseBoolean(project.property("quality.owasp.ignoreWarnings"))
+                : true
+);
 
 
 
@@ -572,6 +586,44 @@ task findbugsAndroid(type: FindBugs) {
 }
 //NOTE to post analysis is necessary, ignore failures does it job and fails the build if something
 //is wrong
+//</editor-fold>
+
+
+
+
+
+
+/*
+####### #     #    #     #####  ######
+#     # #  #  #   # #   #     # #     #
+#     # #  #  #  #   #  #       #     #
+#     # #  #  # #     #  #####  ######
+#     # #  #  # #######       # #
+#     # #  #  # #     # #     # #
+#######  ## ##  #     #  #####  #
+ */
+//OWASP dependency-check is a utility that detects publicly disclosed vulnerabilities in application dependencies.
+//<editor-fold desc="owasp">
+apply plugin: org.owasp.dependencycheck.gradle.DependencyCheck
+dependencyCheck {
+    autoUpdate=project.ext.owaspEnable   //disables everything
+    //cveValidForHours=24
+
+    format='ALL'
+    outputDirectory = buildDir.absolutePath + "/reports/owasp/"
+}
+if (!project.ext.owaspIgnoreFailures){
+    dependencyCheck{
+        failBuildOnCVSS 1
+    }
+}
+afterEvaluate {
+    try {
+        check.dependsOn 'dependencyCheck'
+    } catch (Exception ex) {
+        System.out.println(project.name + ": " + ex.getMessage())
+    }
+}
 //</editor-fold>
 
 

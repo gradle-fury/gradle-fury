@@ -807,7 +807,8 @@ List<ReportsContainer> scanReports(List<String> reports){
                 //i hate that i need to do special handling for everything. f gradle
                 if (test.getName().equalsIgnoreCase("findbugs")
                         || test.getName().equalsIgnoreCase("checkstyle")
-                        || test.getName().equalsIgnoreCase("pmd")){
+                        || test.getName().equalsIgnoreCase("pmd")
+                        || test.getName().equalsIgnoreCase("owasp")){
                     //get all .html files within the folder 'test' and add to the findbugs reports
 
                     File[] buggers = test.listFiles(new FilenameFilter() {

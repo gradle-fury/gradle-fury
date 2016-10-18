@@ -71,6 +71,10 @@ public class SiteTests {
     public void confirmFindbugsReportsExist() throws Exception {
         test("findbugs", "main.html","findbugs.html");
     }
+    @Test
+    public void confirmOWASPReportsExist() throws Exception {
+        test("owasp", "dependency-check-report.html","dependency-check-vulnerability.html");
+    }
 
     @Test
     public void confirmJDependReportsExist() throws Exception {
