@@ -38,6 +38,14 @@ ext.canSign = project.hasProperty('android.signingConfigs.release.storeFile') &&
 
 afterEvaluate { project ->
 
+    if (!rootProject.hasProperty("hackedTooMuchTime")) {
+        rootProject.ext.hackedTooMuchTime= true;
+        println "\n\n========================================================================"
+        println "==> WARNING: Gradle-Fury has moved! Update your build script refs to <=="
+        println "==> https://raw.githubusercontent.com/gradle-fury/gradle-fury/master <=="
+        println "=========================================================================\n\n"
+    }
+
     if (!canSign) {
         if ((isAndroidProject) && !rootProject.hasProperty('noSigningConfigWarningDisplayed')) {
             // only display this error message on the first pass...

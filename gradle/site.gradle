@@ -105,6 +105,17 @@ dependencies {
  */
 task siteInit(group: "Gradle Fury Site Generation",
         description: 'Initializes the site content structure, if needed.' )  << {
+
+
+    if (!rootProject.hasProperty("hackedTooMuchTime")) {
+        rootProject.ext.hackedTooMuchTime= true;
+        println "\n\n========================================================================"
+        println "==> WARNING: Gradle-Fury has moved! Update your build script refs to <=="
+        println "==> https://raw.githubusercontent.com/gradle-fury/gradle-fury/master <=="
+        println "=========================================================================\n\n"
+    }
+
+
     File site = new File (rootDir.absolutePath + "/src/site/");
     boolean doWork=false;
     if (!site.exists()) {
@@ -807,7 +818,8 @@ List<ReportsContainer> scanReports(List<String> reports){
                 //i hate that i need to do special handling for everything. f gradle
                 if (test.getName().equalsIgnoreCase("findbugs")
                         || test.getName().equalsIgnoreCase("checkstyle")
-                        || test.getName().equalsIgnoreCase("pmd")){
+                        || test.getName().equalsIgnoreCase("pmd")
+                        || test.getName().equalsIgnoreCase("owasp")){
                     //get all .html files within the folder 'test' and add to the findbugs reports
 
                     File[] buggers = test.listFiles(new FilenameFilter() {

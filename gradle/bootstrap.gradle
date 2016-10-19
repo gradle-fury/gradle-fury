@@ -13,7 +13,7 @@ import java.nio.file.StandardCopyOption
  *
  *
  * put this in your root gradle.build file
- apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle'
+ apply from 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/encryption.gradle'
  apply from: "${rootDir}/gradle/encryption.gradle"
 
 
@@ -348,7 +348,7 @@ def modifyBuildFile(File buildDotGradle) {
             bw.write(line + "\n");
             if (line.matches(androidRegex)) {
                 if (needsAndroid)
-                    bw.write("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'\n")
+                    bw.write("apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/android-support.gradle'\n")
             }
         }
     } catch (Exception e) {
