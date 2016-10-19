@@ -608,7 +608,7 @@ apply plugin: org.owasp.dependencycheck.gradle.DependencyCheck
 dependencyCheck {
     autoUpdate=project.ext.owaspEnable   //disables everything
     //cveValidForHours=24
-
+    skipConfigurations = ['findbugs','checkstyle','umljavadoc']
     format='ALL'
     outputDirectory = buildDir.absolutePath + "/reports/owasp/"
 }
