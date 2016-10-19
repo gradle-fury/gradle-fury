@@ -260,6 +260,14 @@ void printMOTD(){
 
         println "== Report Gradle Fury issues to: https://github.com/chrisdoyle/gradle-fury/issues, also see the wiki for more info"
         println "\n Building version " + project.version + " of your project...";
+
+        if (!rootProject.hasProperty("hackedTooMuchTime")) {
+            rootProject.ext.hackedTooMuchTime= true;
+            println "\n\n========================================================================"
+            println "==> WARNING: Gradle-Fury has moved! Update your build script refs to <=="
+            println "==> https://raw.githubusercontent.com/gradle-fury/gradle-fury/master <=="
+            println "=========================================================================\n\n"
+        }
     }
 }
 

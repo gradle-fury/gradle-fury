@@ -54,6 +54,14 @@ if (!rootProject.hasProperty('codeQuality')) {
 }
 
 
+if (!rootProject.hasProperty("hackedTooMuchTime")) {
+    rootProject.ext.hackedTooMuchTime= true;
+    println "\n\n========================================================================"
+    println "==> WARNING: Gradle-Fury has moved! Update your build script refs to <=="
+    println "==> https://raw.githubusercontent.com/gradle-fury/gradle-fury/master <=="
+    println "=========================================================================\n\n"
+}
+
 
 buildscript {
     repositories {
