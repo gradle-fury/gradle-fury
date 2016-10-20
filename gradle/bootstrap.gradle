@@ -120,6 +120,13 @@ void pullDownConfig(){
         fos.write(content.getBytes(Charset.defaultCharset()));
         fos.close()
     }
+    file = new File (rootDir.absolutePath + "/config/checkstyle/checkstyle-noframes-sorted.xsl");
+    if (!file.exists()){
+        String content= "https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/config/checkstyle/checkstyle-noframes-sorted.xsl".toURL().getText();
+        FileOutputStream fos = new FileOutputStream( file );
+        fos.write(content.getBytes(Charset.defaultCharset()));
+        fos.close()
+    }
     file = new File (rootDir.absolutePath + "/config/findbugs/findbugs-filter.xml");
     if (!file.exists()){
         String content= "https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/config/findbugs/findbugs-filter.xml".toURL().getText();
