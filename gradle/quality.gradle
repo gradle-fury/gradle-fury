@@ -20,13 +20,19 @@ import java.nio.file.Paths
  * To apply to your project, apply this file under 'allprojects'
  * then copy the files from gradle-fury/config and place it in your project
  *
- * allprojects {*        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
- *}*  then execute with `gradelw build`
+ * allprojects {
+ *         apply from 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/quality.gradle'
+ *}
+ *
+ * then execute with `gradelw build`
  *
  * Since the checks can add a lot of time to your build, you probably want to make it optional...
  *
- * allprojects {*      if (project.hasProperty('profile') && project.profile.split(',').contains("ci")) {*        apply from 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'
- *}*}*
+ * allprojects {
+ *      if (project.hasProperty('profile') && project.profile.split(',').contains("ci")) {
+ *      apply from 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/quality.gradle'
+ *      }
+ * }
  *  then execute with `gradelw build -Pprofile=ci`
  *
  * @since 1.0.10
@@ -53,14 +59,6 @@ if (!rootProject.hasProperty('codeQuality')) {
     println "== Quality plugin active. Hold on to your butts...";
 }
 
-
-if (!rootProject.hasProperty("hackedTooMuchTime")) {
-    rootProject.ext.hackedTooMuchTime= true;
-    println "\n\n========================================================================"
-    println "==> WARNING: Gradle-Fury has moved! Update your build script refs to <=="
-    println "==> https://raw.githubusercontent.com/gradle-fury/gradle-fury/master <=="
-    println "=========================================================================\n\n"
-}
 
 
 buildscript {
