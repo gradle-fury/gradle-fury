@@ -115,35 +115,35 @@ void pullDownConfig(){
     }
     file = new File (rootDir.absolutePath + "/config/checkstyle/checkstyle.xml");
     if (!file.exists()){
-        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/checkstyle/checkstyle.xml".toURL().getText();
+        String content= "https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/config/checkstyle/checkstyle.xml".toURL().getText();
         FileOutputStream fos = new FileOutputStream( file );
         fos.write(content.getBytes(Charset.defaultCharset()));
         fos.close()
     }
     file = new File (rootDir.absolutePath + "/config/findbugs/findbugs-filter.xml");
     if (!file.exists()){
-        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/findbugs/findbugs-filter.xml".toURL().getText();
+        String content= "https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/config/findbugs/findbugs-filter.xml".toURL().getText();
         FileOutputStream fos = new FileOutputStream( file );
         fos.write(content.getBytes(Charset.defaultCharset()));
         fos.close()
     }
     file = new File (rootDir.absolutePath + "/config/javancss/javancss2html.xsl");
     if (!file.exists()){
-        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/javancss/javancss2html.xsl".toURL().getText();
+        String content= "https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/config/javancss/javancss2html.xsl".toURL().getText();
         FileOutputStream fos = new FileOutputStream( file );
         fos.write(content.getBytes(Charset.defaultCharset()));
         fos.close()
     }
     file = new File (rootDir.absolutePath + "/config/jdepend/jdepend-report.xslt");
     if (!file.exists()){
-        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/jdepend/jdepend-report.xslt".toURL().getText();
+        String content= "https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/config/jdepend/jdepend-report.xslt".toURL().getText();
         FileOutputStream fos = new FileOutputStream( file );
         fos.write(content.getBytes(Charset.defaultCharset()));
         fos.close()
     }
     file = new File (rootDir.absolutePath + "/config/pmd/pmd-ruleset.xml");
     if (!file.exists()){
-        String content= "https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/config/pmd/pmd-ruleset.xml".toURL().getText();
+        String content= "https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/config/pmd/pmd-ruleset.xml".toURL().getText();
         FileOutputStream fos = new FileOutputStream( file );
         fos.write(content.getBytes(Charset.defaultCharset()));
         fos.close()
@@ -198,8 +198,8 @@ def String readFile(File file) {
 }
 
 def hasMavenSupport(String content) {
-    //apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'
-    return content.matches("\\s*apply\\s+from\\s*:\\s*['\"]https*:\\/\\/raw\\.githubusercontent\\.com\\/chrisdoyle\\/gradle-fury\\/master\\/gradle\\/maven-support.gradle")
+    //apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/android-support.gradle'
+    return content.matches("\\s*apply\\s+from\\s*:\\s*['\"]https*:\\/\\/raw\\.githubusercontent\\.com\\/gradle-fury\\/gradle-fury\\/master\\/gradle\\/maven-support.gradle")
 }
 
 
@@ -216,10 +216,10 @@ def modifyRootBuildFile(File rootBuildFile) {
 
     boolean needsPomVersion = !contents.contains("project.version");
     boolean needsPomGroupId = !contents.contains("project.group");
-    boolean needsEncryption = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle'")
-    boolean needsMaven = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'")
-    boolean needsSite = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/site.gradle'")
-    boolean needsQuality = !contents.contains("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'")
+    boolean needsEncryption = !contents.contains("apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/encryption.gradle'")
+    boolean needsMaven = !contents.contains("apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/maven-support.gradle'")
+    boolean needsSite = !contents.contains("apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/site.gradle'")
+    boolean needsQuality = !contents.contains("apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/quality.gradle'")
     boolean needsCentral = !contents.contains("mavenCentral()");
 
     //do the mods
@@ -236,7 +236,7 @@ def modifyRootBuildFile(File rootBuildFile) {
                 skipCount--;
                 continue;
             }
-            if (line.contains("https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/bootstrap.gradle")) {     //fixme this is for testing only
+            if (line.contains("https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/bootstrap.gradle")) {     //fixme this is for testing only
                 logger.info("bootstrap removed");
                 continue;       //remove the bootstrap
             }
@@ -265,13 +265,13 @@ def modifyRootBuildFile(File rootBuildFile) {
                 }
                 if (needsMaven) {
                     bw.write("\t//Gradle Fury note: this gives us the publishArtifacts task and all the other features of gradle-fury\n");
-                    bw.write("\tapply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/maven-support.gradle'\n")
+                    bw.write("\tapply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/maven-support.gradle'\n")
                     logger.info("apply from maven injected");
                 }
                 if (needsQuality) {
                     bw.write("\t//Gradle Fury note: this gives us the checkstyle, pmd findbugs and more, run with gradlew install -Pprofile=ci\n");
                     bw.write("\n\tif (project.hasProperty('profile') && project.profile.split(',').contains(\"ci\")) {\n")
-                    bw.write("\t\tapply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/quality.gradle'\n")
+                    bw.write("\t\tapply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/quality.gradle'\n")
                     bw.write("\t}\n\n")
                     logger.info("apply from quality injected");
                 }
@@ -283,13 +283,13 @@ def modifyRootBuildFile(File rootBuildFile) {
             logger.info("apply from enc injected");
             //at the end, add the encryption bit
             bw.write("\n\n//Gradle Fury note: this gives us the generateMasterKey and encryptPassword tasks\n");
-            bw.write("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/encryption.gradle'\n");
+            bw.write("apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/encryption.gradle'\n");
         }
         if (needsSite) {
             logger.info("apply from site injected");
             //at the end, add the encryption bit
             bw.write("\n\n//Gradle Fury note: gradlew site\n");
-            bw.write("apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/site.gradle'\n");
+            bw.write("apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/site.gradle'\n");
         }
     } catch (Exception e) {
         e.printStackTrace()
@@ -333,7 +333,7 @@ def modifyBuildFile(File buildDotGradle) {
         return;
     }
 
-    boolean needsAndroid = !contents.contains("https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle");
+    boolean needsAndroid = !contents.contains("https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/android-support.gradle");
     File temp = new File(buildDotGradle.getAbsolutePath() + ".tmp");
 
     //do the mods

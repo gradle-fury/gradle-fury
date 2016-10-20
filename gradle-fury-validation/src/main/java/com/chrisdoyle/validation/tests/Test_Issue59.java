@@ -21,7 +21,7 @@ public class Test_Issue59 {
 
         //update when #59 is merged
         String[] search = new String[]{
-                "<url>http://chrisdoyle.github.io/gradle-fury/</url>"
+                "<url>http://github.com/gradle-fury/gradle-fury</url>"
         };
 
 

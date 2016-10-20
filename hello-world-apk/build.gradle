@@ -3,7 +3,7 @@ description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Android App
 apply plugin: 'com.android.application'
 
 //Attention Gradle Fury users, use this line for your projects
-//apply from: 'https://raw.githubusercontent.com/chrisdoyle/gradle-fury/master/gradle/android-support.gradle'
+//apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/android-support.gradle'
 
 //the following line is just used within the sample projects
 apply from: "${rootDir}/gradle/android-support.gradle"
