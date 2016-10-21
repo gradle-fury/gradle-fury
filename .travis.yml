@@ -156,8 +156,7 @@ script:
   - cd ..
   - cd GradleBootstrap
   - ./gradlew bootstrap
-  - ./gradlew install -Pprofile=javadocs,sources
-  # FIXME uncomment this when #147 is merged and a version is cut
+  - ./gradlew install -Pprofile=ci
   - ./gradlew site
   #build using maven with integration tests
   #we build 3 times due to issues with the maven-android-plugin. root cause is unknown but seems to be related to how artifacts are resolved for android projects
