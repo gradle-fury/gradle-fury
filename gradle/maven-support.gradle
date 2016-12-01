@@ -1948,21 +1948,22 @@ project.plugins.withType(MavenPublishPlugin) {
 //because distribution only generates and installs a crap pom, this injects our rectified one
 //into maven local
 task installDistZipPom(description: 'Install a correct and valid pom for distribution only modules to maven local',
-group: 'Publishing') << {
-    if (project.isDistribution && !project.isJavaProject){
-        //dist only
-        createPom("$buildDir/distributions/", "pom-default.xml")
-        String groupId = project.group;
-        groupId = groupId.replace(".","/");
-        File target = new File(System.getProperty("user.home") + "/.m2/repository/" + groupId + "/" + project.name + "/" + project.version + "/" + project.name + "-" + project.version + ".pom");
-        //System.out.println("copying from " + buildDir.absolutePath + " " + project.buildDir.absolutePath + "/distributions/" + " to " + t.absolutePath + " ? exists:" + t.exists());
+group: 'Publishing') {
+    doLast {
+        if (project.isDistribution && !project.isJavaProject) {
+            //dist only
+            createPom("$buildDir/distributions/", "pom-default.xml")
+            String groupId = project.group;
+            groupId = groupId.replace(".", "/");
+            File target = new File(System.getProperty("user.home") + "/.m2/repository/" + groupId + "/" + project.name + "/" + project.version + "/" + project.name + "-" + project.version + ".pom");
+            //System.out.println("copying from " + buildDir.absolutePath + " " + project.buildDir.absolutePath + "/distributions/" + " to " + t.absolutePath + " ? exists:" + t.exists());
 
 
-        File srcpom = new File(project.buildDir.absolutePath + "/distributions/pom-default.xml");
-        java.nio.file.Files.copy(srcpom.toPath(), target.toPath(),  StandardCopyOption.REPLACE_EXISTING);
+            File srcpom = new File(project.buildDir.absolutePath + "/distributions/pom-default.xml");
+            java.nio.file.Files.copy(srcpom.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-        //new File(System.getProperty("user.home") + "/.m2/repository/" + groupId + "/" + project.name + "/" + project.version + "/"+ project.name + "-" + project.version + ".pom").delete()
-        /*copy{
+            //new File(System.getProperty("user.home") + "/.m2/repository/" + groupId + "/" + project.name + "/" + project.version + "/"+ project.name + "-" + project.version + ".pom").delete()
+            /*copy{
             //fun fact buildDir vs project.buildDir can be different on multimodule projects!
             from project.buildDir.absolutePath + "/distributions/"
             include 'pom-default.xml'
@@ -1974,6 +1975,7 @@ group: 'Publishing') << {
         }*/
 
 
+        }
     }
 }
 
@@ -2186,40 +2188,42 @@ def isGPGAvailable(){
 task signArtifacts(description: 'Attempts to gpg sign all artifacts to mavenCentral/nexus type repository. Use with\n' +
         '\tgradlew clean\n' +
         '\tgradlew install -Pprofile=sources,javadocs\n' +
-        '\tgradlew signArtifacts -Pprofile=sources,javadocs,sign\n', group:"Gradle Fury Crypto") << {
+        '\tgradlew signArtifacts -Pprofile=sources,javadocs,sign\n', group:"Gradle Fury Crypto") {
 
-    // this line just makes gradle angry, left as a warn for future self
-    // outputs.upToDateWhen { false }
-    logger.info("Attempting to sign artifacts "  + project.ext.artifacts.size());
+    doLast {
+        // this line just makes gradle angry, left as a warn for future self
+        // outputs.upToDateWhen { false }
+        logger.info("Attempting to sign artifacts " + project.ext.artifacts.size());
 
-    Iterator<Container> myiterator = project.ext.artifacts.iterator();
-    while (myiterator.hasNext()){
+        Iterator<Container> myiterator = project.ext.artifacts.iterator();
+        while (myiterator.hasNext()) {
 
-        Container item = myiterator.next();
-        logger.debug(item.fileNameAndPath + " " + item.fileName + " " + item.type);
-        if (item.fileNameAndPath.endsWith(".pom")) {
-            if ("jar".equals(item.type)) {
+            Container item = myiterator.next();
+            logger.debug(item.fileNameAndPath + " " + item.fileName + " " + item.type);
+            if (item.fileNameAndPath.endsWith(".pom")) {
+                if ("jar".equals(item.type)) {
 
-                item.fileNameAndPath = item.buildDir + "/publications/javaArtifacts/pom-default.xml";
+                    item.fileNameAndPath = item.buildDir + "/publications/javaArtifacts/pom-default.xml";
+                }
+                if ("aar".equals(item.type)) {
+
+                    item.fileNameAndPath = item.buildDir + "/publications/androidArtifacts/pom-default.xml";
+                }
+                if ("apk".equals(item.type)) {
+
+                    item.fileNameAndPath = item.buildDir + "/publications/androidArtifacts/pom-default.xml";
+                }
             }
-            if ("aar".equals(item.type)) {
-
-                item.fileNameAndPath = item.buildDir + "/publications/androidArtifacts/pom-default.xml";
-            }
-            if ("apk".equals(item.type)) {
-
-                item.fileNameAndPath = item.buildDir + "/publications/androidArtifacts/pom-default.xml";
-            }
-        }
-        if (isGPGAvailable()) {
-            if (signFile(item.fileNameAndPath)) {
-                logger.info(item.fileNameAndPath + " signed!");
+            if (isGPGAvailable()) {
+                if (signFile(item.fileNameAndPath)) {
+                    logger.info(item.fileNameAndPath + " signed!");
+                } else {
+                    logger.warn("\n\nWARN - failed to sign artifact at " + item.fileNameAndPath + " \n\n");
+                }
             } else {
-                logger.warn("\n\nWARN - failed to sign artifact at " + item.fileNameAndPath + " \n\n");
-            }
-        } else {
-            logger.warn("GPG not available " - item.fileNameAndPath);
+                logger.warn("GPG not available " - item.fileNameAndPath);
 
+            }
         }
     }
 }
@@ -2255,80 +2259,79 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
         '\tgradlew install -Pprofile=sources,javadocs\n' +
         '\tgradlew publishArtifacts -Pprofile=sources,javadocs,sign\n',
         group: "Gradle Fury Publishing"
-        ) << {
+        ) {
 
-
-    if ((project.ext.skipPublish)) {
-        logger.warn("publication of " + project.name + " has been skipped due to configuration");
-        return;
-    }
-    if ("".equalsIgnoreCase(targetRepositoryUrl) || targetRepositoryUrl==null){
-        throw new Exception("Cannot publish without a repository url defined");
-    }
-    if ("".equalsIgnoreCase(project.nexusUsername) || project.nexusUsername==null){
-        throw new Exception("Cannot publish without a repository username");
-    }
-    if ("".equalsIgnoreCase(project.nexusPassword) || project.nexusPassword==null){
-        throw new Exception("Cannot publish without a repository password");
-    }
-
-    Authenticator.setDefault (new Authenticator() {
-        protected PasswordAuthentication getPasswordAuthentication() {
-            return new PasswordAuthentication (project.nexusUsername, project.nexusPassword.toCharArray());
+    doLast {
+        if ((project.ext.skipPublish)) {
+            logger.warn("publication of " + project.name + " has been skipped due to configuration");
+            return;
         }
-    });
-
-
-
-
-
-
-
-    Iterator<Container> myiterator = project.ext.artifacts.iterator();
-    while (myiterator.hasNext()) {
-
-        String groupurl = project.group.replace(".", "/");
-        Container item = myiterator.next();
-        //logger.warn(item.fileNameAndPath + " " + item.fileName + " " + item.type + " " + project.name);
-        File f = new File(item.fileNameAndPath);
-
-        String uploadedFileName = f.getName();
-        //this part is a hack to work around gradle's strange handling of poms
-        if (uploadedFileName.equalsIgnoreCase("pom-default.xml")) {
-            uploadedFileName = project.name + "-" + project.version + ".pom"
+        if ("".equalsIgnoreCase(targetRepositoryUrl) || targetRepositoryUrl == null) {
+            throw new Exception("Cannot publish without a repository url defined");
         }
-        //an artifact was added to the list that is a signature, we'll skip it since we sign everything anyhow
-        if (uploadedFileName.toLowerCase().endsWith(".asc"))
-            continue;
-        uploadedFileName=uploadedFileName.replace("-release","");
-        uploadedFileName=uploadedFileName.replace("Release","");
-
-        //upload the primart artifact
-        if (uploadedFileName.endsWith(".pom"))
-            uploadFile(f,targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName , "text/xml; charset=utf-8");
-        else
-            uploadFile(f,targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName , "application/octet-stream; charset=utf-8");
-
-        if (isGPGAvailable()) {
-            //sign hash and upload
-            signFile(f.absolutePath)
-            uploadFile(new File(f.absolutePath + ".asc"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc", "text/plain; charset=utf-8");
-            generateChecksumForFile(new File(f.absolutePath + ".asc"), 'MD5', 32)
-            generateChecksumForFile(new File(f.absolutePath + ".asc"), 'SHA1', 40)
-            uploadFile(new File(f.absolutePath + ".asc.md5"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".asc.md5", "text/plain; charset=utf-8");
-            uploadFile(new File(f.absolutePath + ".asc.sha1"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".asc.sha1", "text/plain; charset=utf-8");
+        if ("".equalsIgnoreCase(project.nexusUsername) || project.nexusUsername == null) {
+            throw new Exception("Cannot publish without a repository username");
         }
-        //hash the artifact
-        generateChecksumForFile(f, 'MD5', 32)
-        generateChecksumForFile(f, 'SHA1', 40)
+        if ("".equalsIgnoreCase(project.nexusPassword) || project.nexusPassword == null) {
+            throw new Exception("Cannot publish without a repository password");
+        }
 
-        //upload hashes
-        uploadFile(new File(f.absolutePath + ".md5"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".md5", "text/plain; charset=utf-8");
-        uploadFile(new File(f.absolutePath + ".sha1"),targetRepositoryUrl + groupurl + "/" + project.name  + "/" + project.version+ "/" + uploadedFileName +".sha1", "text/plain; charset=utf-8");
+        Authenticator.setDefault(new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(project.nexusUsername, project.nexusPassword.toCharArray());
+            }
+        });
 
+
+
+
+
+
+
+        Iterator<Container> myiterator = project.ext.artifacts.iterator();
+        while (myiterator.hasNext()) {
+
+            String groupurl = project.group.replace(".", "/");
+            Container item = myiterator.next();
+            //logger.warn(item.fileNameAndPath + " " + item.fileName + " " + item.type + " " + project.name);
+            File f = new File(item.fileNameAndPath);
+
+            String uploadedFileName = f.getName();
+            //this part is a hack to work around gradle's strange handling of poms
+            if (uploadedFileName.equalsIgnoreCase("pom-default.xml")) {
+                uploadedFileName = project.name + "-" + project.version + ".pom"
+            }
+            //an artifact was added to the list that is a signature, we'll skip it since we sign everything anyhow
+            if (uploadedFileName.toLowerCase().endsWith(".asc"))
+                continue;
+            uploadedFileName = uploadedFileName.replace("-release", "");
+            uploadedFileName = uploadedFileName.replace("Release", "");
+
+            //upload the primart artifact
+            if (uploadedFileName.endsWith(".pom"))
+                uploadFile(f, targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName, "text/xml; charset=utf-8");
+            else
+                uploadFile(f, targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName, "application/octet-stream; charset=utf-8");
+
+            if (isGPGAvailable()) {
+                //sign hash and upload
+                signFile(f.absolutePath)
+                uploadFile(new File(f.absolutePath + ".asc"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc", "text/plain; charset=utf-8");
+                generateChecksumForFile(new File(f.absolutePath + ".asc"), 'MD5', 32)
+                generateChecksumForFile(new File(f.absolutePath + ".asc"), 'SHA1', 40)
+                uploadFile(new File(f.absolutePath + ".asc.md5"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc.md5", "text/plain; charset=utf-8");
+                uploadFile(new File(f.absolutePath + ".asc.sha1"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc.sha1", "text/plain; charset=utf-8");
+            }
+            //hash the artifact
+            generateChecksumForFile(f, 'MD5', 32)
+            generateChecksumForFile(f, 'SHA1', 40)
+
+            //upload hashes
+            uploadFile(new File(f.absolutePath + ".md5"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".md5", "text/plain; charset=utf-8");
+            uploadFile(new File(f.absolutePath + ".sha1"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".sha1", "text/plain; charset=utf-8");
+
+        }
     }
-
-
 }
 
 /**
