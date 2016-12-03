@@ -2157,6 +2157,11 @@ def dummyOutputStream = new OutputStream() {
 def isGPGAvailable(){
     if (project.ext.pgpSearch)
         return project.ext.pgpAvailable;
+    if (project.hasProperty('gpg.skip')) {
+        logger.warn("GPG NOT found, disabled by command line option -PnonGpgSign");
+        project.ext.pgpAvailable=false;
+        return false;
+    }
     project.ext.pgpSearch=true;
     logger.debug("searching for GPG")
     try {
@@ -2276,6 +2281,7 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
             throw new Exception("Cannot publish without a repository password");
         }
 
+        //TODO one day in the future, this should probably support something other than http basic
         Authenticator.setDefault(new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(project.nexusUsername, project.nexusPassword.toCharArray());
@@ -2333,6 +2339,25 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
         }
     }
 }
+
+
+
+
+task publish(overwrite: true) {
+    //logger.warn("Gradle Fury note, the task 'publish'...has room for improvement, so I'm going to do you a solid and call publishArtifacts instead")
+    doFirst {
+        println "\n\n========================================================="
+        println "==> WARNING: the task 'publish'...has room for        <==\n" +
+                "==> improvement, so I'm going to do you a solid and   <==\n" +
+                "==> call Gradle-Fury's publishArtifacts instead.      <=="
+        println "=========================================================\n\n"
+
+        throw new StopExecutionException("Calling the 'publishArtifacts' task instead...")
+    }
+
+}
+publish.dependsOn publishArtifacts
+
 
 /**
  * uploads a file to the given url

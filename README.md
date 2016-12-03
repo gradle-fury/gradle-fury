@@ -354,8 +354,9 @@ $ ./gradlew publishArtifacts -Pprofile=sources,javadoc
 ## Publishing to Nexus like repos without GPG signatures
 
 ```bash
-$ ./gradlew clean publish -Pprofile=sources,javadoc
+$ ./gradlew clean publishArtifacts -Pprofile=sources,javadoc -Pgpg.skip
 ```
+
 
 
 ## Encryption
