@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.widget.TextView;
 
 /**
- * <img alt="Class diagram around Marker class" width="686" height="413" src='./doc-files/marker-classes.png' />
+ * <img alt="Class diagram around Marker class" width="686" height="413" src='./doc-files/marker-classes.png' >
  */
 public final class BogusUtil {
 

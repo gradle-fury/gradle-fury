@@ -522,6 +522,9 @@ def generateJavadocContent(List<File> javadocs){
     javadocMarkdown.append('## Javadoc\n Here\'s all the Javadocs generate for the project ${site.name}\n\n');
     javadocMarkdown.append("| Module \t| Javadocs \t|\n");
     javadocMarkdown.append("| ------ \t| -------- \t|\n")
+    //https://github.com/gradle-fury/gradle-fury/issues/40
+    //javadocAll/index.html
+    javadocMarkdown.append("| ").append("All Modules").append(" \t| [Javadocs](").append("javadocAll/index.html").append(") \t|\n");
     //String rootdir = ext.buildWebsiteDir;
     for (int i = 0; i < javadocs.size(); i++) {
         File f = javadocs.get(i);
@@ -1125,6 +1128,8 @@ def generateProjectInfo(){
         if (distro){
             type+=" zip "
         }
+
+        //artifact name
         String path = p.path;
         path = path.substring(path.lastIndexOf(":")+1);
 
@@ -1141,11 +1146,17 @@ def generateProjectInfo(){
                 variants = p.android.libraryVariants;
             }
             variants.all { variant ->
-                sb.append(variant.name).append(" ");
+                //replace the release flag, since we strip it in the publishArtifacts task
+                String n = variant.name;
+                n = n.replace("-release", "");    //everything else
+                n = n.replace("Release", ""); //android
+                sb.append(n).append(" ");
             }
         }
 
 
+
+        //this part shows the quick copy and paste menu for the artifacts
         reportsMarkdown.append("<a href=\"javascript:showModal('" + p.group + "','" + path + "','" + p.version + "','" + type + "','" + sb.toString() + "');\">");
         reportsMarkdown.append( StringEscapeUtils.escapeHtml4(path) + "</a> | " + StringEscapeUtils.escapeHtml4(p.version)  );
 
@@ -1160,9 +1171,10 @@ def generateProjectInfo(){
             } else if (p.android.hasProperty('libraryVariants')) {
                 variants = p.android.libraryVariants;
             }
+            //this part renders the readable text on the overview page
             variants.all { variant ->
-
-                reportsMarkdown.append(variant.name).append("<br>");
+                String n = variant.name;
+                reportsMarkdown.append(n).append("<br>");
             }
         }
         reportsMarkdown.append("\n");
