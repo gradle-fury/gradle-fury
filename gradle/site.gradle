@@ -1738,13 +1738,14 @@ task javadocAggregate(type: Javadoc)  {
         if (p.hasProperty("sourceSets")) {
 
             //source sets aren't available at this phase of the build cycle. damnit.
-            source += p.sourceSets.main.allJava
-            source += p.sourceSets.test.allJava
+            source=source.plus(p.sourceSets.main.allJava);
+            source=source.plus(p.sourceSets.test.allJava);
+
             System.out.println(p.sourceSets.main.allJava)
             if (p.plugins.hasPlugin('com.android.library') ||p.plugins.hasPlugin('com.android.application') )
             try {
-                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-                classpath.plus(p.files(variant.javaCompile.classpath.files))
+                classpath << (project.files(android.getBootClasspath().join(File.pathSeparator)))
+                classpath << (p.files(variant.javaCompile.classpath.files))
                 //classpath += p.files(ext.androidJar)
             } catch (Throwable ex) {
                 ex.printStackTrace()
@@ -1752,27 +1753,27 @@ task javadocAggregate(type: Javadoc)  {
         } else {
             FileTree tree = fileTree(dir: p.projectDir.absolutePath + "/src/main/java")
             tree.include '**/*.java'
-            source+=tree;
+            source=source.plus(tree);
 
             tree = fileTree(dir: p.projectDir.absolutePath + "/src/androidTest/java")
             tree.include '**/*.java'
-            source+=tree;
+            source=source.plus(tree);
 
             tree = fileTree(dir: p.projectDir.absolutePath + "/src/test/java")
             tree.include '**/*.java'
-            source+=tree;
+            source=source.plus(tree);
 
             try{
-                classpath += p.configurations.compile
+                classpath << (p.configurations.compile)
             }catch (Exception ex){}
             try{
-                classpath += p.configurations.test
+                classpath << (p.configurations.test)
             }catch (Exception ex){}
             try{
-                classpath += p.configurations.all
+                classpath << (p.configurations.all)
             }catch (Exception ex){}
             try {
-                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+                classpath << (project.files(android.getBootClasspath().join(File.pathSeparator)))
             }catch (Exception ex){}
 
         }
@@ -1803,7 +1804,7 @@ task javadocAggregate(type: Javadoc)  {
 
         File j = new File(jar);
         if (j.exists())
-            classpath += project.files(j);
+            classpath << (project.files(j));
 
 
         compileSdk = 'Google Inc.:Google APIs:23';
@@ -1826,7 +1827,7 @@ task javadocAggregate(type: Javadoc)  {
 
         j = new File(jar);
         if (j.exists()) {
-            classpath += project.files(j);
+            classpath << (project.files(j));
         }
     }
 
