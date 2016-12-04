@@ -104,63 +104,64 @@ dependencies {
  * bootstraps the site, only ran during the first AND /src/site/template.html doesn't exist
  */
 task siteInit(group: "Gradle Fury Site Generation",
-        description: 'Initializes the site content structure, if needed.' )  << {
+        description: 'Initializes the site content structure, if needed.' )  {
 
+    doLast {
 
+        File site = new File(rootDir.absolutePath + "/src/site/");
+        boolean doWork = false;
+        if (!site.exists()) {
+            logger.info(site.absolutePath + " does not exist");
+            //ok work to do
+            site.mkdirs();
+            doWork = true;
+        }
+        //other tasks may have created the dirs already
+        if (!(new File(site.absolutePath + "/template.html").exists())) {
+            logger.info(site.absolutePath + "/template.html" + " does not exist");
+            doWork = true;
+        }
+        if (doWork) {
+            //download the latest and greatest from the gradle-fury templates
+            logger.warn("Gradle Fury Site Plugin is bootstraping...");
+            String file = (project.ext.webBootstrapUrl + "/bootstrap.files").toURL().getText();
+            //split the file on the "#" symbol to get lines
+            String[] lines = file.split("\n");
+            for (int i = 0; i < lines.length; i++) {
+                if (!lines[i].startsWith("#") && lines[i].trim().length() > 0) {
 
-    File site = new File (rootDir.absolutePath + "/src/site/");
-    boolean doWork=false;
-    if (!site.exists()) {
-        logger.info(site.absolutePath + " does not exist");
-        //ok work to do
-        site.mkdirs();
-        doWork=true;
-    }
-    //other tasks may have created the dirs already
-    if (!(new File(site.absolutePath + "/template.html").exists())) {
-        logger.info(site.absolutePath + "/template.html" + " does not exist");
-        doWork = true;
-    }
-    if (doWork) {
-        //download the latest and greatest from the gradle-fury templates
-        logger.warn("Gradle Fury Site Plugin is bootstraping...");
-        String file= (project.ext.webBootstrapUrl +"/bootstrap.files").toURL().getText();
-        //split the file on the "#" symbol to get lines
-        String[] lines = file.split("\n");
-        for (int i=0; i < lines.length; i++){
-            if (!lines[i].startsWith("#") && lines[i].trim().length()>0) {
-
-                String outputRelativeFile = lines[i].trim().replace(project.ext.webBootstrapUrl, "");
-                File outfile = new File(site.absolutePath + "/" + outputRelativeFile);
-                if (!outfile.exists()) {
-                    logger.warn("Downloading " + lines[i].trim());
-                    URL u = new URL(lines[i].trim());
-                    URLConnection connection = u.openConnection()
-                    InputStream input = connection.getInputStream();
-                    byte[] buffer = new byte[4096];
-                    int n = -1;
-                    String path = (site.absolutePath + "/" + outputRelativeFile);
-                    path = path.substring(0, path.lastIndexOf("/"));
-                    new File(path).mkdirs();
-                    OutputStream output = new FileOutputStream(site.absolutePath + "/" + outputRelativeFile);
-                    while ((n = input.read(buffer)) != -1) {
-                        output.write(buffer, 0, n);
+                    String outputRelativeFile = lines[i].trim().replace(project.ext.webBootstrapUrl, "");
+                    File outfile = new File(site.absolutePath + "/" + outputRelativeFile);
+                    if (!outfile.exists()) {
+                        logger.warn("Downloading " + lines[i].trim());
+                        URL u = new URL(lines[i].trim());
+                        URLConnection connection = u.openConnection()
+                        InputStream input = connection.getInputStream();
+                        byte[] buffer = new byte[4096];
+                        int n = -1;
+                        String path = (site.absolutePath + "/" + outputRelativeFile);
+                        path = path.substring(0, path.lastIndexOf("/"));
+                        new File(path).mkdirs();
+                        OutputStream output = new FileOutputStream(site.absolutePath + "/" + outputRelativeFile);
+                        while ((n = input.read(buffer)) != -1) {
+                            output.write(buffer, 0, n);
+                        }
+                        output.close();
+                        input.close();
                     }
-                    output.close();
-                    input.close();
                 }
+
+            }
+            if (!(new File(site.absolutePath + "/index.md").exists())) {
+                String index = '# Welcome to ${site.name}\n\nThis is the home page. Maybe someone will put some useful information here';
+                FileOutputStream fos = new FileOutputStream(site.absolutePath + "/index.md");
+                fos.write(index.getBytes(Charset.defaultCharset()));
+                fos.close()
             }
 
+        } else {
+            logger.info("Skipping bootstrap");
         }
-        if (!(new File(site.absolutePath + "/index.md" ).exists())) {
-            String index = '# Welcome to ${site.name}\n\nThis is the home page. Maybe someone will put some useful information here';
-            FileOutputStream fos = new FileOutputStream(site.absolutePath + "/index.md");
-            fos.write(index.getBytes(Charset.defaultCharset()));
-            fos.close()
-        }
-
-    } else {
-        logger.info("Skipping bootstrap");
     }
 }
 
@@ -168,24 +169,25 @@ task siteInit(group: "Gradle Fury Site Generation",
  * builds the site
  */
 task site(group: "Gradle Fury Site Generation",
-        description: 'Builds the web-site contents.', dependsOn: siteInit )  << {
-    List<File> javadocs = copyJavadocPages(rootDir,true);
+        description: 'Builds the web-site contents.', dependsOn: siteInit )   {
+    doLast {
+        List<File> javadocs = copyJavadocPages(rootDir, true);
 
-    List<File> reportsDocs = copyReports(rootDir,true);
+        List<File> reportsDocs = copyReports(rootDir, true);
 
-    copyUserSiteSrc();
+        copyUserSiteSrc();
 
-    generateNavMenu();
+        generateNavMenu();
 
-    prepareTemplate();
+        prepareTemplate();
 
-    generateCannedContent(javadocs, reportsDocs);
+        generateCannedContent(javadocs, reportsDocs);
 
-    int modifiedFiles = convertContent();
-    logger.info("Site generation complete, altered " + modifiedFiles + " files");
+        int modifiedFiles = convertContent();
+        logger.info("Site generation complete, altered " + modifiedFiles + " files");
 
-    new File(project.ext.buildWebsiteDir + "/template.html").delete();
-
+        new File(project.ext.buildWebsiteDir + "/template.html").delete();
+    }
 }
 
 /**
@@ -219,15 +221,17 @@ void createWebXml() {
  */
 task siteWar(group: "Gradle Fury Site Generation",
         description: 'Builds the web-site as a war file.',
-        dependsOn:[site])  << {
+        dependsOn:[site])  {
 
-    createWebXml();
-    task(zipResources, type: Zip) {
-        destinationDir new File("${rootDir}/build/")
-        archiveName 'site.war'
-        from project.ext.buildWebsiteDir
+    doLast {
+        createWebXml();
+        task(zipResources, type: Zip) {
+            destinationDir new File("${rootDir}/build/")
+            archiveName 'site.war'
+            from project.ext.buildWebsiteDir
 
-    }.execute()
+        }.execute()
+    }
 
 }
 siteWar.dependsOn site
@@ -1452,162 +1456,162 @@ class Dependency{
 }
 
 
-task dependencyReportMd(description: 'Generates a Maven parsable dependency list for the project', group: 'Reporting') << {
-    DependencyReport rpt = new DependencyReport();
-    int modules=1;
+task dependencyReportMd(description: 'Generates a Maven parsable dependency list for the project', group: 'Reporting') {
+    doLast {
+        DependencyReport rpt = new DependencyReport();
+        int modules = 1;
 
 
 
-    project.configurations.each { configuration ->
-        configuration.allDependencies.each { dependency ->
-            if (dependency.group != null && dependency.name != null) {
-                Set<String> t =resolveType(this.project, dependency.name, dependency.version)
-                Dependency d= rpt.get(dependency.group,dependency.name);
-                d.type.addAll(t);
-                d.project.add("root")
-
-                d.version.add(dependency.getVersion());
-            }
-        }
-    }
-
-    buildscript.configurations.all.each { configuration ->
-        configuration.allDependencies.each { dependency ->
-            if (dependency.group != null && dependency.name != null) {
+        project.configurations.each { configuration ->
+            configuration.allDependencies.each { dependency ->
                 if (dependency.group != null && dependency.name != null) {
-                    Set<String> t =resolveType(this.project, dependency.name, dependency.version)
-                    Dependency d= rpt.get(dependency.group,dependency.name);
+                    Set<String> t = resolveType(this.project, dependency.name, dependency.version)
+                    Dependency d = rpt.get(dependency.group, dependency.name);
                     d.type.addAll(t);
-                    d.project.add("root buildscript")
-                    d.version.add(dependency.getVersion());
+                    d.project.add("root")
 
+                    d.version.add(dependency.getVersion());
                 }
             }
         }
-    }
 
-    subprojects.findAll{
-        modules++;
-        it.each {
-            it.configurations.each { configuration ->
-                configuration.allDependencies.each { dependency ->
+        buildscript.configurations.all.each { configuration ->
+            configuration.allDependencies.each { dependency ->
+                if (dependency.group != null && dependency.name != null) {
                     if (dependency.group != null && dependency.name != null) {
-                        Set<String> t =resolveType(it, dependency.name, dependency.version)
-                        Dependency d= rpt.get(dependency.group,dependency.name);
+                        Set<String> t = resolveType(this.project, dependency.name, dependency.version)
+                        Dependency d = rpt.get(dependency.group, dependency.name);
                         d.type.addAll(t);
-                        d.project.add(it.name)
+                        d.project.add("root buildscript")
                         d.version.add(dependency.getVersion());
+
                     }
                 }
             }
         }
-    }
 
-    subprojects.findAll{
-        it.each {
-            it.buildscript.configurations.all.each { configuration ->
-                configuration.allDependencies.each { dependency ->
-                    if (dependency.group != null && dependency.name != null) {
+        subprojects.findAll {
+            modules++;
+            it.each {
+                it.configurations.each { configuration ->
+                    configuration.allDependencies.each { dependency ->
                         if (dependency.group != null && dependency.name != null) {
-                            Set<String> t =resolveType(it, dependency.name, dependency.version)
-                            Dependency d= rpt.get(dependency.group,dependency.name);
+                            Set<String> t = resolveType(it, dependency.name, dependency.version)
+                            Dependency d = rpt.get(dependency.group, dependency.name);
                             d.type.addAll(t);
-                            d.project.add(it.name + " buildscript")
+                            d.project.add(it.name)
                             d.version.add(dependency.getVersion());
                         }
                     }
                 }
             }
         }
-    }
-    //data collected...
 
-    String rootdir2 = project.ext.buildWebsiteDir;
-    new File(rootdir2).mkdirs();
-    //produce the report
-    File outfile = new File(rootdir2 + "/dependencyReport.md");
-    StringBuilder sb = new StringBuilder();
-    sb.append("# Dependency Report (Gradle Style) \n\n" +
-            "This report is useful to analyze your project's dependencies. If you are familiar with Maven's site plugin, this should look familiar " +
-            "(Dependency Convergence Report). In addition, " +
-            "if you want to quickly grab all of this projects dependencies and force them to load and cache for use " +
-            "offline, you should be able to copy and paste the stuff below into an empty gradle.buid file or for a pom.xml.\n\n");
-    sb.append("## Dependency Convergence\n\n");
-
-    sb.append("Dependency Statistics\n\n");
-    int NOC=0;
-    int NOD=0;
-    int NOA=0;
-    int NOS=0;
-    int NOWC=0;
-    for (int i=0; i <rpt.deps.size(); i++){
-        NOD++;
-        def iterator = rpt.deps.get(i).version.iterator();
-        if (rpt.deps.get(i).version.size() > 1)
-            NOC+=rpt.deps.get(i).version.size();
-        while (iterator.hasNext()){
-
-            if (rpt.deps.get(i).type.isEmpty()){
-                NOA++;
-            }
-            else {
-                def iterator2 = rpt.deps.get(i).type.iterator();
-                while (iterator2.hasNext()) {
-                    iterator2.next();
-                    NOA++;  //requires the type classifier
+        subprojects.findAll {
+            it.each {
+                it.buildscript.configurations.all.each { configuration ->
+                    configuration.allDependencies.each { dependency ->
+                        if (dependency.group != null && dependency.name != null) {
+                            if (dependency.group != null && dependency.name != null) {
+                                Set<String> t = resolveType(it, dependency.name, dependency.version)
+                                Dependency d = rpt.get(dependency.group, dependency.name);
+                                d.type.addAll(t);
+                                d.project.add(it.name + " buildscript")
+                                d.version.add(dependency.getVersion());
+                            }
+                        }
+                    }
                 }
             }
-
-            String version = iterator.next();
-            if (version.toLowerCase().contains("-snapshot"))
-                NOS++;
-            if (version.contains("+"))
-                NOWC++;
         }
-    }
+        //data collected...
 
-    int NODNOA = 100;
-    if (NOA > 0)
-        NODNOA = (int)((NOD/NOA) *100);
-    sb.append("|  | |\n")
-    sb.append("| --- | --- |\n")
+        String rootdir2 = project.ext.buildWebsiteDir;
+        new File(rootdir2).mkdirs();
+        //produce the report
+        File outfile = new File(rootdir2 + "/dependencyReport.md");
+        StringBuilder sb = new StringBuilder();
+        sb.append("# Dependency Report (Gradle Style) \n\n" +
+                "This report is useful to analyze your project's dependencies. If you are familiar with Maven's site plugin, this should look familiar " +
+                "(Dependency Convergence Report). In addition, " +
+                "if you want to quickly grab all of this projects dependencies and force them to load and cache for use " +
+                "offline, you should be able to copy and paste the stuff below into an empty gradle.buid file or for a pom.xml.\n\n");
+        sb.append("## Dependency Convergence\n\n");
 
-    sb.append("Modules: | " + modules + "\n");
-    sb.append("Number of dependencies (NOD): | " + NOD + "\n");
-    sb.append("Number of unique artifacts (NOA): | " + NOA + "\n");
-    sb.append("Number of version-conflicting artifacts (NOC): | " + NOC + "\n");
-    sb.append("Number of SNAPSHOT artifacts (NOS): | " + NOS + "\n");
-    sb.append("Number of Wildcard artifacts (NOWC): | " + NOWC + "\n");
-    sb.append("Convergence (NOD/NOA):| " + NODNOA + "%\n");
-    String readyState= "";
-    if (NOS > 0)
-        readyState = "You have SNAPSHOT dependencies.<br>";
-    if (NODNOA < 100){
-        readyState += "You do not have 100 % convergence.";
-    }
-    sb.append("Ready for release (100 % convergence and no SNAPSHOTS):| ");
-    if (readyState.length() > 0)
-        sb.append("**Error**<br>").append(readyState);
-    else sb.append("Ready");
-    sb.append("\n\n");
-    if (NOC>0)
-        logger.warn("WARN - You have " + NOC + " version conflicting artifacts");
-    if (NODNOA<100)
-        logger.warn("WARN - You have " + NODNOA + "% dependency convergence.");
-    if (NOWC>0)
-        logger.warn("WARN - You have " + NOWC + " dependencies with wildcard versions, this will effect the stability of the build.");
+        sb.append("Dependency Statistics\n\n");
+        int NOC = 0;
+        int NOD = 0;
+        int NOA = 0;
+        int NOS = 0;
+        int NOWC = 0;
+        for (int i = 0; i < rpt.deps.size(); i++) {
+            NOD++;
+            def iterator = rpt.deps.get(i).version.iterator();
+            if (rpt.deps.get(i).version.size() > 1)
+                NOC += rpt.deps.get(i).version.size();
+            while (iterator.hasNext()) {
 
-       sb.append("## Gradle Dependencies, composite\n\n" +
-               "This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. " +
-               "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.\n\n````\n\ndependencies {\n");
+                if (rpt.deps.get(i).type.isEmpty()) {
+                    NOA++;
+                } else {
+                    def iterator2 = rpt.deps.get(i).type.iterator();
+                    while (iterator2.hasNext()) {
+                        iterator2.next();
+                        NOA++;  //requires the type classifier
+                    }
+                }
 
-       for (int i=0; i <rpt.deps.size(); i++){
+                String version = iterator.next();
+                if (version.toLowerCase().contains("-snapshot"))
+                    NOS++;
+                if (version.contains("+"))
+                    NOWC++;
+            }
+        }
 
-           def iterator = rpt.deps.get(i).version.iterator();
-           if (rpt.deps.get(i).version.size() > 1)
-               sb.append("\n\n//WARN dependency converage flag! Currently used by the modules: " + rpt.deps.get(i).project + "\n");
-           while (iterator.hasNext()){
-                if (rpt.deps.get(i).type.isEmpty()){
+        int NODNOA = 100;
+        if (NOA > 0)
+            NODNOA = (int) ((NOD / NOA) * 100);
+        sb.append("|  | |\n")
+        sb.append("| --- | --- |\n")
+
+        sb.append("Modules: | " + modules + "\n");
+        sb.append("Number of dependencies (NOD): | " + NOD + "\n");
+        sb.append("Number of unique artifacts (NOA): | " + NOA + "\n");
+        sb.append("Number of version-conflicting artifacts (NOC): | " + NOC + "\n");
+        sb.append("Number of SNAPSHOT artifacts (NOS): | " + NOS + "\n");
+        sb.append("Number of Wildcard artifacts (NOWC): | " + NOWC + "\n");
+        sb.append("Convergence (NOD/NOA):| " + NODNOA + "%\n");
+        String readyState = "";
+        if (NOS > 0)
+            readyState = "You have SNAPSHOT dependencies.<br>";
+        if (NODNOA < 100) {
+            readyState += "You do not have 100 % convergence.";
+        }
+        sb.append("Ready for release (100 % convergence and no SNAPSHOTS):| ");
+        if (readyState.length() > 0)
+            sb.append("**Error**<br>").append(readyState);
+        else sb.append("Ready");
+        sb.append("\n\n");
+        if (NOC > 0)
+            logger.warn("WARN - You have " + NOC + " version conflicting artifacts");
+        if (NODNOA < 100)
+            logger.warn("WARN - You have " + NODNOA + "% dependency convergence.");
+        if (NOWC > 0)
+            logger.warn("WARN - You have " + NOWC + " dependencies with wildcard versions, this will effect the stability of the build.");
+
+        sb.append("## Gradle Dependencies, composite\n\n" +
+                "This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. " +
+                "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.\n\n````\n\ndependencies {\n");
+
+        for (int i = 0; i < rpt.deps.size(); i++) {
+
+            def iterator = rpt.deps.get(i).version.iterator();
+            if (rpt.deps.get(i).version.size() > 1)
+                sb.append("\n\n//WARN dependency converage flag! Currently used by the modules: " + rpt.deps.get(i).project + "\n");
+            while (iterator.hasNext()) {
+                if (rpt.deps.get(i).type.isEmpty()) {
 
                     sb.append('\tcompile: \'');
                     sb.append(rpt.deps.get(i).groupId + ":");
@@ -1626,69 +1630,70 @@ task dependencyReportMd(description: 'Generates a Maven parsable dependency list
                         sb.append("\'\n");
                     }
                 }
-           }
-           if (rpt.deps.get(i).version.size() > 1)
-               sb.append("//END WARN dependency converage flag!\n\n    ")
-       }
-       sb.append('}\n````\n');
+            }
+            if (rpt.deps.get(i).version.size() > 1)
+                sb.append("//END WARN dependency converage flag!\n\n    ")
+        }
+        sb.append('}\n````\n');
 
-          sb.append("## Maven Dependencies, composite\n\n" +
-                  "This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. "+
-                  "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.\n\n````\n\n<dependencies>\n");
+        sb.append("## Maven Dependencies, composite\n\n" +
+                "This is a composite of all dependencies for this project. Useful if you need to go offline and want to force all dependencies to download. " +
+                "Note: the dependencies listed below are all listed as compile, even though they may not actually be compile dependencies. Also missing is classifiers.\n\n````\n\n<dependencies>\n");
 
-          for (int i=0; i <rpt.deps.size(); i++){
+        for (int i = 0; i < rpt.deps.size(); i++) {
 
-              def iterator = rpt.deps.get(i).version.iterator();
-              if (rpt.deps.get(i).version.size() > 1)
-                  sb.append("\n\n<!--WARN dependency converage flag! Currently used by the modules: " + rpt.deps.get(i).project + "-->\n");
-              while (iterator.hasNext()){
-                  if ( rpt.deps.get(i).type.isEmpty()){
-                      sb.append('\t<dependency>\n');
-                      sb.append('\t\t<groupId>' + rpt.deps.get(i).groupId + "</groupId>\n");
-                      sb.append('\t\t<artifactId>' + rpt.deps.get(i).artifactId + "</artifactId>\n");
-                      String version = iterator.next();
-                      //a gradle wildcard
-                      if ("+".equals(version)) {
-                          version = "LATEST"
-                      } else if (version.endsWith(".+")) {
-                          //the version is something.+
-                          version = "[" + version.replace(".+", ",)");
-                      } else if (version.endsWith("+")) {
-                          version = "[" + version.replace("+", ",)");
-                      }
-                      sb.append('\t\t<version>' + version + '</version>\n');
-                      sb.append("\t</dependency>\n");
-                  }else {
-                      def iterator2 = rpt.deps.get(i).type.iterator();
-                      while (iterator2.hasNext()) {
-                          sb.append('\t<dependency>\n');
-                          sb.append('\t\t<groupId>' + rpt.deps.get(i).groupId + "</groupId>\n");
-                          sb.append('\t\t<artifactId>' + rpt.deps.get(i).artifactId + "</artifactId>\n");
-                          String version = iterator.next();
-                          //a gradle wildcard
-                          if ("+".equals(version)) {
-                              version = "LATEST"
-                          } else if (version.endsWith(".+")) {
-                              //the version is something.+
-                              version = "[" + version.replace(".+", ",)");
-                          } else if (version.endsWith("+")) {
-                              version = "[" + version.replace("+", ",)");
-                          }
-                          sb.append('\t\t<version>' + version + '</version>\n');
-                          sb.append("\t\t<type>" + iterator2.next()).append("</type>\n");
-                          sb.append("\t</dependency>\n");
-                      }
+            def iterator = rpt.deps.get(i).version.iterator();
+            if (rpt.deps.get(i).version.size() > 1)
+                sb.append("\n\n<!--WARN dependency converage flag! Currently used by the modules: " + rpt.deps.get(i).project + "-->\n");
+            while (iterator.hasNext()) {
+                if (rpt.deps.get(i).type.isEmpty()) {
+                    sb.append('\t<dependency>\n');
+                    sb.append('\t\t<groupId>' + rpt.deps.get(i).groupId + "</groupId>\n");
+                    sb.append('\t\t<artifactId>' + rpt.deps.get(i).artifactId + "</artifactId>\n");
+                    String version = iterator.next();
+                    //a gradle wildcard
+                    if ("+".equals(version)) {
+                        version = "LATEST"
+                    } else if (version.endsWith(".+")) {
+                        //the version is something.+
+                        version = "[" + version.replace(".+", ",)");
+                    } else if (version.endsWith("+")) {
+                        version = "[" + version.replace("+", ",)");
+                    }
+                    sb.append('\t\t<version>' + version + '</version>\n');
+                    sb.append("\t</dependency>\n");
+                } else {
+                    def iterator2 = rpt.deps.get(i).type.iterator();
+                    while (iterator2.hasNext()) {
+                        sb.append('\t<dependency>\n');
+                        sb.append('\t\t<groupId>' + rpt.deps.get(i).groupId + "</groupId>\n");
+                        sb.append('\t\t<artifactId>' + rpt.deps.get(i).artifactId + "</artifactId>\n");
+                        String version = iterator.next();
+                        //a gradle wildcard
+                        if ("+".equals(version)) {
+                            version = "LATEST"
+                        } else if (version.endsWith(".+")) {
+                            //the version is something.+
+                            version = "[" + version.replace(".+", ",)");
+                        } else if (version.endsWith("+")) {
+                            version = "[" + version.replace("+", ",)");
+                        }
+                        sb.append('\t\t<version>' + version + '</version>\n');
+                        sb.append("\t\t<type>" + iterator2.next()).append("</type>\n");
+                        sb.append("\t</dependency>\n");
+                    }
 
-                  }
-              }
-              if (rpt.deps.get(i).version.size() > 1)
-                  sb.append("<!--END WARN dependency converage flag!-->\n\n    ")
+                }
+            }
+            if (rpt.deps.get(i).version.size() > 1)
+                sb.append("<!--END WARN dependency converage flag!-->\n\n    ")
 
-          }
-    sb.append('</dependencies>\n````\n');
-    FileOutputStream fos = new FileOutputStream(outfile);
-    fos.write((sb.toString()).getBytes());
-    fos.close();
+        }
+        sb.append('</dependencies>\n````\n');
+        FileOutputStream fos = new FileOutputStream(outfile);
+        fos.write((sb.toString()).getBytes());
+        fos.close();
+    }
 
 }
 
