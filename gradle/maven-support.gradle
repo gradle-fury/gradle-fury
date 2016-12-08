@@ -2342,23 +2342,6 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
 
 
 
-
-task publish(overwrite: true) {
-    //logger.warn("Gradle Fury note, the task 'publish'...has room for improvement, so I'm going to do you a solid and call publishArtifacts instead")
-    doFirst {
-        println "\n\n========================================================="
-        println "==> WARNING: the task 'publish'...has room for        <==\n" +
-                "==> improvement, so I'm going to do you a solid and   <==\n" +
-                "==> call Gradle-Fury's publishArtifacts instead.      <=="
-        println "=========================================================\n\n"
-
-        throw new StopExecutionException("Calling the 'publishArtifacts' task instead...")
-    }
-
-}
-publish.dependsOn publishArtifacts
-
-
 /**
  * uploads a file to the given url
  * borrowed from <a href="http://stackoverflow.com/questions/11420971/send-a-file-with-a-put-request-using-a-httpurlconnection">here</a>
