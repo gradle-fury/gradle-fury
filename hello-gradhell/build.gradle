@@ -9,7 +9,7 @@ compileJava {
 
 dependencies {
     compile "org.apache.commons:commons-lang3:${project.property('commons-lang3.version')}"
-
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.0.1'
     testCompile "junit:junit:${project.property('junit.version')}"
 }
 

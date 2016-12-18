@@ -518,12 +518,16 @@ def generateTeamList(){
 
 def generateJavadocContent(List<File> javadocs){
 
+    System.out.println("preparing javadocs");
     PrintWriter out;
     String rootdir = ext.buildWebsiteDir;
+    String rootdir2 = rootdir.replace('\\',"/");
+    System.out.println(rootdir2);
+    //System.out.println(rootdir2);
     //java docs
     StringBuilder javadocMarkdown = new StringBuilder();
 
-    javadocMarkdown.append('## Javadoc\n Here\'s all the Javadocs generate for the project ${site.name}\n\n');
+    javadocMarkdown.append('## Javadoc\n Here\'s all the Javadocs generated for the project ${site.name}\n\n');
     javadocMarkdown.append("| Module \t| Javadocs \t|\n");
     javadocMarkdown.append("| ------ \t| -------- \t|\n")
     //https://github.com/gradle-fury/gradle-fury/issues/40
@@ -532,8 +536,13 @@ def generateJavadocContent(List<File> javadocs){
     //String rootdir = ext.buildWebsiteDir;
     for (int i = 0; i < javadocs.size(); i++) {
         File f = javadocs.get(i);
+        System.out.println(rootdir2);
         if (new File(f.getAbsolutePath() + File.separator + "index.html").exists()) {
             String subpath = f.getAbsolutePath().replace(rootdir, "");
+
+            subpath = subpath.replace("\\", "/");
+            subpath = subpath.replace(rootdir2, "");
+            System.out.println("subpath " + subpath);
             javadocMarkdown.append("| ").append(f.getName()).append(" \t| [Javadocs](").append(subpath + "/index.html").append(") \t|\n");
         } else {
             //we have variants to deal with
@@ -543,6 +552,9 @@ def generateJavadocContent(List<File> javadocs){
                     File variant = variants[k];
                     if (new File(variant.getAbsolutePath() + File.separator+ "index.html").exists()) {
                         String subpath = variant.getAbsolutePath().replace(rootdir, "");
+                        subpath = subpath.replace("\\", "/");
+                        subpath = subpath.replace(rootdir2, "");
+                        System.out.println("subpath " + subpath);
                         javadocMarkdown.append("| ").append(f.getName()).append(" \t| [").append(variant.getName()).append("](").append(subpath+ File.separator +"index.html").append(") \t |\n");
                     }
                 }
@@ -550,7 +562,7 @@ def generateJavadocContent(List<File> javadocs){
         }
     }
     javadocMarkdown.append("\n\n");
-    out = new PrintWriter(rootdir + File.separator +"javadoc.md");
+    out = new PrintWriter(rootdir2 + File.separator +"javadoc.md");
     out.println(javadocMarkdown.toString());
     out.close()
 }
@@ -643,10 +655,48 @@ class ReportsContainer{
             processGradleTestResult(file, link);
         } else if ("pmd".equalsIgnoreCase(reportType)){
             processPmdReport(file, link);
+        } else if ("owaps".equalsIgnoreCase(reportType)){
+            processOwasp(file, link);
         }
         //FIXME dex-count reports
     }
 
+    private void processOwasp(String file, Link link){
+        if (file.contains("dependency-check-report.html")){
+
+        }
+        /*String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
+        Document doc = Jsoup.parse(contents);
+        //find the Summary h3, next (2nd in doc) table, second row, second column is errors
+
+        for (Element table : doc.select("table")) {
+            int count2=0;
+            for (Element tr : table.select("tr")){
+                count2++;
+                if (count2==2 || count2==3){     //high priority items
+                    int count3=0;
+                    for (Element td : tr.select("td")){
+                        count3++;
+                        if (count3==2){
+                            String errors = td.text();
+                            if (errors==null || errors.trim().length()==0)
+                                continue;
+                            if (count2==2) {
+                                System.out.println("Error count: " + errors);
+                                link.errors += Integer.parseInt(errors.trim());
+                            } else if (count2==3) {
+                                System.out.println("Warnings count: " + errors);
+                                link.warnings += Integer.parseInt(errors.trim());
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+        }*/
+        //FIXME
+
+    }
 
     private void processAndroidLint(String file, Link link){
         String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
