@@ -187,6 +187,13 @@ public class Main {
             "./hello-world-dist/build/distributions/hello-world-dist-$version.zip" ,
             "./hello-world-dist/build/distributions/pom-default.xml" ,
 
+
+            "./hello-world-kotlin/build/libs/hello-world-kotlin-$version.jar" ,
+            "./hello-world-kotlin/build/libs/hello-world-kotlin-$version-sources.jar" ,
+            "./hello-world-kotlin/build/libs/hello-world-kotlin-$version-javadoc.jar" ,
+            "./hello-world-kotlin/build/publications/javaArtifacts/pom-default.xml" ,
+
+
     };
 
     /**
@@ -251,7 +258,12 @@ public class Main {
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug.apk",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug-sources.jar",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug-javadoc.jar",
-            "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version.pom"
+            "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version.pom",
+
+            "~/.m2/repository/com/chrisdoyle/hello-world-kotlin/$version/hello-world-kotlin-$version.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-world-kotlin/$version/hello-world-kotlin-$version-sources.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-world-kotlin/$version/hello-world-kotlin-$version-javadoc.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-world-kotlin/$version/hello-world-kotlin-$version.pom",
 
     };
 
@@ -271,6 +283,7 @@ public class Main {
             "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-app/$version/hello-world-app-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-dist/$version/hello-world-dist-$version.pom",
+            "~/.m2/repository/com/chrisdoyle/hello-world-kotlin/$version/hello-world-kotlin-$version.pom",
 
     };
 
@@ -311,6 +324,8 @@ public class Main {
 
         //this part does some basic string replacements for home dir, versioning etc
         String homeDir = System.getProperty("user.home");
+        homeDir=homeDir.replace("\\","/");  //stupid windows!
+        System.out.println("Homedir is " + homeDir);
         for (int i=0; i < allArtifacts.length; i++){
             allArtifacts[i] = allArtifacts[i].replaceAll(VERSION, version);
             allArtifacts[i] = allArtifacts[i].replaceAll( "~", homeDir);

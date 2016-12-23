@@ -1,4 +1,6 @@
 buildscript {
+
+	ext.kotlin_version = '1.0.5-2'	//only used for the test cases, not a gradle-fury dependency
     repositories {
         jcenter()
         mavenCentral()
@@ -7,7 +9,12 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:${project.property('android-plugin.version')}"
+		
+		//only used for the test cases, not a gradle-fury dependency
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
+	
+       
 }
 
 allprojects  {
