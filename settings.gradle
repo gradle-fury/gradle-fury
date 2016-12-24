@@ -23,6 +23,7 @@ include ':hello-world-apk-overrides'
 
 //wars
 include ':hello-world-war'
+include ':hello-world-warDistAppJar'
 
 //test and validation jar app
 include ':gradle-fury-validation'

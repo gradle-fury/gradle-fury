@@ -1,0 +1,20 @@
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Java Web Application (WAR) and Jar, and DistZip'
+
+apply plugin: 'java'
+apply plugin: 'distribution'
+apply plugin: 'application'
+apply plugin: 'maven'
+apply plugin: 'war'
+
+mainClassName='com.chrisdoyle.helloworld.war.I18NHelper'
+
+compileJava {
+    sourceCompatibility = "${project.property('compileJava.sourceCompatibility')}"
+    targetCompatibility = "${project.property('compileJava.targetCompatibility')}"
+}
+
+dependencies {
+    compile "org.apache.commons:commons-lang3:${project.property('commons-lang3.version')}"
+    compile project(':hello-world-lib')
+    testCompile "junit:junit:${project.property('junit.version')}"
+}

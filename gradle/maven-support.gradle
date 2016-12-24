@@ -1575,7 +1575,8 @@ project.plugins.withType(MavenPublishPlugin) {
 
                         }
 
-                        if (project.javadocProfileEnabled) {
+                        if (project.javadocProfileEnabled && !project.hasProperty("javadocsAddedAlready")) {
+                            project.ext.set("javadocsAddedAlready",true);
                             javadocArtifacts(MavenPublication) {
                                 from components.java
 
@@ -1600,7 +1601,8 @@ project.plugins.withType(MavenPublishPlugin) {
                             }
                         }
 
-                        if (project.sourcesProfileEnabled) {
+                        if (project.sourcesProfileEnabled && !project.hasProperty("sourcesAddedAlready")) {
+                            project.ext.set("sourcesAddedAlready",true);
                             sourceJarArtifacts(MavenPublication) {
                                 from components.java
 
@@ -1666,7 +1668,8 @@ project.plugins.withType(MavenPublishPlugin) {
 
 
                         }
-                        if (project.javadocProfileEnabled) {
+                        if (project.javadocProfileEnabled && !project.hasProperty("javadocsAddedAlready")) {
+                            project.ext.set("javadocsAddedAlready",true);
                             javadocArtifacts(MavenPublication) {
                                 from components.web
 
@@ -1691,7 +1694,8 @@ project.plugins.withType(MavenPublishPlugin) {
                             }
                         }
 
-                        if (project.sourcesProfileEnabled) {
+                        if (project.sourcesProfileEnabled && !project.hasProperty("sourcesAddedAlready")) {
+                            project.ext.set("sourcesAddedAlready",true);
                             sourceJarArtifacts(MavenPublication) {
                                 from components.web
 
@@ -1755,7 +1759,8 @@ project.plugins.withType(MavenPublishPlugin) {
 
                         }
 
-                        if (project.javadocProfileEnabled) {
+                        if (project.javadocProfileEnabled && !project.hasProperty("javadocsAddedAlready")) {
+                            project.ext.set("javadocsAddedAlready",true);
                             javadocArtifacts(MavenPublication) {
                                 from components.java
 
@@ -1780,7 +1785,8 @@ project.plugins.withType(MavenPublishPlugin) {
                             }
                         }
 
-                        if (project.sourcesProfileEnabled) {
+                        if (project.sourcesProfileEnabled && !project.hasProperty("sourcesAddedAlready")) {
+                            project.ext.set("sourcesAddedAlready",true);
                             sourceJarArtifacts(MavenPublication) {
                                 from components.java
 

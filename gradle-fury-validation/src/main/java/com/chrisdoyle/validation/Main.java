@@ -177,6 +177,12 @@ public class Main {
             "./hello-world-war/build/libs/hello-world-war-$version-sources.jar" ,
             "./hello-world-war/build/publications/webApp/pom-default.xml" ,
 
+            "./hello-world-warDistAppJar/build/libs/hello-world-warDistAppJar-$version.war" ,
+            "./hello-world-warDistAppJar/build/distributions/hello-world-warDistAppJar-$version.zip" ,
+            "./hello-world-warDistAppJar/build/libs/hello-world-warDistAppJar-$version-javadoc.jar" ,
+            "./hello-world-warDistAppJar/build/libs/hello-world-warDistAppJar-$version-sources.jar" ,
+            "./hello-world-warDistAppJar/build/publications/webApp/pom-default.xml" ,
+
 
             "./hello-world-app/build/libs/hello-world-app-$version.jar" ,
             "./hello-world-app/build/libs/hello-world-app-$version-sources.jar" ,
@@ -251,7 +257,16 @@ public class Main {
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug.apk",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug-sources.jar",
             "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version-fooDebug-javadoc.jar",
-            "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version.pom"
+            "~/.m2/repository/com/chrisdoyle/hello-world-apk-overrides/$version/hello-world-apk-overrides-$version.pom",
+
+
+
+            "~/.m2/repository/com/chrisdoyle/hello-world-warDistAppJar/$version/hello-world-warDistAppJar-$version.pom",
+            "~/.m2/repository/com/chrisdoyle/hello-world-warDistAppJar/$version/hello-world-warDistAppJar-$version.war",
+            "~/.m2/repository/com/chrisdoyle/hello-world-warDistAppJar/$version/hello-world-warDistAppJar-$version.zip",
+            "~/.m2/repository/com/chrisdoyle/hello-world-warDistAppJar/$version/hello-world-warDistAppJar-$version-sources.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-world-warDistAppJar/$version/hello-world-warDistAppJar-$version-javadoc.jar",
+            "~/.m2/repository/com/chrisdoyle/hello-world-warDistAppJar/$version/hello-world-warDistAppJar-$version.pom",
 
     };
 
@@ -271,6 +286,7 @@ public class Main {
             "~/.m2/repository/com/chrisdoyle/hello-world-war/$version/hello-world-war-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-app/$version/hello-world-app-$version.pom",
             "~/.m2/repository/com/chrisdoyle/hello-world-dist/$version/hello-world-dist-$version.pom",
+            "~/.m2/repository/com/chrisdoyle/hello-world-warDistAppJar/$version/hello-world-warDistAppJar-$version.pom",
 
     };
 
@@ -311,6 +327,7 @@ public class Main {
 
         //this part does some basic string replacements for home dir, versioning etc
         String homeDir = System.getProperty("user.home");
+        homeDir = homeDir.replace("\\","/");
         for (int i=0; i < allArtifacts.length; i++){
             allArtifacts[i] = allArtifacts[i].replaceAll(VERSION, version);
             allArtifacts[i] = allArtifacts[i].replaceAll( "~", homeDir);
