@@ -422,7 +422,7 @@ afterEvaluate { project ->
     printMOTD();
 
 
-    project.ext.isJavaProject = project.plugins.hasPlugin('java');
+    project.ext.isJavaProject = project.plugins.hasPlugin('java') || project.plugins.hasPlugin('kotlin');
     project.ext.isDistribution = project.plugins.hasPlugin('distribution') ||project.plugins.hasPlugin('application');
     project.ext.isWarProject = project.plugins.hasPlugin('war');
 
