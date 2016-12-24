@@ -2268,7 +2268,7 @@ def generateChecksumForFile(File file, String algorithm, int length) {
 task publishArtifacts( description: 'Attempts to publish all artifacts to mavenCentral/nexus type repository. Use with\n' +
         '\tgradlew clean\n' +
         '\tgradlew install -Pprofile=sources,javadocs\n' +
-        '\tgradlew publishArtifacts -Pprofile=sources,javadocs,sign\n',
+        '\tgradlew publishArtifacts -Pprofile=sources,javadocs\n',
         group: "Gradle Fury Publishing"
         ) {
 
@@ -2296,11 +2296,25 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
 
 
 
+        //filter out duplicate poms
+        LinkedList<Container> finalSet = new LinkedList<>();
+
+        Set<String> arts = new HashSet<>();
+        LinkedList<Container> c = project.ext.artifacts;
+        Iterator<Container> myiterator = c.iterator();
+        while (myiterator.hasNext()) {
+            Container item = myiterator.next();
+            if (!arts.contains(item.fileNameAndPath)) {
+                finalSet.add(item);
+                arts.add(item.fileNameAndPath);
+            }
+        }
+
+        //end filter out duplicate poms
 
 
 
-
-        Iterator<Container> myiterator = project.ext.artifacts.iterator();
+        myiterator = finalSet.iterator();
         while (myiterator.hasNext()) {
 
             String groupurl = project.group.replace(".", "/");
