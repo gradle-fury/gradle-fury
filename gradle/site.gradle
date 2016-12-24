@@ -655,46 +655,34 @@ class ReportsContainer{
             processGradleTestResult(file, link);
         } else if ("pmd".equalsIgnoreCase(reportType)){
             processPmdReport(file, link);
-        } else if ("owaps".equalsIgnoreCase(reportType)){
+        } else if ("owasp".equalsIgnoreCase(reportType)){
             processOwasp(file, link);
         }
         //FIXME dex-count reports
     }
 
     private void processOwasp(String file, Link link){
-        if (file.contains("dependency-check-report.html")){
+        if (file.contains("dependency-check-vulnerability.html")){
 
-        }
-        /*String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
-        Document doc = Jsoup.parse(contents);
-        //find the Summary h3, next (2nd in doc) table, second row, second column is errors
-
-        for (Element table : doc.select("table")) {
-            int count2=0;
-            for (Element tr : table.select("tr")){
-                count2++;
-                if (count2==2 || count2==3){     //high priority items
-                    int count3=0;
-                    for (Element td : tr.select("td")){
-                        count3++;
-                        if (count3==2){
-                            String errors = td.text();
-                            if (errors==null || errors.trim().length()==0)
-                                continue;
-                            if (count2==2) {
-                                System.out.println("Error count: " + errors);
-                                link.errors += Integer.parseInt(errors.trim());
-                            } else if (count2==3) {
-                                System.out.println("Warnings count: " + errors);
-                                link.warnings += Integer.parseInt(errors.trim());
-                            }
-                        }
+            String contents = readFile(file, java.nio.charset.Charset.defaultCharset());
+            Document doc = Jsoup.parse(contents);
+            //find the Summary h3, next (2nd in doc) table, second row, second column is errors
+            boolean found=false;
+            for (Element table : doc.select("span#volnCount")) {
+                String txt=table.text();
+                System.out.println("WARN count detected as " + txt)
+                if (txt!=null) {
+                    txt=txt.trim();
+                    if (txt.length() > 0) {
+                        link.errors += Integer.parseInt(txt);
+                        found=true;
                     }
                 }
             }
-            break;
-        }*/
-        //FIXME
+            if (!found) {
+                System.out.println("WARN could not find volnCount element!");
+            }
+        }
 
     }
 
