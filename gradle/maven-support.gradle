@@ -2304,9 +2304,11 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
         Iterator<Container> myiterator = c.iterator();
         while (myiterator.hasNext()) {
             Container item = myiterator.next();
-            if (!arts.contains(item.fileNameAndPath)) {
+            if (!arts.contains(item.fileName)) {
                 finalSet.add(item);
-                arts.add(item.fileNameAndPath);
+                arts.add(item.fileName);
+            } else {
+                logger.info("skipping " + item.fileNameAndPath);
             }
         }
 
@@ -2314,7 +2316,7 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
 
 
 
-        myiterator = finalSet.iterator();
+        myiterator = finalSet   .iterator();
         while (myiterator.hasNext()) {
 
             String groupurl = project.group.replace(".", "/");
@@ -2405,7 +2407,6 @@ def uploadFile(File input, String urlDestination, String contentType){
         logger.debug("Wrote " + totalBytesRead + " bytes of " + input.length() + ", ratio: " + (double) totalBytesRead / (double) input.length());
 
         if (connection.getResponseCode() < 200 || connection.getResponseCode() >= 300) {
-            printError();
             throw new Exception("unexcepted response code. Published failed. " + connection.getResponseCode() + ": " + connection.getResponseMessage())
         }
     }catch (Exception ex){
