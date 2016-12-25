@@ -2304,11 +2304,17 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
         Iterator<Container> myiterator = c.iterator();
         while (myiterator.hasNext()) {
             Container item = myiterator.next();
-            if (!arts.contains(item.fileName)) {
+            logger.debug("prepare " + item.fileNameAndPath + " " + item.fileName);
+            if (item.fileNameAndPath.contains("pom-default.xml") && !arts.contains("pom-default.xml")){
                 finalSet.add(item);
-                arts.add(item.fileName);
+                arts.add("pom-default.xml");
+                logger.debug("added1" + item.fileNameAndPath);
+            } else if (!item.fileNameAndPath.contains("pom-default.xml") ) {
+                finalSet.add(item);
+                arts.add(item.fileNameAndPath);
+                logger.debug("added2" + item.fileNameAndPath);
             } else {
-                logger.info("skipping " + item.fileNameAndPath);
+                logger.debug("skipping " + item.fileNameAndPath);
             }
         }
 
