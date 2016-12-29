@@ -2304,17 +2304,17 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
         Iterator<Container> myiterator = c.iterator();
         while (myiterator.hasNext()) {
             Container item = myiterator.next();
-            logger.debug("prepare " + item.fileNameAndPath + " " + item.fileName);
+            logger.warn("prepare " + item.fileNameAndPath + " " + item.fileName);
             if (item.fileNameAndPath.contains("pom-default.xml") && !arts.contains("pom-default.xml")){
                 finalSet.add(item);
                 arts.add("pom-default.xml");
-                logger.debug("added1" + item.fileNameAndPath);
+                logger.warn("added1" + item.fileNameAndPath);
             } else if (!item.fileNameAndPath.contains("pom-default.xml") ) {
                 finalSet.add(item);
                 arts.add(item.fileNameAndPath);
-                logger.debug("added2" + item.fileNameAndPath);
+                logger.warn("added2" + item.fileNameAndPath);
             } else {
-                logger.debug("skipping " + item.fileNameAndPath);
+                logger.warn("skipping " + item.fileNameAndPath);
             }
         }
 
@@ -2340,29 +2340,40 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
                 continue;
             uploadedFileName = uploadedFileName.replace("-release", "");
             uploadedFileName = uploadedFileName.replace("Release", "");
-
+            boolean uploadSuccessful = false;
             //upload the primart artifact
-            if (uploadedFileName.endsWith(".pom"))
-                uploadFile(f, targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName, "text/xml; charset=utf-8");
-            else
-                uploadFile(f, targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName, "application/octet-stream; charset=utf-8");
-
-            if (isGPGAvailable()) {
-                //sign hash and upload
-                signFile(f.absolutePath)
-                uploadFile(new File(f.absolutePath + ".asc"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc", "text/plain; charset=utf-8");
-                generateChecksumForFile(new File(f.absolutePath + ".asc"), 'MD5', 32)
-                generateChecksumForFile(new File(f.absolutePath + ".asc"), 'SHA1', 40)
-                uploadFile(new File(f.absolutePath + ".asc.md5"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc.md5", "text/plain; charset=utf-8");
-                uploadFile(new File(f.absolutePath + ".asc.sha1"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc.sha1", "text/plain; charset=utf-8");
+            if (uploadedFileName.endsWith(".pom")) {
+                try {
+                    uploadFile(f, targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName, "text/xml; charset=utf-8");
+                    uploadSuccessful=true
+                } catch (Exception ex) {
+                    //total hack job for when you have a module that produces a war and a jar and a distzip
+                    ex.printStackTrace();
+                }
             }
-            //hash the artifact
-            generateChecksumForFile(f, 'MD5', 32)
-            generateChecksumForFile(f, 'SHA1', 40)
+            else {
+                uploadFile(f, targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName, "application/octet-stream; charset=utf-8");
+                uploadSuccessful=true;
+            }
 
-            //upload hashes
-            uploadFile(new File(f.absolutePath + ".md5"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".md5", "text/plain; charset=utf-8");
-            uploadFile(new File(f.absolutePath + ".sha1"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".sha1", "text/plain; charset=utf-8");
+            if (uploadSuccessful) {
+                if (isGPGAvailable()) {
+                    //sign hash and upload
+                    signFile(f.absolutePath)
+                    uploadFile(new File(f.absolutePath + ".asc"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc", "text/plain; charset=utf-8");
+                    generateChecksumForFile(new File(f.absolutePath + ".asc"), 'MD5', 32)
+                    generateChecksumForFile(new File(f.absolutePath + ".asc"), 'SHA1', 40)
+                    uploadFile(new File(f.absolutePath + ".asc.md5"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc.md5", "text/plain; charset=utf-8");
+                    uploadFile(new File(f.absolutePath + ".asc.sha1"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".asc.sha1", "text/plain; charset=utf-8");
+                }
+                //hash the artifact
+                generateChecksumForFile(f, 'MD5', 32)
+                generateChecksumForFile(f, 'SHA1', 40)
+
+                //upload hashes
+                uploadFile(new File(f.absolutePath + ".md5"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".md5", "text/plain; charset=utf-8");
+                uploadFile(new File(f.absolutePath + ".sha1"), targetRepositoryUrl + groupurl + "/" + project.name + "/" + project.version + "/" + uploadedFileName + ".sha1", "text/plain; charset=utf-8");
+            }
 
         }
     }
