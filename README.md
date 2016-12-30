@@ -18,14 +18,8 @@ the maven site plugin.
 Why use Gradle-Fury
 -------------------
 
-Great question, with a sea of many maven publisher helpers (this along should raise a red flag that
-something is wrong) what stands gradle-fury apart?
-
-Check out [the wiki](https://github.com/gradle-fury/gradle-fury/wiki) for the most update to date set
-of features. It's always growing and it's easier to update the wiki.
-
-
-This notice will be removed/updated once the remaining versions are fixed
+Great question, with a sea of many maven publisher helpers (this alone should raise a red flag that
+something is wrong) what stands gradle-fury apart? Check out our [Why would you want to use Gradle Fury? wiki page](https://github.com/gradle-fury/gradle-fury/wiki) for the most update to date set of features which is always growing.
 
 Build Status
 ------------
@@ -455,7 +449,7 @@ Then execute with `gradelw build -Pprofile=ci`
 
 ## Maven Site Plugin
 
-### [Here's what it looks like][http://gradle-fury.github.io/gradle-fury]
+### [Here's what it looks like](http://gradle-fury.github.io/gradle-fury)
 
 Well it's not exactly the Maven Site Plugin, but it's our version of it. It's pretty darn close.
 It uses theming inspired by [Apache Fluido](http://maven.apache.org/skins/maven-fluido-skin/) and is loosely based
