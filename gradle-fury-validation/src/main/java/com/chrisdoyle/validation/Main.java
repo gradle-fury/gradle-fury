@@ -181,7 +181,7 @@ public class Main {
             "./hello-world-warDistAppJar/build/distributions/hello-world-warDistAppJar-$version.zip" ,
             "./hello-world-warDistAppJar/build/libs/hello-world-warDistAppJar-$version-javadoc.jar" ,
             "./hello-world-warDistAppJar/build/libs/hello-world-warDistAppJar-$version-sources.jar" ,
-            "./hello-world-warDistAppJar/build/javaArtifacts/pom-default.xml" ,
+            "./hello-world-warDistAppJar/build/publications/javaArtifacts/pom-default.xml" ,
 
 
             "./hello-world-app/build/libs/hello-world-app-$version.jar" ,
