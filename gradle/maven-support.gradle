@@ -2304,17 +2304,17 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
         Iterator<Container> myiterator = c.iterator();
         while (myiterator.hasNext()) {
             Container item = myiterator.next();
-            logger.warn("prepare " + item.fileNameAndPath + " " + item.fileName);
+            logger.debug("prepare " + item.fileNameAndPath + " " + item.fileName);
             if (item.fileNameAndPath.contains("pom-default.xml") && !arts.contains("pom-default.xml")){
                 finalSet.add(item);
                 arts.add("pom-default.xml");
-                logger.warn("added1" + item.fileNameAndPath);
+                logger.debug("added1" + item.fileNameAndPath);
             } else if (!item.fileNameAndPath.contains("pom-default.xml") ) {
                 finalSet.add(item);
                 arts.add(item.fileNameAndPath);
-                logger.warn("added2" + item.fileNameAndPath);
+                logger.debug("added2" + item.fileNameAndPath);
             } else {
-                logger.warn("skipping " + item.fileNameAndPath);
+                logger.debug("skipping (duplicate)" + item.fileNameAndPath);
             }
         }
 
@@ -2348,7 +2348,8 @@ task publishArtifacts( description: 'Attempts to publish all artifacts to mavenC
                     uploadSuccessful=true
                 } catch (Exception ex) {
                     //total hack job for when you have a module that produces a war and a jar and a distzip
-                    ex.printStackTrace();
+                    logger.warn("Upload failed for " + f + ". If the module has multiple outputs (jar, war, dist/application, this can be ignored. See https://github.com/gradle-fury/gradle-fury/issues/46 for more info");
+                    logger.info("Upload failed for " + f + ". If the module has multiple outputs (jar, war, dist/application, this can be ignored. See https://github.com/gradle-fury/gradle-fury/issues/46 for more info", ex);
                 }
             }
             else {
