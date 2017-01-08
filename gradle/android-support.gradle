@@ -153,8 +153,14 @@ android {
             debuggable true
             minifyEnabled false
         }
-        release {
-            signingConfig signingConfigs.release
+        //https://github.com/gradle-fury/gradle-fury/issues/49
+        //if defined, don't muck with the signing configurations, you're on your own
+        if (!project.hasProperty("android.signingConfigs.skipFury") || (
+                project.hasProperty("android.signingConfigs.skipFury") && project.property("android.signingConfigs.skipFury").equals("false")
+        )) {
+            release {
+                signingConfig signingConfigs.release
+            }
         }
     }
     // END Digitally sign all Release artifacts ----------------------------------------------------
