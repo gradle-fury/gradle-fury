@@ -1,0 +1,55 @@
+description = '[ c h r i s d o y l e ] :: Gradle Fury :: Hello World Android Application (APK) without signatures'
+
+//basically, fury assumes that you're using the same key for signing all android artifacts
+//this examples shows you how to NOT use gradle-fury's signing setup so that you can provide
+//your own configuration. see gradle.properties in this folder for details
+
+apply plugin: 'com.android.application'
+
+//Attention Gradle Fury users, use this line for your projects
+//apply from: 'https://raw.githubusercontent.com/gradle-fury/gradle-fury/master/gradle/android-support.gradle'
+
+//the following line is just used within the sample projects
+apply from: "${rootDir}/gradle/android-support.gradle"
+
+//Protip: apply the gradle fury plugin before setting up your android specific stuff (if needed)
+//i.e. the following block. Gradle Fury will automagically setup up application id, minSdk, etc
+//based on your gradle.properties file and some other magic.
+
+
+android {
+
+    signingConfigs {
+        config1 {
+            storeFile file("../keystore.jks")
+            keyAlias "GradleFury"
+            keyPassword "password"
+            storePassword "password"
+        }
+        config2 {
+            storeFile file("../keystore.jks")
+            keyAlias "GradleFury"
+            keyPassword "password"
+            storePassword "password"
+        }
+
+    }
+
+    productFlavors {
+        flavor1 {
+            signingConfig signingConfigs.config1
+        }
+        flavor2 {
+            signingConfig signingConfigs.config2
+        }
+    }
+
+
+}
+
+dependencies {
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+}

@@ -21,6 +21,7 @@ include ':hello-world-aar'
 include ':hello-world-gmaps'
 include ':hello-world-apk'
 include ':hello-world-apk-overrides'
+include ':hello-world-apk-signing'
 
 //wars
 include ':hello-world-war'

@@ -118,29 +118,34 @@ android {
         }
     }
 
+    //https://github.com/gradle-fury/gradle-fury/issues/49
+    //if defined, don't muck with the signing configurations, you're on your own
+    if (!project.hasProperty("android.signingConfigs.skipFury") || (
+        project.hasProperty("android.signingConfigs.skipFury") && project.property("android.signingConfigs.skipFury").equals("false")
+    )) {
 
-    // Digitally sign all Release artifacts --------------------------------------------------------
-    if (canSign) {
-        signingConfigs {
-            release {
-                storeFile file("${project.property('android.signingConfigs.release.storeFile')}")
-                storePassword "${project.property('android.signingConfigs.release.storePassword')}"
-                keyAlias "${project.property('android.signingConfigs.release.keyAlias')}"
-                keyPassword "${project.property('android.signingConfigs.release.keyPassword')}"
+        // Digitally sign all Release artifacts --------------------------------------------------------
+        if (canSign) {
+            signingConfigs {
+                release {
+                    storeFile file("${project.property('android.signingConfigs.release.storeFile')}")
+                    storePassword "${project.property('android.signingConfigs.release.storePassword')}"
+                    keyAlias "${project.property('android.signingConfigs.release.keyAlias')}"
+                    keyPassword "${project.property('android.signingConfigs.release.keyPassword')}"
+                }
             }
+        } else {
+            // "Doing it this way gives you flexibility to build on a computer that has the [the
+            //  properties defined] or not"
+            // From http://stackoverflow.com/a/15753461/3093897:
+            signingConfigs {
+                release
+            }
+            // NOTE: At some point in time this stopped working due to a Gradle version or Android tools
+            // plugin upgrade.  I am unwilling to waste any further time isolating it down to a specific
+            // cause because I'm sure it will cost me more time in the future when they inevitably break
+            // it again.  For now, the above "tasks" looper hack provides a "fix".  --Doyle
         }
-    }
-    else {
-        // "Doing it this way gives you flexibility to build on a computer that has the [the
-        //  properties defined] or not"
-        // From http://stackoverflow.com/a/15753461/3093897:
-        signingConfigs {
-            release
-        }
-        // NOTE: At some point in time this stopped working due to a Gradle version or Android tools
-        // plugin upgrade.  I am unwilling to waste any further time isolating it down to a specific
-        // cause because I'm sure it will cost me more time in the future when they inevitably break
-        // it again.  For now, the above "tasks" looper hack provides a "fix".  --Doyle
     }
 
     buildTypes {
