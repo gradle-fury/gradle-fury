@@ -420,6 +420,7 @@ jdependAndroidReport.dependsOn jdependAndroid
 //configure checkstyle for 'normal' projects
     checkstyle {
         ignoreFailures = project.ext.checkStyleIgnoreFailures
+        toolVersion "7.6.1"
         configFile new File("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
 
