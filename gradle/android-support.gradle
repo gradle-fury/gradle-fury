@@ -113,7 +113,7 @@ android {
                         project.name + "-" + project.version + "-" + variant.name + "." +
                                 project.pom.packaging;
 
-                variant.outputs[0].outputFile = new File(apk.parentFile, artifactName);
+                variant.outputs[0].outputFileName = artifactName;
             }
         }
     }
