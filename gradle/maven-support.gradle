@@ -638,6 +638,10 @@ afterEvaluate { project ->
 
                     classpath = project.files(variant.javaCompile.classpath.files)
                     classpath += project.files(ext.androidJar)
+                    classpath += project.files(android.getBootClasspath())
+                    classpath += files("build/generated/source/buildConfig/${variant.flavorname}/release")
+                    classpath += files("build/generated/source/r/buildConfig/${variant.flavorname}/release")
+
                     //classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
                     //-bootclasspath /path/to/sdk/platforms/android-##/android.jar
                     // other lame attempts to overcome the 3-headed monster...
