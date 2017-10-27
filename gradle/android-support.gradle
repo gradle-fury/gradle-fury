@@ -112,8 +112,17 @@ android {
                 def artifactName =
                         project.name + "-" + project.version + "-" + variant.name + "." +
                                 project.pom.packaging;
+                try {
+                    variant.outputs[0].outputFile = new File(apk.parentFile, artifactName);
+                    //this works on gradle 3>
+                }catch (Exception ex) {
+                }
+                try {
+                    //this works on gradle < 3
+                    variant.outputs[0].outputFileName = artifactName;
+                }catch (Exception ex) {
 
-                variant.outputs[0].outputFileName = artifactName;
+                }
             }
         }
     }
