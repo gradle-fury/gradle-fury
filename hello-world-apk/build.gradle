@@ -35,6 +35,7 @@ android {
 
     packagingOptions {
         exclude 'META-INF/maven/commons-io/commons-io/pom.xml'
+        exclude 'META-INF/maven/commons-io/commons-io/pom.properties'
     }
 
     //note there's no application id specified, it's derived from the pom group id and the module
