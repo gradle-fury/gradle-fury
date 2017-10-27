@@ -33,6 +33,9 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/maven/commons-io/commons-io/pom.xml'
+    }
 
     //note there's no application id specified, it's derived from the pom group id and the module
     //name. Of course you can override it with whatever you want as you would normally do, BUT
