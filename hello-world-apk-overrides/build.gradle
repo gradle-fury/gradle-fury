@@ -58,6 +58,6 @@ android {
     packagingOptions {
         exclude 'META-INF/maven/commons-io/commons-io/pom.xml'
         exclude 'META-INF/maven/commons-io/commons-io/pom.properties'
-    }
+    }   
 
 }
