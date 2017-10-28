@@ -71,10 +71,10 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'org.apache.commons:commons-lang3:3.4'
+        classpath 'org.apache.commons:commons-lang3:3.6'
         classpath 'commons-io:commons-io:2.5'
         classpath 'com.github.spyhunter99:dex-method-counts-lib:2.1.1'
-        classpath 'org.owasp:dependency-check-gradle:1.4.4.1'
+        classpath 'org.owasp:dependency-check-gradle:1.4.5.1'
     }
 }
 
