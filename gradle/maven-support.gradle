@@ -997,7 +997,11 @@ def modifyGeneratedPom(pom) {
                     configurationNames = ['compile', 'testCompile','compileOnly']
                     // FIXME :: Issue #21: POM dependency generation shall support type and scope
                 }
-
+                /*
+                2017/10/28 commented out. in gradle 3.4 this can throw under certain circumstances.
+                https://github.com/jeremylong/dependency-check-gradle/issues/31
+                https://docs.gradle.org/release-candidate/javadoc/org/gradle/api/artifacts/Configuration.html#isCanBeResolved()
+                https://discuss.gradle.org/t/3-4-rc-1-3-3-resolving-configurations-may-be-disallowed-and-throw-illegalstateexception/21470/2
                 configurations.findAll { set ->
                     set.each { config ->
                         // Note to future self
@@ -1007,6 +1011,7 @@ def modifyGeneratedPom(pom) {
                         // System.out.println("CONFIG " +config.name);
                     }
                 }
+                */
                 int addedDependencies=0;
 
                 //note to future self, gradle, when it comes to dependency managements in pom's
