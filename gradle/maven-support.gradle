@@ -1002,6 +1002,12 @@ def modifyGeneratedPom(pom) {
                 https://github.com/jeremylong/dependency-check-gradle/issues/31
                 https://docs.gradle.org/release-candidate/javadoc/org/gradle/api/artifacts/Configuration.html#isCanBeResolved()
                 https://discuss.gradle.org/t/3-4-rc-1-3-3-resolving-configurations-may-be-disallowed-and-throw-illegalstateexception/21470/2
+
+                The api was added in 3.3 and in 3.4, it throws the following
+                Execution failed for task ':gradle-fury-validation:generatePomFileForJavaArtifactsPublication'.
+                > Could not apply withXml() to generated POM
+                   > Resolving configuration 'apiElements' directly is not allowed
+
                 configurations.findAll { set ->
                     set.each { config ->
                         // Note to future self
@@ -1012,6 +1018,7 @@ def modifyGeneratedPom(pom) {
                     }
                 }
                 */
+
                 int addedDependencies=0;
 
                 //note to future self, gradle, when it comes to dependency managements in pom's
@@ -1339,7 +1346,7 @@ def modifyGeneratedPom(pom) {
                                      */
                                 }
                             }
-                        } catch (Exception ex) {
+                        } catch (Throwable ex) {
                             logger.info("Issue 119, swallowed exception requesting the config name " + configurationName, ex);
                             //fix for issue 119
                             //always possible that the requested configuration does not exist on this project,
