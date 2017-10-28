@@ -40,7 +40,17 @@ Tested configurations for gradle and the android gradle build tools.
 
 | Gradle | Android Build Tools | JDK | Test Result 
 | ------ | ------------------- | --- | -----------
-| 3.2.1  | 2.3.0-alpha2        | 8   | OK
+| 4.1    | 3.0.0	           | 8   | FAIL publish fails due to pom not being generated,  Gradle changed APIs which prevents dependencies from being declared in the pom.
+| 4.0.1  | 2.3.3               | 8   | FAIL Gradle changed APIs which prevents dependencies from being declared in the pom.
+| 4.0    | 2.3.3               | 8   | FAIL Gradle changed APIs which prevents dependencies from being declared in the pom.
+| 3.5.1  | 2.3.3               | 8   | FAIL Gradle changed APIs which prevents dependencies from being declared in the pom.
+| 3.5    | 2.3.3               | 8   | FAIL Gradle changed APIs which prevents dependencies from being declared in the pom.
+| 3.4    | 2.3.3               | 8   | FAIL Gradle changed APIs which prevents dependencies from being declared in the pom.
+| 3.3    | 2.3.3               | 8   | OK
+| 3.3    | 2.3.2               | 8   | OK
+| 3.3    | 2.3.1               | 8   | OK
+| 3.3    | 2.3.0               | 8   | OK
+| 3.2.1  | 2.3.0-alpha2        | 8   | it worked at one point but not anymore
 | 3.1    | 2.2.2               | 8   | OK
 | 3.1    | 2.2.1               | 8   | OK
 | 3.1    | 2.2.0               | 8   | OK 
